@@ -4,17 +4,7 @@ import { KeystoreNodeProvider } from "../src/provider";
 import { BlockTag } from "../src/types/block";
 import { GetTransactionReceiptResponse } from "../src/types/response";
 import { TransactionStatus } from "../src/types/transaction";
-
-const NODE_URL = "http://keystore-node-271cd8fbf8aac2f5.elb.us-east-1.amazonaws.com:80";
-
-const AXIOM_ACCOUNT_ADDRESS = "0xc3a9b82816196f3f5692dda37ee242839ce86357dc06a205ce04da56a3651e06";
-const NON_EXISTING_ACCOUNT_ADDRESS = "0x1111111111111111111111111111111111111111111111111111111111111111";
-
-const EXISTING_TX_HASH = "0x3e9fe5542eda9ea70da8f12141f19629f281ef92f2458188b1c206e13c2430cc";
-const NON_EXISTENT_TX_HASH = "0x1111111111111111111111111111111111111111111111111111111111111111";
-
-const EXISTING_BLOCK_HASH = "0x8e776eeb4e25cfe8d84803c37d0e9349e472d44945fe9a36b46993e423957c0c";
-const NON_EXISTENT_BLOCK_HASH = "0x1111111111111111111111111111111111111111111111111111111111111111";
+import { AXIOM_ACCOUNT_ADDRESS, EMPTY_HEX, EXISTING_BLOCK_HASH, EXISTING_TX_HASH, NODE_URL, NON_EXISTENT_BLOCK_HASH, NON_EXISTENT_TX_HASH, NON_EXISTING_ACCOUNT_ADDRESS, ZERO_BYTES32 } from './testUtils';
 
 describe('keystore node provider', () => {
   let provider: KeystoreNodeProvider;
@@ -42,20 +32,17 @@ describe('keystore node provider', () => {
   });
 
   test('keystore_getStateAt', async () => {
-    const emptyHex = "0x";
-    const zeroBytes32 = pad("0x", { size: 32 });
-
     const res1 = await provider.getStateAt(AXIOM_ACCOUNT_ADDRESS, BlockTag.Latest);
-    expect(res1.dataHash).not.toBe(zeroBytes32);
-    expect(res1.vkeyHash).not.toBe(zeroBytes32);
-    expect(res1.data).not.toBe(emptyHex);
-    expect(res1.vkey).not.toBe(emptyHex);
+    expect(res1.dataHash).not.toBe(ZERO_BYTES32);
+    expect(res1.vkeyHash).not.toBe(ZERO_BYTES32);
+    expect(res1.data).not.toBe(EMPTY_HEX);
+    expect(res1.vkey).not.toBe(EMPTY_HEX);
 
     const res2 = await provider.getStateAt(NON_EXISTING_ACCOUNT_ADDRESS, BlockTag.Latest);
-    expect(res2.dataHash).toBe(zeroBytes32);
-    expect(res2.vkeyHash).toBe(zeroBytes32);
-    expect(res2.data).toBe(emptyHex);
-    expect(res2.vkey).toBe(emptyHex);
+    expect(res2.dataHash).toBe(ZERO_BYTES32);
+    expect(res2.vkeyHash).toBe(ZERO_BYTES32);
+    expect(res2.data).toBe(EMPTY_HEX);
+    expect(res2.vkey).toBe(EMPTY_HEX);
   });
 
   test('keystore_getTransactionCount', async () => {
