@@ -1,3 +1,4 @@
+import { pad } from "viem";
 import { KeystoreNodeProvider } from "../src/provider";
 import { BlockTag } from "../src/types/block";
 import { GetTransactionReceiptResponse } from "../src/types/response";
@@ -14,7 +15,7 @@ const NON_EXISTENT_TX_HASH = "0x111111111111111111111111111111111111111111111111
 const EXISTING_BLOCK_HASH = "0x8e776eeb4e25cfe8d84803c37d0e9349e472d44945fe9a36b46993e423957c0c";
 const NON_EXISTENT_BLOCK_HASH = "0x1111111111111111111111111111111111111111111111111111111111111111";
 
-describe('keystore provider', () => {
+describe('keystore node provider', () => {
   let provider: KeystoreNodeProvider;
 
   beforeEach(() => {
@@ -40,11 +41,20 @@ describe('keystore provider', () => {
   });
 
   test('keystore_getStateAt', async () => {
+    const emptyHex = "0x";
+    const zeroBytes32 = pad("0x", { size: 32 });
+
     const res1 = await provider.getStateAt(AXIOM_ACCOUNT_ADDRESS, BlockTag.Latest);
-    console.log(res1); // TODO: add a check
+    expect(res1.dataHash).not.toBe(zeroBytes32);
+    expect(res1.vkeyHash).not.toBe(zeroBytes32);
+    expect(res1.data).not.toBe(emptyHex);
+    expect(res1.vkey).not.toBe(emptyHex);
 
     const res2 = await provider.getStateAt(NON_EXISTING_ACCOUNT_ADDRESS, BlockTag.Latest);
-    console.log(res2); // TODO: add a check
+    expect(res2.dataHash).toBe(zeroBytes32);
+    expect(res2.vkeyHash).toBe(zeroBytes32);
+    expect(res2.data).toBe(emptyHex);
+    expect(res2.vkey).toBe(emptyHex);
   });
 
   test('keystore_getTransactionCount', async () => {
@@ -65,7 +75,7 @@ describe('keystore provider', () => {
 
   test('keystore_getTransactionByHash', async () => {
     let tx = await provider.getTransactionByHash(EXISTING_TX_HASH);
-    console.log(tx);
+    expect(tx.hash).toBe(EXISTING_TX_HASH);
 
     await expect(provider.getTransactionByHash(NON_EXISTENT_TX_HASH))
       .rejects.toThrow();
