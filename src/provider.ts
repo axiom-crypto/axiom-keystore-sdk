@@ -1,7 +1,8 @@
 import { RequestManager, HTTPTransport, Client } from "@open-rpc/client-js";
-import { CallResponse, GetBalanceResponse, GetBlockByHashResponse, GetBlockByNumberResponse, GetBlockNumberByStateRootResponse, GetProofResponse, GetStateAtResponse, GetTransactionByHashResponse, GetTransactionCountResponse, GetTransactionReceiptResponse, SyncStatusResponse } from "./types/response";
+import { AuthenticateTransactionResponse, CallResponse, GetAuthenticationStatusResponse, GetBalanceResponse, GetBlockByHashResponse, GetBlockByNumberResponse, GetBlockNumberByStateRootResponse, GetProofResponse, GetSponsorAuthenticationStatusResponse, GetStateAtResponse, GetTransactionByHashResponse, GetTransactionCountResponse, GetTransactionReceiptResponse, SendRawTransactionResponse, SponsorAuthenticateTransactionResponse, SyncStatusResponse } from "./types/response";
 import { Data, Hash, KeystoreAddress } from "./types/primitives";
 import { BlockTagOrNumber } from "./types/block";
+import { AuthInputs, SponsorAuthInputs } from "./types/input";
 
 export class KeystoreNodeProvider {
   private client: Client;
@@ -103,6 +104,64 @@ export class KeystoreNodeProvider {
     const result = await this.client.request({
       method: "keystore_getBlockByHash",
       params: [hash, fullTransactions]
+    });
+    return result;
+  }
+}
+
+export class KeystoreSignatureProverProvider {
+  private client: Client;
+
+  constructor(url: string) {
+    const transport = new HTTPTransport(url);
+    this.client = new Client(new RequestManager([transport]));
+  }
+
+  async authenticateTransaction(transaction: Data, authInputs: AuthInputs): Promise<AuthenticateTransactionResponse> {
+    const result = await this.client.request({
+      method: "keystore_authenticateTransaction",
+      params: [transaction, authInputs]
+    });
+    return result;
+  }
+
+  async getAuthenticationStatus(requestHash: Hash): Promise<GetAuthenticationStatusResponse> {
+    const result = await this.client.request({
+      method: "keystore_getAuthenticationStatus",
+      params: [requestHash]
+    });
+    return result;
+  }
+
+  async sponsorAuthenticateTransaction(transaction: Data, sponsorAuthInputs: SponsorAuthInputs): Promise<SponsorAuthenticateTransactionResponse> {
+    const result = await this.client.request({
+      method: "keystore_authenticateTransaction",
+      params: [transaction, sponsorAuthInputs]
+    });
+    return result;
+  }
+
+  async getSponsorAuthenticationStatus(requestHash: Hash): Promise<GetSponsorAuthenticationStatusResponse> {
+    const result = await this.client.request({
+      method: "keystore_getSponsorAuthenticationStatus",
+      params: [requestHash]
+    });
+    return result;
+  }
+}
+
+export class KeystoreSequencerProvider {
+  private client: Client;
+
+  constructor(url: string) {
+    const transport = new HTTPTransport(url);
+    this.client = new Client(new RequestManager([transport]));
+  }
+
+  async sendRawTransaction(transaction: Data): Promise<SendRawTransactionResponse> {
+    const result = await this.client.request({
+      method: "keystore_sendRawTransaction",
+      params: [transaction]
     });
     return result;
   }
