@@ -1,5 +1,4 @@
-type Hex = `0x${string}`
-type HexNumber = `0x${bigint}`
+import { Hex } from "viem";
 
 /**
  * Represents "0x"-prefixed hexadecimal data of arbitrary length.
@@ -29,7 +28,7 @@ export type Byte = Hex;
 /**
  * Represents a number as a hex string (e.g., "0x1").
  */
-export type Quantity = HexNumber;
+export type Quantity = Hex;
 
 /**
  * Represents "0x"-prefixed 32-byte strings.

@@ -101,9 +101,7 @@ export type AuthenticateTransactionResponse = Hash;
 /**
  * Authentication status for a transaction request can be null or a status object.
  */
-export type GetAuthenticationStatusResponse =
-  | undefined
-  | AuthenticationStatus;
+export type GetAuthenticationStatusResponse = AuthenticationStatus;
 
 /**
  * Authentication status object.
@@ -129,9 +127,7 @@ export type SponsorAuthenticateTransactionResponse = Hash;
 /**
  * Sponsor authentication status can be null or a status object.
  */
-export type GetSponsorAuthenticationStatusResponse =
-  | undefined
-  | SponsorAuthenticationStatus;
+export type GetSponsorAuthenticationStatusResponse = SponsorAuthenticationStatus;
 
 /** 
  * Sponsor authentication status object. 

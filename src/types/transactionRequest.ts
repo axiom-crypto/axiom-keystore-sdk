@@ -1,7 +1,7 @@
 import { Data } from "./primitives";
 import { KeystoreAccount } from "./transaction";
 
-export type UpdateTransactionRequest = {
+export interface UpdateTransactionRequest {
   nonce: bigint;
   feePerGas: bigint;
   newUserData: Data;
