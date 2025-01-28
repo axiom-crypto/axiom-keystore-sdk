@@ -1,5 +1,4 @@
 import { describe, test, expect } from '@jest/globals';
-import { pad } from "viem";
 import { KeystoreNodeProvider } from "../src/provider";
 import { BlockTag } from "../src/types/block";
 import { GetTransactionReceiptResponse } from "../src/types/response";
@@ -14,7 +13,7 @@ describe('keystore node provider', () => {
   });
 
   test('keystore_syncStatus', async () => {
-    let resp = await provider.syncStatus();
+    const resp = await provider.syncStatus();
     expect(resp.committedL2).toBeDefined();
     expect(resp.finalizedL2).toBeDefined();
   });
@@ -46,7 +45,7 @@ describe('keystore node provider', () => {
   });
 
   test('keystore_getTransactionCount', async () => {
-    let nonce1 = await provider.getTransactionCount(AXIOM_ACCOUNT_ADDRESS, BlockTag.Latest);
+    const nonce1 = await provider.getTransactionCount(AXIOM_ACCOUNT_ADDRESS, BlockTag.Latest);
     expect(BigInt(nonce1)).toBeGreaterThan(0n);
 
     const nonce2 = await provider.getTransactionCount(NON_EXISTING_ACCOUNT_ADDRESS, BlockTag.Latest);
@@ -62,7 +61,7 @@ describe('keystore node provider', () => {
   });
 
   test('keystore_getTransactionByHash', async () => {
-    let tx = await provider.getTransactionByHash(EXISTING_TX_HASH);
+    const tx = await provider.getTransactionByHash(EXISTING_TX_HASH);
     expect(tx.hash).toBe(EXISTING_TX_HASH);
 
     await expect(provider.getTransactionByHash(NON_EXISTENT_TX_HASH))
@@ -70,15 +69,15 @@ describe('keystore node provider', () => {
   });
 
   test('keystore_getTransactionReceipt', async () => {
-    let receipt: GetTransactionReceiptResponse = await provider.getTransactionReceipt(EXISTING_TX_HASH);
+    const receipt: GetTransactionReceiptResponse = await provider.getTransactionReceipt(EXISTING_TX_HASH);
     expect(receipt.status).toBe(TransactionStatus.L2FinalizedL1Included);
 
     await expect(provider.getTransactionReceipt(NON_EXISTENT_TX_HASH)).rejects.toThrow();
   });
 
   test('keystore_getBlockNumberByStateRoot', async () => {
-    let block = await provider.getBlockByNumber(BlockTag.Latest, false);
-    let blockNumber = await provider.getBlockNumberByStateRoot(block.stateRoot);
+    const block = await provider.getBlockByNumber(BlockTag.Latest, false);
+    const blockNumber = await provider.getBlockNumberByStateRoot(block.stateRoot);
     expect(blockNumber).toBe(block.number);
   });
 
