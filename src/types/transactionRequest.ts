@@ -1,15 +1,18 @@
 import { Data } from "./primitives";
 import { KeystoreAccount } from "./transaction";
 
-export interface UpdateTransactionRequest {
+export type UpdateTransactionRequest = {
   nonce: bigint;
   feePerGas: bigint;
   newUserData: Data;
   newUserVkey: Data;
   userAcct: KeystoreAccount;
-  userProof: Data;
-  sponsorAcctBytes?: KeystoreAccount;
-  sponsorProof?: Data;
+  sponsorAcct?: KeystoreAccount;
 };
 
 export type L2TransactionRequest = UpdateTransactionRequest;
+
+export type AuthenticatedUpdateTransactionRequest = UpdateTransactionRequest & {
+  userProof: Data;
+  sponsorProof?: Data;
+};

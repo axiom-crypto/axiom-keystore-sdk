@@ -12,7 +12,7 @@ export type TransactionOrHash = Hash | L2Transaction;
 /**
  * Represents the state of a keystore account.
  */
-export interface KeystoreAccount {
+export type KeystoreAccount = {
   keystoreAddress: KeystoreAddress;
   salt: Bytes32;
   dataHash: Hash;
@@ -22,7 +22,7 @@ export interface KeystoreAccount {
 /**
  * Base transaction properties shared by all L2 transaction variants.
  */
-export interface BaseTransaction {
+export type BaseTransaction = {
   hash: Hash;
   transactionIndex: Quantity;
   blockHash: Hash;
@@ -32,8 +32,7 @@ export interface BaseTransaction {
 /**
  * A deposit transaction (type = "0x00").
  */
-export interface DepositTransaction {
-  base: BaseTransaction;
+export type DepositTransaction = BaseTransaction & {
   l1InitiatedNonce: Quantity;
   amt: Quantity;
   keystoreAddress: KeystoreAddress;
@@ -42,8 +41,7 @@ export interface DepositTransaction {
 /**
  * A withdraw transaction (type = "0x01").
  */
-export interface WithdrawTransaction {
-  base: BaseTransaction;
+export type WithdrawTransaction = BaseTransaction & {
   isL1Initiated: boolean;
   nonce: Quantity;
   feePerGas: Data;
@@ -57,8 +55,7 @@ export interface WithdrawTransaction {
 /**
  * An update transaction (type = "0x02").
  */
-export interface UpdateTransaction {
-  base: BaseTransaction;
+export type UpdateTransaction = BaseTransaction & {
   isL1Initiated: boolean;
   nonce: Quantity;
   feePerGas: Data;

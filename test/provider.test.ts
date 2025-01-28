@@ -64,7 +64,9 @@ describe('keystore provider', () => {
   });
 
   test('keystore_getTransactionByHash', async () => {
-    await provider.getTransactionByHash(EXISTING_TX_HASH);
+    let tx = await provider.getTransactionByHash(EXISTING_TX_HASH);
+    console.log(tx);
+
     await expect(provider.getTransactionByHash(NON_EXISTENT_TX_HASH))
       .rejects.toThrow();
   });

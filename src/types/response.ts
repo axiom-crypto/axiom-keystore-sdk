@@ -6,7 +6,7 @@ import { L2Transaction, TransactionStatus } from "./transaction";
 /** 
  * Sync status response with L2 and L1 references. 
  */
-export interface SyncStatusResponse {
+export type SyncStatusResponse = {
   preconfirmedL2?: L2BlockRef;
   committedL2: L2BlockRef;
   finalizedL2: L2BlockRef;
@@ -18,7 +18,7 @@ export interface SyncStatusResponse {
 /**
  * Rollup configuration parameters.
  */
-export interface RollupConfigResponse {
+export type RollupConfigResponse = {
   l1SlotTime: Quantity;
   maxSequencerDrift: Quantity;
   maxSequencerDelay: Quantity;
@@ -42,7 +42,7 @@ export type GetStateAtResponse = AccountState;
 /** 
  * GetProofResponse includes the account state plus the IMT proof. 
  */
-export interface GetProofResponse {
+export type GetProofResponse = {
   state: AccountState;
   proof: ImtProof;
 }
@@ -50,7 +50,7 @@ export interface GetProofResponse {
 /**
  * GetWithdrawalProofResponse includes the L1 target address, amount, and the IMT proof.
  */
-export interface GetWithdrawalProofResponse {
+export type GetWithdrawalProofResponse = {
   to: L1Address;
   amt: Quantity;
   proof: ImtProof;
@@ -62,7 +62,7 @@ export type GetTransactionCountResponse = Quantity;
 /**
  * Represents the result of a call simulation (success plus optional state transitions).
  */
-export interface CallResponse {
+export type CallResponse = {
   success: boolean;
   stateTransitions?: StateTransitions;
 }
@@ -80,7 +80,7 @@ export type GetTransactionByBlockNumberAndIndexResponse = L2Transaction;
 /** 
  * The transaction receipt structure.
  */
-export interface GetTransactionReceiptResponse {
+export type GetTransactionReceiptResponse = {
   transactionHash: Hash;
   blockHash: Hash;
   blockNumber: Quantity;
@@ -102,13 +102,13 @@ export type AuthenticateTransactionResponse = Hash;
  * Authentication status for a transaction request can be null or a status object.
  */
 export type GetAuthenticationStatusResponse =
-  | { None: true }  // When request identifier was not found
-  | { Status: AuthenticationStatusObject };
+  | undefined
+  | AuthenticationStatus;
 
 /**
  * Authentication status object.
  */
-export interface AuthenticationStatusObject {
+export type AuthenticationStatus = {
   status: AuthenticationStatusEnum;
   authenticatedTransaction?: Data;
   error?: string;
@@ -130,13 +130,13 @@ export type SponsorAuthenticateTransactionResponse = Hash;
  * Sponsor authentication status can be null or a status object.
  */
 export type GetSponsorAuthenticationStatusResponse =
-  | { None: true }
-  | { Status: SponsorAuthenticationStatusObject };
+  | undefined
+  | SponsorAuthenticationStatus;
 
 /** 
  * Sponsor authentication status object. 
  */
-export interface SponsorAuthenticationStatusObject {
+export type SponsorAuthenticationStatus = {
   status: AuthenticationStatusEnum;
   sponsorAuthenticatedTransaction?: Data;
   error?: string;

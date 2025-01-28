@@ -19,7 +19,7 @@ export type BlockTagOrNumber = BlockTag | Quantity;
 /**
  * L1 block reference (hash, number, parentHash, timestamp).
  */
-export interface L1BlockRef {
+export type L1BlockRef = {
   hash: Hash;
   number: Quantity;
   parentHash: Hash;
@@ -30,7 +30,7 @@ export interface L1BlockRef {
  * L2 block reference, containing additional fields like
  * sequencerKeystoreAddress, etc.
  */
-export interface L2BlockRef {
+export type L2BlockRef = {
   hash: Hash;
   number: Quantity;
   parentHash: Hash;

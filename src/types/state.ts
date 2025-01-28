@@ -3,7 +3,7 @@ import { Byte, Hash, KeystoreAddress, Quantity, Data } from "./primitives";
 /**
  * An Individual Merkle Tree sibling proof element.
  */
-export interface ImtSibling {
+export type ImtSibling = {
   hash: Hash;
   isLeft: boolean;
 }
@@ -11,7 +11,7 @@ export interface ImtSibling {
 /**
  * The leaf object of an IMT proof.
  */
-export interface ImtLeaf {
+export type ImtLeaf = {
   hash: Hash;
   keyPrefix: Byte;
   key: Hash;
@@ -23,7 +23,7 @@ export interface ImtLeaf {
 /**
  * Represents an IMT proof, either an inclusion or exclusion proof.
  */
-export interface ImtProof {
+export type ImtProof = {
   isExclusionProof: boolean;
   siblings: ImtSibling[];
   leaf: ImtLeaf;
@@ -32,7 +32,7 @@ export interface ImtProof {
 /**
  * Represents the state of an account (data and vkey).
  */
-export interface AccountState {
+export type AccountState = {
   dataHash: Hash,
   vkeyHash: Hash,
   data: Data;
@@ -42,7 +42,7 @@ export interface AccountState {
 /**
  * A helper for "from" => "to" transitions of a particular type.
  */
-export interface FromTo<T> {
+export type FromTo<T> = {
   from: T;
   to: T;
 }
@@ -50,7 +50,7 @@ export interface FromTo<T> {
 /**
  * The sub-structure holding transitions for nonce, balance, and state.
  */
-export interface Transitions {
+export type Transitions = {
   nonce?: FromTo<Quantity>;
   balance?: FromTo<Quantity>;
   state?: FromTo<AccountState>;
@@ -59,7 +59,7 @@ export interface Transitions {
 /**
  * Describes the "from" => "to" transitions of nonce, balance, state, etc.
  */
-export interface AccountStateTransitions {
+export type AccountStateTransitions = {
   keystoreAddress: KeystoreAddress;
   transitions: Transitions;
 }
@@ -68,7 +68,7 @@ export interface AccountStateTransitions {
  * Aggregates user and optional sponsor state transitions in a transaction
  * simulation.
  */
-export interface StateTransitions {
+export type StateTransitions = {
   user: AccountStateTransitions;
   sponsor?: AccountStateTransitions;
 }
