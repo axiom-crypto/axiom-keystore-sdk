@@ -4,7 +4,11 @@
   "author": "Intrinsic Technologies",
   "license": "MIT",
   "description": "Keystore Rollup SDK",
-  "keywords": ["keystore", "evm", "axiom"],
+  "keywords": [
+    "keystore",
+    "evm",
+    "axiom"
+  ],
   "main": "dist/index.cjs",
   "types": "dist/index.d.ts",
   "typings": "dist/index.d.ts",
@@ -19,8 +23,8 @@
     "build": "rm -rf ./dist/* && tsc",
     "start": "node dist/index.js",
     "dev": "tsc --watch",
-    "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix",
+    "lint": "eslint '**/*.ts'",
+    "lint:fix": "eslint '**/*.ts' --fix",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage"
@@ -38,10 +42,13 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
+    "@ethereumjs/rlp": "^5.0.2",
     "@noble/hashes": "^1.7.1",
     "@noble/secp256k1": "^2.2.3",
+    "@open-rpc/client-js": "^1.8.1",
     "dotenv": "^16.4.7",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "viem": "^2.22.15"
   },
   "publishConfig": {
     "directory": "dist"
