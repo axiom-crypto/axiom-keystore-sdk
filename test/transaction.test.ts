@@ -1,3 +1,4 @@
+import { describe, test, expect } from '@jest/globals';
 import { UpdateTransactionRequest } from "../src/types/transactionRequest";
 import { UpdateTransactionBytes } from "../src/transaction";
 
