@@ -42,11 +42,13 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
+    "@ethereumjs/rlp": "^5.0.2",
     "@noble/hashes": "^1.7.1",
     "@noble/secp256k1": "^2.2.3",
     "@open-rpc/client-js": "^1.8.1",
     "dotenv": "^16.4.7",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "viem": "^2.22.15"
   },
   "publishConfig": {
     "directory": "dist"
