@@ -20,9 +20,9 @@ export const ANVIL_ACCOUNTS: { pk: KeystoreAddress, addr: L1Address }[] = [
   },
 ];
 
-export const NODE_URL = "http://keystore-node-271cd8fbf8aac2f5.elb.us-east-1.amazonaws.com:80";
-export const SIGNATURE_PROVER_URL = "http://signature-prover-cee9f99ccd16c4ef.elb.us-east-1.amazonaws.com:80";
-export const SEQUENCER_URL = "http://keystore-sequencer-524685ad227fca63.elb.us-east-1.amazonaws.com:80";
+export const NODE_URL = "http://keystore-rpc-node.axiom.xyz";
+export const SIGNATURE_PROVER_URL = "http://keystore-rpc-signatureprover.axiom.xyz";
+export const SEQUENCER_URL = "http://keystore-rpc-sequencer.axiom.xyz";
 
 export const AXIOM_ACCOUNT_ADDRESS = "0xc3a9b82816196f3f5692dda37ee242839ce86357dc06a205ce04da56a3651e06";
 export const NON_EXISTING_ACCOUNT_ADDRESS = "0x1111111111111111111111111111111111111111111111111111111111111111";
