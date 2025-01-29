@@ -9,18 +9,11 @@
     "evm",
     "axiom"
   ],
-  "main": "dist/index.cjs",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "typings": "dist/index.d.ts",
   "type": "module",
-  "module": "dist/es/index.js",
-  "exports": {
-    "import": "./dist/es/index.js",
-    "require": "./dist/index.cjs",
-    "default": "./dist/es/index.js"
-  },
   "scripts": {
-    "build": "rm -rf ./dist/* && tsc",
+    "build": "rm -rf ./dist/* && tsc && node scripts/postTsc.cjs",
     "start": "node dist/index.js",
     "dev": "tsc --watch",
     "lint": "eslint '**/*.ts'",
