@@ -1,5 +1,5 @@
 {
-  "name": "keystore-sdk",
+  "name": "@axiom-crypto/keystore-sdk",
   "version": "0.0.1",
   "author": "Intrinsic Technologies",
   "license": "MIT",
