@@ -13,7 +13,9 @@ import {
   numberToHex,
   bytesToHex,
   hexToBigInt,
+  concat,
 } from "viem";
+import { Bytes32, Data, Hash, KeystoreAddress } from "src/types/primitives";
 
 // Constants
 const EIP712_DOMAIN = keccak256(
@@ -56,46 +58,39 @@ function encodeKeystoreAccount(acct: KeystoreAccount): Hex {
   return bytesToHex(RLP.encode([keystoreAddress, salt, dataHash, vkey]));
 }
 
-export class KeystoreAccountBytes {
-  public readonly keystoreAddress: Hex
-  public readonly salt: Hex
-  public readonly dataHash: Hex
-  public readonly vkey: Hex
+export class KeystoreAccountBuilder implements KeystoreAccount {
+  keystoreAddress: `0x${string}`;
+  salt: `0x${string}`;
+  dataHash: `0x${string}`;
+  vkey: `0x${string}`;
 
-  constructor(
-    keystoreAddress: Hex,
-    salt: Hex,
-    dataHash: Hex,
-    vkey: Hex
-  ) {
-    this.keystoreAddress = keystoreAddress;
-    this.salt = salt;
-    this.dataHash = dataHash;
+  constructor(keystoreAddress: `0x${string}`, salt: `0x${string}`, dataHash: `0x${string}`, vkey: `0x${string}`) {
+    this.keystoreAddress = pad(keystoreAddress, { size: 32 });
+    this.salt = pad(salt, { size: 32 });
+    this.dataHash = pad(dataHash, { size: 32 });
     this.vkey = vkey;
   }
 
-  public static fromKeystoreAccount(acct: KeystoreAccount) {
-    const keystoreAddress = pad(acct.keystoreAddress, { size: 32 });
-    const salt = pad(acct.salt, { size: 32 });
-    const dataHash = pad(acct.dataHash, { size: 32 });
-    const vkey = acct.vkey;
-    return new this(
-      keystoreAddress,
-      salt,
-      dataHash,
-      vkey
-    );
+  static withKeystoreAddress(keystoreAddress: KeystoreAddress, dataHash: Hash, vkey: Data) {
+    const salt = pad("0x", { size: 32 });
+    return new this(keystoreAddress, salt, dataHash, vkey);
+  }
+
+  static withSalt(salt: Bytes32, dataHash: Hash, vkey: Data): KeystoreAccount {
+    const vkeyHash = keccak256(vkey);
+    const keystoreAddress = keccak256(concat([salt, dataHash, vkeyHash]));
+    return new this(keystoreAddress, salt, dataHash, vkey);
   }
 }
 
-export class UpdateTransactionBytes {
+export class UpdateTransactionBuilder {
   private readonly isL1Initiated: Hex
   private readonly nonce: bigint
   private readonly feePerGas: Hex
   private readonly l1InitiatedNonce: Hex
   private readonly newUserData: Hex
   private readonly newUserVkey: Hex
-  private readonly userAcct: KeystoreAccountBytes
+  private readonly userAcct: KeystoreAccount
   private readonly userProof: Hex
   private readonly sponsorAcctBytes: Hex
   private readonly sponsorProof: Hex
@@ -110,7 +105,7 @@ export class UpdateTransactionBytes {
     l1InitiatedNonce: Hex,
     newUserData: Hex,
     newUserVkey: Hex,
-    userAcct: KeystoreAccountBytes,
+    userAcct: KeystoreAccount,
     userProof: Hex,
     sponsorAcctBytes: Hex,
     sponsorProof: Hex,
@@ -134,7 +129,7 @@ export class UpdateTransactionBytes {
     const l1InitiatedNonce = "0x";
     const newUserData = txReq.newUserData;
     const newUserVkey = txReq.newUserVkey;
-    const userAcct = KeystoreAccountBytes.fromKeystoreAccount(txReq.userAcct);
+    const userAcct = new KeystoreAccountBuilder(txReq.userAcct.keystoreAddress, txReq.userAcct.salt, txReq.userAcct.dataHash, txReq.userAcct.vkey);
     const userProof = "0x";
     const sponsorAcctBytes = txReq.sponsorAcct
       ? encodeKeystoreAccount(txReq.sponsorAcct)
@@ -250,12 +245,12 @@ export class UpdateTransactionBytes {
     const sponsorAcctBytes = rlpDecoded[9] as Uint8Array;
     const sponsorProof = rlpDecoded[10] as Uint8Array;
 
-    const userAcct = new KeystoreAccountBytes(bytesToHex(userAcctKeystoreAddress), bytesToHex(userAcctSalt), bytesToHex(userAcctDataHash), bytesToHex(userAcctVkey));
+    const userAcct = new KeystoreAccountBuilder(bytesToHex(userAcctKeystoreAddress), bytesToHex(userAcctSalt), bytesToHex(userAcctDataHash), bytesToHex(userAcctVkey));
 
     const nonceHex = bytesToHex(nonce);
     const nonceBigInt = nonceHex == '0x' ? 0n : hexToBigInt(nonceHex);
 
-    return new UpdateTransactionBytes(
+    return new UpdateTransactionBuilder(
       boolToHex(isL1Initiated, { size: 1 }),
       nonceBigInt,
       bytesToHex(feePerGas),

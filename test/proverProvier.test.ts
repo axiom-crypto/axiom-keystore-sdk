@@ -4,8 +4,8 @@ import { ANVIL_ACCOUNTS, CODE_HASH, SIGNATURE_PROVER_URL } from './testUtils';
 import { Hex, pad } from 'viem';
 import { AXIOM_ACCOUNT, AXIOM_CODEHASH, AXIOM_EOA, AXIOM_VKEY, ecdsaSign } from "../src";
 import { calcDataHash } from "../src/dataHash";
-import { KeystoreAccountBuilder, UpdateTransactionRequest } from '../src/types/transactionRequest';
-import { UpdateTransactionBytes } from '../src/transaction';
+import { UpdateTransactionRequest } from '../src/types/transactionRequest';
+import { KeystoreAccountBuilder, UpdateTransactionBuilder } from '../src/transaction';
 import { SponsorAuthInputs } from '../src/types/input';
 
 describe('keystore prover provider', () => {
@@ -36,7 +36,7 @@ describe('keystore prover provider', () => {
       userAcct,
       sponsorAcct,
     };
-    const updateTx = UpdateTransactionBytes.fromTransactionRequest(txReq);
+    const updateTx = UpdateTransactionBuilder.fromTransactionRequest(txReq);
 
     const userMsgHash = updateTx.userMsgHash();
     const userSig: Hex = await ecdsaSign(pk, userMsgHash);
@@ -66,7 +66,7 @@ describe('keystore prover provider', () => {
     console.log(status.status);
 
     if (status.authenticatedTransaction) {
-      let _ = UpdateTransactionBytes.decodeTxBytes(status.authenticatedTransaction);
+      let _ = UpdateTransactionBuilder.decodeTxBytes(status.authenticatedTransaction);
     }
   });
 });
