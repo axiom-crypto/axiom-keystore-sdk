@@ -77,9 +77,12 @@ export class KeystoreAccountBuilder implements KeystoreAccount {
   }
 
   static withSalt(salt: Bytes32, dataHash: Hash, vkey: Data): KeystoreAccount {
+    const paddedSalt = pad(salt, { size: 32 });
+    const paddedDataHash = pad(dataHash, { size: 32 });
+
     const vkeyHash = keccak256(vkey);
-    const keystoreAddress = keccak256(concat([salt, dataHash, vkeyHash]));
-    return new this(keystoreAddress, salt, dataHash, vkey);
+    const keystoreAddress = keccak256(concat([paddedSalt, paddedDataHash, vkeyHash]));
+    return new this(keystoreAddress, paddedSalt, paddedDataHash, vkey);
   }
 }
 
