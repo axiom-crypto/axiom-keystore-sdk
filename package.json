@@ -9,8 +9,8 @@
     "evm",
     "axiom"
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "type": "module",
   "scripts": {
     "build": "rm -rf ./dist/* && tsc && node scripts/postTsc.cjs",
