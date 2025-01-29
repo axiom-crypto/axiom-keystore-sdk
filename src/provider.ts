@@ -1,5 +1,5 @@
 import { RequestManager, HTTPTransport, Client } from "@open-rpc/client-js";
-import { AuthenticateTransactionResponse, CallResponse, GetAuthenticationStatusResponse, GetBalanceResponse, GetBlockByHashResponse, GetBlockByNumberResponse, GetBlockNumberByStateRootResponse, GetProofResponse, GetSponsorAuthenticationStatusResponse, GetStateAtResponse, GetTransactionByHashResponse, GetTransactionCountResponse, GetTransactionReceiptResponse, SendRawTransactionResponse, SponsorAuthenticateTransactionResponse, SyncStatusResponse } from "./types/response";
+import { AuthenticateTransactionResponse, CallResponse, EstimateGasResponse, EstimateL1DataFeeResponse, GasPriceResponse, GetAuthenticationStatusResponse, GetBalanceResponse, GetBlockByHashResponse, GetBlockByNumberResponse, GetBlockNumberByStateRootResponse, GetProofResponse, GetSponsorAuthenticationStatusResponse, GetStateAtResponse, GetTransactionByHashResponse, GetTransactionCountResponse, GetTransactionReceiptResponse, SendRawTransactionResponse, SponsorAuthenticateTransactionResponse, SyncStatusResponse } from "./types/response";
 import { Data, Hash, KeystoreAddress } from "./types/primitives";
 import { BlockTagOrNumber } from "./types/block";
 import { AuthInputs, SponsorAuthInputs } from "./types/input";
@@ -162,6 +162,38 @@ export class KeystoreSequencerProvider {
     const result = await this.client.request({
       method: "keystore_sendRawTransaction",
       params: [transaction]
+    });
+    return result;
+  }
+
+  async gasPrice(): Promise<GasPriceResponse> {
+    const result = await this.client.request({
+      method: "keystore_gasPrice",
+      params: []
+    });
+    return result;
+  }
+
+  async estimateGas(transaction: Data): Promise<EstimateGasResponse> {
+    const result = await this.client.request({
+      method: "keystore_estimateGas",
+      params: [transaction]
+    });
+    return result;
+  }
+
+  async estimateL1DataFee(transaction: Data, block: BlockTagOrNumber): Promise<EstimateL1DataFeeResponse> {
+    const result = await this.client.request({
+      method: "keystore_estimateL1DataFee",
+      params: [transaction, block]
+    });
+    return result;
+  }
+
+  async call(transaction: Data, block: BlockTagOrNumber): Promise<CallResponse> {
+    const result = await this.client.request({
+      method: "keystore_call",
+      params: [transaction, block]
     });
     return result;
   }
