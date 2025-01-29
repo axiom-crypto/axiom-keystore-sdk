@@ -1,12 +1,12 @@
 import { describe, test, expect } from '@jest/globals';
-import { ecdsaSign } from "../src/ecdsa";
+import { ecdsaSign } from "../src/utils/ecdsa";
 import { ANVIL_ACCOUNTS } from "./testUtils";
-import { Hex, keccak256, stringToHex } from 'viem';
+import { keccak256, stringToHex } from 'viem';
 
 describe("ecdsa", () => {
   test("should sign a message", async () => {
     const acct = ANVIL_ACCOUNTS[0];
-    const pk = acct.pk as Hex;
+    const pk = acct.pk;
     const msg = stringToHex("message");
     const msgHash = keccak256(msg);
     expect(msgHash).toBe("0xc2baf6c66618acd49fb133cebc22f55bd907fe9f0d69a726d45b7539ba6bbe08");

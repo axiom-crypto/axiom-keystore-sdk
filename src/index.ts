@@ -1,7 +1,7 @@
 import { pad } from "viem";
 import { KeystoreAccount } from "./types/transaction";
 
-export * from "./ecdsa";
+export * from "./utils/ecdsa";
 
 export const AXIOM_EOA = "0xD7548a3ED8c51FA30D26ff2D7Db5C33d27fd48f2";
 export const AXIOM_CODEHASH = "0xa1b20564cd6cc6410266a716c9654406a15e822d4dc89c4127288da925d5c225";
