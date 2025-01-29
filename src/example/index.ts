@@ -1,4 +1,5 @@
-import { AXIOM_ACCOUNT, AXIOM_ACCOUNT_AUTH_INPUTS, AXIOM_VKEY, AuthenticationStatusEnum, BlockTag, KeystoreAccountBuilder, KeystoreNodeProvider, KeystoreSequencerProvider, KeystoreSignatureProverProvider, SAMPLE_USER_CODE_HASH, SponsorAuthInputs, UpdateTransactionBuilder, UpdateTransactionRequest, calcDataHash, ecdsaSign, generateRandomHex } from "..";
+import { generateRandomHex } from "src/utils/random";
+import { AXIOM_ACCOUNT, AXIOM_ACCOUNT_AUTH_INPUTS, AXIOM_VKEY, AuthenticationStatusEnum, BlockTag, KeystoreAccountBuilder, KeystoreNodeProvider, KeystoreSequencerProvider, KeystoreSignatureProverProvider, SAMPLE_USER_CODE_HASH, SponsorAuthInputs, UpdateTransactionBuilder, UpdateTransactionRequest, calcDataHash, ecdsaSign } from "..";
 import { Hex, hexToBigInt, stringToHex } from "viem";
 
 export const NODE_URL = "http://keystore-node-271cd8fbf8aac2f5.elb.us-east-1.amazonaws.com:80";
