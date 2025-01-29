@@ -116,9 +116,9 @@ export type AuthenticationStatus = {
  * Authentication status enum (pending, completed, failed).
  */
 export enum AuthenticationStatusEnum {
-  Pending = "pending",
-  Completed = "completed",
-  Failed = "failed",
+  Pending = "Pending",
+  Completed = "Completed",
+  Failed = "Failed",
 }
 
 /** A direct alias for sponsor authentication request hash. */
