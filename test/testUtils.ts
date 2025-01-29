@@ -1,5 +1,5 @@
 import { KeystoreAddress, L1Address } from "../src/types/primitives";
-import { bytesToHex, Hex, keccak256, pad } from "viem";
+import { keccak256, pad } from "viem";
 import { UpdateTransactionRequest } from "../src/types/transactionRequest";
 import { KeystoreAccountBuilder } from "../src/transaction";
 import { AXIOM_ACCOUNT } from "../src";
@@ -43,6 +43,6 @@ export const TEST_TX_REQ: UpdateTransactionRequest = {
   feePerGas: 100n,
   newUserData: "0x12345",
   newUserVkey: "0x12345",
-  userAcct: KeystoreAccountBuilder.withSalt(pad("0x2"), keccak256("0x1234"), "0x1234"),
+  userAcct: KeystoreAccountBuilder.create(pad("0x2"), keccak256("0x1234"), "0x1234"),
   sponsorAcct: AXIOM_ACCOUNT,
 }
