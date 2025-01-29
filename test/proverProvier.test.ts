@@ -24,7 +24,7 @@ describe('keystore prover provider', () => {
 
     const userCodeHash = CODE_HASH;
     const dataHash = calcDataHash(userCodeHash, 1n, [eoaAddr]);
-    const userAcct = KeystoreAccountBuilder.withSalt(salt, dataHash, vk);
+    const userAcct = KeystoreAccountBuilder.create(salt, dataHash, vk);
 
     const sponsorAcct = AXIOM_ACCOUNT;
 

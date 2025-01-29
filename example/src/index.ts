@@ -16,7 +16,7 @@ async function main() {
 
   const salt = generateRandomHex(32);
   const dataHash = calcDataHash(SAMPLE_USER_CODE_HASH, 1n, [eoaAddr]);
-  const userAcct = KeystoreAccountBuilder.withSalt(salt, dataHash, AXIOM_VKEY);
+  const userAcct = KeystoreAccountBuilder.create(salt, dataHash, AXIOM_VKEY);
   console.log("User account:", userAcct);
 
   const nodeProvider = new KeystoreNodeProvider(NODE_URL);
@@ -28,7 +28,7 @@ async function main() {
   const txReq: UpdateTransactionRequest = {
     nonce: hexToBigInt(nonce),
     feePerGas: hexToBigInt(feePerGas),
-    newUserData: stringToHex("newUserData"),
+    newUserData: stringToHex("newUserData"), // placeholder
     newUserVkey: AXIOM_VKEY,
     userAcct,
     sponsorAcct: AXIOM_ACCOUNT,
@@ -54,6 +54,7 @@ async function main() {
   console.log("Request hash:", requestHash);
   console.log("Waiting for sponsor authentication to complete. This may take several minutes...");
 
+  // polls the request status until it's completed
   const authenticatedTx = await (async () => {
     while (true) {
       const status = await signatureProverProvider.getSponsorAuthenticationStatus(requestHash);
@@ -81,6 +82,8 @@ async function main() {
   console.log("Transaction sent to sequencer", txHash);
 
   let currentStatus = "";
+  
+  // polls the transaction receipt until it's finalized
   for (let i = 0; i < MAX_RETRIES; i++) {
     try {
       const receipt = await nodeProvider.getTransactionReceipt(txHash);

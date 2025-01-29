@@ -17,7 +17,6 @@ import {
 } from "viem";
 import { Bytes32, Data, Hash, KeystoreAddress } from "src/types/primitives";
 
-// Constants
 const EIP712_DOMAIN = keccak256(
   toBytes("EIP712Domain(string name,string version,uint256 chainId")
 );
@@ -71,12 +70,32 @@ export class KeystoreAccountBuilder implements KeystoreAccount {
     this.vkey = vkey;
   }
 
+  /**
+   * Creates a new KeystoreAccount with an existing keystoreAddress.
+   * This is useful when you already have a keystoreAddress and want to create
+   * the corresponding account object. Salt is set to `bytes32(0)`.
+   * 
+   * @param keystoreAddress - The existing keystore address
+   * @param dataHash - Hash of the user's data
+   * @param vkey - Verification key for the account
+   * @returns KeystoreAccount with provided keystoreAddress and parameters
+   */
   static withKeystoreAddress(keystoreAddress: KeystoreAddress, dataHash: Hash, vkey: Data) {
     const salt = pad("0x", { size: 32 });
     return new this(keystoreAddress, salt, dataHash, vkey);
   }
 
-  static withSalt(salt: Bytes32, dataHash: Hash, vkey: Data): KeystoreAccount {
+  /**
+   * Creates a new KeystoreAccount with the given salt, dataHash and vkey.
+   * The keystoreAddress is derived by hashing the concatenation of the salt,
+   * dataHash and vkeyHash.
+   * 
+   * @param salt - Random 32 byte value used to generate unique keystoreAddress
+   * @param dataHash - Hash of the user's data
+   * @param vkey - Verification key for the account
+   * @returns KeystoreAccount with derived keystoreAddress and provided parameters
+   */
+  static create(salt: Bytes32, dataHash: Hash, vkey: Data): KeystoreAccount {
     const paddedSalt = pad(salt, { size: 32 });
     const paddedDataHash = pad(dataHash, { size: 32 });
 
@@ -125,6 +144,12 @@ export class UpdateTransactionBuilder {
     this.sponsorProof = sponsorProof;
   }
 
+  /**
+   * Creates a new UpdateTransactionBuilder from an UpdateTransactionRequest.
+   * 
+   * @param txReq - The transaction request object
+   * @returns UpdateTransactionBuilder with the provided transaction request
+   */
   public static fromTransactionRequest(txReq: UpdateTransactionRequest) {
     const isL1Initiated = boolToHex(false, { size: 1 });
     const nonce = txReq.nonce;
@@ -153,6 +178,11 @@ export class UpdateTransactionBuilder {
     );
   }
 
+  /**
+   * Returns the transaction bytes for the update transaction.
+   * 
+   * @returns The transaction bytes
+   */
   public txBytes(): Hex {
     if (!this._txBytes) {
       const rlpEncoded = RLP.encode([
@@ -182,6 +212,11 @@ export class UpdateTransactionBuilder {
     return this._txBytes;
   }
 
+  /**
+   * Returns the transaction hash for the update transaction.
+   * 
+   * @returns The transaction hash
+   */
   public txHash(): Hex {
     if (!this._txHash) {
       this._txHash = keccak256(this.txBytes());
@@ -189,6 +224,11 @@ export class UpdateTransactionBuilder {
     return this._txHash;
   }
 
+  /**
+   * Returns the user message hash for the update transaction.
+   * 
+   * @returns The user message hash
+   */
   public userMsgHash(): Hex {
     const toHash1 = encodeAbiParameters(
       [
@@ -216,6 +256,12 @@ export class UpdateTransactionBuilder {
     return keccak256(toHash2);
   }
 
+  /**
+   * Decodes the transaction bytes for an update transaction.
+   * 
+   * @param hex - The transaction bytes
+   * @returns UpdateTransactionBuilder with the decoded transaction
+   */
   public static decodeTxBytes(hex: Hex) {
     const bytes = hexToBytes(hex);
 
