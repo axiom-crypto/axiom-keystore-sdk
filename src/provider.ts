@@ -4,9 +4,17 @@ import { Data, Hash, KeystoreAddress } from "./types/primitives";
 import { BlockTagOrNumber } from "./types/block";
 import { AuthInputs, SponsorAuthInputs } from "./types/input";
 
+/**
+ * Provider for interacting with a keystore node.
+ */
 export class KeystoreNodeProvider {
   private client: Client;
 
+  /**
+   * Creates a new KeystoreNodeProvider.
+   * 
+   * @param url - The URL of the keystore node
+   */
   constructor(url: string) {
     const transport = new HTTPTransport(url);
     this.client = new Client(new RequestManager([transport]));
@@ -109,9 +117,17 @@ export class KeystoreNodeProvider {
   }
 }
 
+/**
+ * Provider for interacting with a keystore signature prover.
+ */
 export class KeystoreSignatureProverProvider {
   private client: Client;
 
+  /**
+   * Creates a new KeystoreSignatureProverProvider.
+   * 
+   * @param url - The URL of the keystore signature prover
+   */
   constructor(url: string) {
     const transport = new HTTPTransport(url);
     this.client = new Client(new RequestManager([transport]));
@@ -150,9 +166,17 @@ export class KeystoreSignatureProverProvider {
   }
 }
 
+/**
+ * Provider for interacting with a keystore sequencer.
+ */
 export class KeystoreSequencerProvider {
   private client: Client;
 
+  /**
+   * Creates a new KeystoreSequencerProvider.
+   * 
+   * @param url - The URL of the keystore sequencer
+   */
   constructor(url: string) {
     const transport = new HTTPTransport(url);
     this.client = new Client(new RequestManager([transport]));
