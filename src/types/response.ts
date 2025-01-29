@@ -127,13 +127,4 @@ export type SponsorAuthenticateTransactionResponse = Hash;
 /**
  * Sponsor authentication status can be null or a status object.
  */
-export type GetSponsorAuthenticationStatusResponse = SponsorAuthenticationStatus;
-
-/** 
- * Sponsor authentication status object. 
- */
-export type SponsorAuthenticationStatus = {
-  status: AuthenticationStatusEnum;
-  sponsorAuthenticatedTransaction?: Data;
-  error?: string;
-}
+export type GetSponsorAuthenticationStatusResponse = AuthenticationStatus;

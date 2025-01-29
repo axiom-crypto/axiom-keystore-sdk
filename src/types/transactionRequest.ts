@@ -1,7 +1,8 @@
-import { Data } from "./primitives";
+import { concat, keccak256, pad } from "viem";
+import { Bytes32, Data, Hash, KeystoreAddress } from "./primitives";
 import { KeystoreAccount } from "./transaction";
 
-export interface UpdateTransactionRequest {
+export type UpdateTransactionRequest = {
   nonce: bigint;
   feePerGas: bigint;
   newUserData: Data;
@@ -12,7 +13,27 @@ export interface UpdateTransactionRequest {
 
 export type L2TransactionRequest = UpdateTransactionRequest;
 
-export type AuthenticatedUpdateTransactionRequest = UpdateTransactionRequest & {
-  userProof: Data;
-  sponsorProof?: Data;
-};
+export class KeystoreAccountBuilder {
+  public static withSalt(salt: Bytes32, dataHash: Hash, vkey: Data): KeystoreAccount {
+    const vkeyHash = keccak256(vkey);
+    const keystoreAddress = keccak256(concat([salt, dataHash, vkeyHash]));
+    const acct: KeystoreAccount = {
+      keystoreAddress,
+      salt,
+      dataHash,
+      vkey,
+    };
+    return acct;
+  }
+
+  public static withKeystoreAddress(keystoreAddress: KeystoreAddress, dataHash: Hash, vkey: Data): KeystoreAccount {
+    const salt = pad("0x", { size: 32 });
+    const acct: KeystoreAccount = {
+      keystoreAddress,
+      salt,
+      dataHash,
+      vkey,
+    };
+    return acct;
+  }
+}

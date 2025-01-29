@@ -135,7 +135,7 @@ export class KeystoreSignatureProverProvider {
 
   async sponsorAuthenticateTransaction(transaction: Data, sponsorAuthInputs: SponsorAuthInputs): Promise<SponsorAuthenticateTransactionResponse> {
     const result = await this.client.request({
-      method: "keystore_authenticateTransaction",
+      method: "keystore_sponsorAuthenticateTransaction",
       params: [transaction, sponsorAuthInputs]
     });
     return result;

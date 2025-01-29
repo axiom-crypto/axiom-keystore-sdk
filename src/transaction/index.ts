@@ -12,6 +12,9 @@ import {
   boolToHex,
   numberToHex,
   bytesToHex,
+  bytesToBigInt,
+  bytesToNumber,
+  hexToBigInt,
 } from "viem";
 
 // Constants
@@ -89,7 +92,7 @@ export class KeystoreAccountBytes {
 
 export class UpdateTransactionBytes {
   private readonly isL1Initiated: Hex
-  private readonly nonce: Hex
+  private readonly nonce: bigint
   private readonly feePerGas: Hex
   private readonly l1InitiatedNonce: Hex
   private readonly newUserData: Hex
@@ -104,7 +107,7 @@ export class UpdateTransactionBytes {
 
   constructor(
     isL1Initiated: Hex,
-    nonce: Hex,
+    nonce: bigint,
     feePerGas: Hex,
     l1InitiatedNonce: Hex,
     newUserData: Hex,
@@ -128,7 +131,7 @@ export class UpdateTransactionBytes {
 
   public static fromTransactionRequest(txReq: UpdateTransactionRequest) {
     const isL1Initiated = boolToHex(false, { size: 1 });
-    const nonce = numberToHex(txReq.nonce, { size: 32 });
+    const nonce = txReq.nonce;
     const feePerGas = numberToHex(txReq.feePerGas, { size: 32 });
     const l1InitiatedNonce = "0x";
     const newUserData = txReq.newUserData;
@@ -169,6 +172,7 @@ export class UpdateTransactionBytes {
         this.sponsorAcctBytes,
         this.sponsorProof
       ]);
+      console.log(bytesToHex(rlpEncoded));
 
       this._txBytes = encodePacked(
         ['bytes1', 'bytes1', 'bytes', 'bytes'],
@@ -188,6 +192,34 @@ export class UpdateTransactionBytes {
       this._txHash = keccak256(this.txBytes());
     }
     return this._txHash;
+  }
+
+  public userMsgHash(): Hex {
+    const toHash1 = encodeAbiParameters(
+      [
+        { name: 'UPDATE_TYPEHASH', type: 'bytes32' },
+        { name: 'userKeystoreAddr', type: 'bytes32' },
+        { name: 'nonce', type: 'uint256' },
+        { name: 'feePerGas', type: 'bytes' },
+        { name: 'newUserDataHash', type: 'bytes32' },
+        { name: 'newUserVkeyHash', type: 'bytes32' },
+      ],
+      [
+        UPDATE_TYPEHASH,
+        this.userAcct.keystoreAddress,
+        this.nonce,
+        this.feePerGas,
+        keccak256(this.newUserData),
+        keccak256(this.newUserVkey),
+      ]
+    );
+    console.log(toHash1);
+
+    const toHash2 = encodePacked(
+      ['bytes2', 'bytes32', 'bytes32'],
+      ['0x1901', DOMAIN_SEPARATOR, keccak256(toHash1)]
+    );
+    return keccak256(toHash2);
   }
 
   public static decodeTxBytes(hex: Hex) {
@@ -224,9 +256,12 @@ export class UpdateTransactionBytes {
 
     const userAcct = new KeystoreAccountBytes(bytesToHex(userAcctKeystoreAddress), bytesToHex(userAcctSalt), bytesToHex(userAcctDataHash), bytesToHex(userAcctVkey));
 
+    const nonceHex = bytesToHex(nonce);
+    const nonceBigInt = nonceHex == '0x' ? 0n : hexToBigInt(nonceHex);
+
     return new UpdateTransactionBytes(
       boolToHex(isL1Initiated, { size: 1 }),
-      bytesToHex(nonce),
+      nonceBigInt,
       bytesToHex(feePerGas),
       "0x",
       bytesToHex(newUserData),
