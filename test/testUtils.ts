@@ -1,5 +1,8 @@
-import { pad } from "viem";
 import { KeystoreAddress, L1Address } from "../src/types/primitives";
+import { bytesToHex, Hex, keccak256, pad } from "viem";
+import { UpdateTransactionRequest } from "../src/types/transactionRequest";
+import { KeystoreAccountBuilder } from "../src/transaction";
+import { AXIOM_ACCOUNT } from "../src";
 
 // Default accounts from Anvil
 export const ANVIL_ACCOUNTS: { pk: KeystoreAddress, addr: L1Address }[] = [
@@ -18,6 +21,8 @@ export const ANVIL_ACCOUNTS: { pk: KeystoreAddress, addr: L1Address }[] = [
 ];
 
 export const NODE_URL = "http://keystore-node-271cd8fbf8aac2f5.elb.us-east-1.amazonaws.com:80";
+export const SIGNATURE_PROVER_URL = "http://signature-prover-cee9f99ccd16c4ef.elb.us-east-1.amazonaws.com:80";
+export const SEQUENCER_URL = "http://keystore-sequencer-524685ad227fca63.elb.us-east-1.amazonaws.com:80";
 
 export const AXIOM_ACCOUNT_ADDRESS = "0xc3a9b82816196f3f5692dda37ee242839ce86357dc06a205ce04da56a3651e06";
 export const NON_EXISTING_ACCOUNT_ADDRESS = "0x1111111111111111111111111111111111111111111111111111111111111111";
@@ -28,6 +33,24 @@ export const NON_EXISTENT_TX_HASH = "0x11111111111111111111111111111111111111111
 export const EXISTING_BLOCK_HASH = "0x8e776eeb4e25cfe8d84803c37d0e9349e472d44945fe9a36b46993e423957c0c";
 export const NON_EXISTENT_BLOCK_HASH = "0x1111111111111111111111111111111111111111111111111111111111111111";
 
-
 export const EMPTY_HEX = "0x";
 export const ZERO_BYTES32 = pad("0x", { size: 32 });
+
+export const CODE_HASH = "0x595b7552e60f6430c898abc2b292aa805e94834a576f57969406940f6d12d4d9";
+
+export const TEST_TX_REQ: UpdateTransactionRequest = {
+  nonce: 0n,
+  feePerGas: 100n,
+  newUserData: "0x12345",
+  newUserVkey: "0x12345",
+  userAcct: KeystoreAccountBuilder.withSalt(pad("0x2"), keccak256("0x1234"), "0x1234"),
+  sponsorAcct: AXIOM_ACCOUNT,
+}
+
+export function generateRandomBytes(length: number): Uint8Array {
+  return crypto.getRandomValues(new Uint8Array(length));
+}
+
+export function generateRandomHex(length: number): Hex {
+  return bytesToHex(generateRandomBytes(length))
+}

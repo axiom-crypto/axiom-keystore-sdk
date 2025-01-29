@@ -1,6 +1,6 @@
 import { describe, test, expect } from '@jest/globals';
 import { UpdateTransactionRequest } from "../src/types/transactionRequest";
-import { UpdateTransactionBytes } from "../src/transaction";
+import { UpdateTransactionBuilder } from "../src/transaction";
 
 describe('transaction encoding', () => {
   test('UpdateTransactionBytes', () => {
@@ -17,10 +17,10 @@ describe('transaction encoding', () => {
       }
     };
 
-    const updateTx = UpdateTransactionBytes.fromTransactionRequest(txReq);
+    const updateTx = UpdateTransactionBuilder.fromTransactionRequest(txReq);
 
     const txBytes = updateTx.txBytes();
-    const decodedTx = UpdateTransactionBytes.decodeTxBytes(txBytes);
+    const decodedTx = UpdateTransactionBuilder.decodeTxBytes(txBytes);
 
     expect(updateTx.txHash()).toBe(decodedTx.txHash());
   });
