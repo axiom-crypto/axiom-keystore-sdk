@@ -1,4 +1,5 @@
-export * from "./ecdsa";
+export * from "./utils/ecdsa";
+export * from "./utils/random";
 export * from "./constants";
 export * from "./provider";
 export * from "./transaction";

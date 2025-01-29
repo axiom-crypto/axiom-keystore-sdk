@@ -1,5 +1,5 @@
-import { AXIOM_ACCOUNT, AXIOM_ACCOUNT_AUTH_INPUTS, AXIOM_VKEY, AuthenticationStatusEnum, BlockTag, KeystoreAccountBuilder, KeystoreNodeProvider, KeystoreSequencerProvider, KeystoreSignatureProverProvider, SAMPLE_USER_CODE_HASH, SponsorAuthInputs, UpdateTransactionBuilder, UpdateTransactionRequest, calcDataHash, ecdsaSign } from "..";
-import { Hex, hexToBigInt, numberToHex, stringToHex } from "viem";
+import { AXIOM_ACCOUNT, AXIOM_ACCOUNT_AUTH_INPUTS, AXIOM_VKEY, AuthenticationStatusEnum, BlockTag, KeystoreAccountBuilder, KeystoreNodeProvider, KeystoreSequencerProvider, KeystoreSignatureProverProvider, SAMPLE_USER_CODE_HASH, SponsorAuthInputs, UpdateTransactionBuilder, UpdateTransactionRequest, calcDataHash, ecdsaSign, generateRandomHex } from "..";
+import { Hex, hexToBigInt, stringToHex } from "viem";
 
 export const NODE_URL = "http://keystore-node-271cd8fbf8aac2f5.elb.us-east-1.amazonaws.com:80";
 export const SIGNATURE_PROVER_URL = "http://signature-prover-cee9f99ccd16c4ef.elb.us-east-1.amazonaws.com:80";
@@ -10,7 +10,7 @@ async function main() {
   const privateKey = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
   const eoaAddr = "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266";
 
-  const salt = numberToHex(42);
+  const salt = generateRandomHex(32);
   const dataHash = calcDataHash(SAMPLE_USER_CODE_HASH, 1n, [eoaAddr]);
   const userAcct = KeystoreAccountBuilder.withSalt(salt, dataHash, AXIOM_VKEY);
   console.log("user account", userAcct);
