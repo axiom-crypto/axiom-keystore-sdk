@@ -1,5 +1,4 @@
-import { concat, keccak256, pad } from "viem";
-import { Bytes32, Data, Hash, KeystoreAddress } from "./primitives";
+import { Data } from "./primitives";
 import { KeystoreAccount } from "./transaction";
 
 export type UpdateTransactionRequest = {
