@@ -12,8 +12,6 @@ import {
   boolToHex,
   numberToHex,
   bytesToHex,
-  bytesToBigInt,
-  bytesToNumber,
   hexToBigInt,
 } from "viem";
 
@@ -172,7 +170,6 @@ export class UpdateTransactionBytes {
         this.sponsorAcctBytes,
         this.sponsorProof
       ]);
-      console.log(bytesToHex(rlpEncoded));
 
       this._txBytes = encodePacked(
         ['bytes1', 'bytes1', 'bytes', 'bytes'],
@@ -213,7 +210,6 @@ export class UpdateTransactionBytes {
         keccak256(this.newUserVkey),
       ]
     );
-    console.log(toHash1);
 
     const toHash2 = encodePacked(
       ['bytes2', 'bytes32', 'bytes32'],

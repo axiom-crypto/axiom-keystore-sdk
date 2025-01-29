@@ -1,4 +1,4 @@
-import { pad } from "viem";
+import { bytesToHex, Hex, pad } from "viem";
 
 // Default accounts from Anvil
 export const ANVIL_ACCOUNTS = [
@@ -33,3 +33,11 @@ export const EMPTY_HEX = "0x";
 export const ZERO_BYTES32 = pad("0x", { size: 32 });
 
 export const CODE_HASH = "0x595b7552e60f6430c898abc2b292aa805e94834a576f57969406940f6d12d4d9";
+
+export function generateRandomBytes(length: number): Uint8Array {
+  return crypto.getRandomValues(new Uint8Array(length));
+}
+
+export function generateRandomHex(length: number): Hex {
+  return bytesToHex(generateRandomBytes(length))
+}

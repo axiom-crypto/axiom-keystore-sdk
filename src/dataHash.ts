@@ -6,8 +6,6 @@ export function calcDataHash(codeHash: Hex, m: bigint, signersList: Hex[]): Hex 
 }
 
 function encodeDataHashData(codeHash: Hex, m: bigint, signersList: Hex[]): Hex {
-  console.log(codeHash, m, signersList);
-
   const encoded = encodeAbiParameters(
     [
       { name: 'codeHash', type: 'bytes32' },
