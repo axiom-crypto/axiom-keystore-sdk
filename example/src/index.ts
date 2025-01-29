@@ -2,9 +2,9 @@ import { generateRandomHex } from "@axiom-crypto/keystore-sdk/src/utils/random";
 import { AXIOM_ACCOUNT, AXIOM_ACCOUNT_AUTH_INPUTS, AXIOM_VKEY, AuthenticationStatusEnum, BlockTag, KeystoreAccountBuilder, KeystoreNodeProvider, KeystoreSequencerProvider, KeystoreSignatureProverProvider, SAMPLE_USER_CODE_HASH, SponsorAuthInputs, UpdateTransactionBuilder, UpdateTransactionRequest, calcDataHash, ecdsaSign } from "@axiom-crypto/keystore-sdk/src";
 import { Hex, hexToBigInt, stringToHex } from "viem";
 
-export const NODE_URL = "http://keystore-node-271cd8fbf8aac2f5.elb.us-east-1.amazonaws.com:80";
-export const SIGNATURE_PROVER_URL = "http://signature-prover-cee9f99ccd16c4ef.elb.us-east-1.amazonaws.com:80";
-export const SEQUENCER_URL = "http://keystore-sequencer-524685ad227fca63.elb.us-east-1.amazonaws.com:80";
+export const NODE_URL = "http://keystore-rpc-node.axiom.xyz";
+export const SIGNATURE_PROVER_URL = "http://keystore-rpc-signatureprover.axiom.xyz";
+export const SEQUENCER_URL = "http://keystore-rpc-sequencer.axiom.xyz";
 
 async function main() {
   // anvil keys
