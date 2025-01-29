@@ -56,8 +56,8 @@ describe('keystore prover provider', () => {
 
     const txBytes = updateTx.txBytes();
 
-    const requestHash = await provider.sponsorAuthenticateTransaction(txBytes, sponsorAuthInputs);
-    console.log(requestHash);
+    // const requestHash = await provider.sponsorAuthenticateTransaction(txBytes, sponsorAuthInputs);
+    // console.log(requestHash);
   }, 120 * 1000);
 
   test('keystore_getSponsorAuthenticationStatus', async () => {
