@@ -19,8 +19,8 @@ describe('keystore prover provider', () => {
     const salt = pad("0x01");
     const vk = AXIOM_VKEY;
 
-    const pk: Hex = `0x${ANVIL_ACCOUNTS[0].pk}`;
-    const eoaAddr: Hex = `0x${ANVIL_ACCOUNTS[0].addr}`;
+    const pk = ANVIL_ACCOUNTS[0].pk as Hex;
+    const eoaAddr = ANVIL_ACCOUNTS[0].addr as Hex;
 
     const userCodeHash = CODE_HASH;
     const dataHash = calcDataHash(userCodeHash, 1n, [eoaAddr]);
@@ -38,9 +38,8 @@ describe('keystore prover provider', () => {
     };
     const updateTx = UpdateTransactionBytes.fromTransactionRequest(txReq);
 
-    const userMsgHash = updateTx.userMsgHash().replace('0x', '');
-    const pk2 = pk.replace('0x', '');
-    const userSig: Hex = `0x${await ecdsaSign(pk2, userMsgHash)}`;
+    const userMsgHash = updateTx.userMsgHash();
+    const userSig: Hex = await ecdsaSign(pk, userMsgHash);
 
     const sponsorAuthInputs: SponsorAuthInputs = {
       sponsorAuth: {
@@ -59,12 +58,15 @@ describe('keystore prover provider', () => {
 
     const requestHash = await provider.sponsorAuthenticateTransaction(txBytes, sponsorAuthInputs);
     console.log(requestHash);
-  });
+  }, 120 * 1000);
 
   test('keystore_getSponsorAuthenticationStatus', async () => {
     const requestHash = "0x4625e121b8f18810c44ad3377a367337f618766e02f8d7c511ae7c62cc708460";
     let status = await provider.getSponsorAuthenticationStatus(requestHash);
+    console.log(status.status);
 
-    let updateTx = status.authenticatedTransaction ? UpdateTransactionBytes.decodeTxBytes(status.authenticatedTransaction) : undefined;
+    if (status.authenticatedTransaction) {
+      let _ = UpdateTransactionBytes.decodeTxBytes(status.authenticatedTransaction);
+    }
   });
 });
