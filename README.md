@@ -16,7 +16,11 @@ npm install @axiom-crypto/keystore-sdk
 To create a new keystore account, follow these steps:
 
 ```typescript
-const acct = KeystoreAccountBuilder.create(salt, dataHash, vkey);
+// Initialize a counterfactual keystore account
+const acct = KeystoreAccountBuilder.initCounterfactual(salt, dataHash, vkey);
+
+// Initialize a keystore account with a known keystore address
+const acct = KeystoreAccountBuilder.initWithKeystoreAddress(keystoreAddress, dataHash, vkey); 
 ```
 
 If you already have the `keystoreAddress`, you can create the account as follows:

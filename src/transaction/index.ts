@@ -15,7 +15,7 @@ import {
   hexToBigInt,
   concat,
 } from "viem";
-import { Bytes32, Data, Hash, KeystoreAddress } from "src/types/primitives";
+import { Bytes32, Data, Hash, KeystoreAddress } from "../types/primitives";
 
 const EIP712_DOMAIN = keccak256(
   toBytes("EIP712Domain(string name,string version,uint256 chainId")
@@ -71,31 +71,31 @@ export class KeystoreAccountBuilder implements KeystoreAccount {
   }
 
   /**
-   * Creates a new KeystoreAccount with an existing keystoreAddress.
-   * This is useful when you already have a keystoreAddress and want to create
+   * Initializes a keystore account with an existing keystore address.
+   * This is useful when you already have a keystore address and want to create
    * the corresponding account object. Salt is set to `bytes32(0)`.
    * 
    * @param keystoreAddress - The existing keystore address
    * @param dataHash - Hash of the user's data
    * @param vkey - Verification key for the account
-   * @returns KeystoreAccount with provided keystoreAddress and parameters
+   * @returns KeystoreAccount with provided keystore address and parameters
    */
-  static withKeystoreAddress(keystoreAddress: KeystoreAddress, dataHash: Hash, vkey: Data) {
+  static initWithKeystoreAddress(keystoreAddress: KeystoreAddress, dataHash: Hash, vkey: Data) {
     const salt = pad("0x", { size: 32 });
     return new this(keystoreAddress, salt, dataHash, vkey);
   }
 
   /**
-   * Creates a new KeystoreAccount with the given salt, dataHash and vkey.
-   * The keystoreAddress is derived by hashing the concatenation of the salt,
-   * dataHash and vkeyHash.
+   * Initializes a counterfactual keystore account with the given salt, data hash and vkey.
+   * The keystore address is derived by hashing the concatenation of the salt,
+   * data hash and vkey hash.
    * 
-   * @param salt - Random 32 byte value used to generate unique keystoreAddress
+   * @param salt - A 32 bytes value to enable address uniqueness.
    * @param dataHash - Hash of the user's data
    * @param vkey - Verification key for the account
-   * @returns KeystoreAccount with derived keystoreAddress and provided parameters
+   * @returns KeystoreAccount with derived keystore address and provided parameters
    */
-  static create(salt: Bytes32, dataHash: Hash, vkey: Data): KeystoreAccount {
+  static initCounterfactual(salt: Bytes32, dataHash: Hash, vkey: Data): KeystoreAccount {
     const paddedSalt = pad(salt, { size: 32 });
     const paddedDataHash = pad(dataHash, { size: 32 });
 
