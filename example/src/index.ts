@@ -16,7 +16,7 @@ async function main() {
 
   const salt = generateRandomHex(32);
   const dataHash = calcDataHash(SAMPLE_USER_CODE_HASH, 1n, [eoaAddr]);
-  const userAcct = KeystoreAccountBuilder.create(salt, dataHash, AXIOM_VKEY);
+  const userAcct = KeystoreAccountBuilder.initCounterfactual(salt, dataHash, AXIOM_VKEY);
   console.log("User account:", userAcct);
 
   const nodeProvider = new KeystoreNodeProvider(NODE_URL);
@@ -82,7 +82,7 @@ async function main() {
   console.log("Transaction sent to sequencer", txHash);
 
   let currentStatus = "";
-  
+
   // polls the transaction receipt until it's finalized
   for (let i = 0; i < MAX_RETRIES; i++) {
     try {

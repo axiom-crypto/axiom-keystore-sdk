@@ -1,5 +1,5 @@
 import { signAsync } from "@noble/secp256k1";
-import { Data, Hash } from "src/types/primitives";
+import { Data, Hash } from "../types/primitives";
 
 /// @dev ECDSA sign a message hash with a private key
 /// @param pk The private key to sign with

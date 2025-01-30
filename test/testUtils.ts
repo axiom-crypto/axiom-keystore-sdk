@@ -43,6 +43,6 @@ export const TEST_TX_REQ: UpdateTransactionRequest = {
   feePerGas: 100n,
   newUserData: "0x12345",
   newUserVkey: "0x12345",
-  userAcct: KeystoreAccountBuilder.create(pad("0x2"), keccak256("0x1234"), "0x1234"),
+  userAcct: KeystoreAccountBuilder.initCounterfactual(pad("0x2"), keccak256("0x1234"), "0x1234"),
   sponsorAcct: AXIOM_ACCOUNT,
 }
