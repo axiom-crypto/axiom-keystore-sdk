@@ -152,4 +152,4 @@ const accountState = await nodeProvider.getStateAt(keystoreAddress, BlockTag.Lat
 
 ## Examples
 
-For a complete demonstration, take a look at the [example directory](./example/).
+For a complete demonstration, take a look at our [example](./example/src/index.ts).
