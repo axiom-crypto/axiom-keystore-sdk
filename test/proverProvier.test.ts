@@ -2,7 +2,7 @@ import { describe, test } from '@jest/globals';
 import { KeystoreSignatureProverProvider } from "../src/provider";
 import { ANVIL_ACCOUNTS, CODE_HASH, SIGNATURE_PROVER_URL } from './testUtils';
 import { Hex, pad } from 'viem';
-import { AXIOM_ACCOUNT, AXIOM_CODEHASH, AXIOM_EOA, AXIOM_VKEY, ecdsaSign } from "../src";
+import { AXIOM_ACCOUNT, AXIOM_CODEHASH, AXIOM_EOA, AXIOM_VKEY, Data } from "../src";
 import { calcDataHash } from "../src/dataHash";
 import { UpdateTransactionRequest } from '../src/types/transactionRequest';
 import { KeystoreAccountBuilder, UpdateTransactionBuilder } from '../src/transaction';
@@ -37,9 +37,7 @@ describe('keystore prover provider', () => {
       sponsorAcct,
     };
     const updateTx = UpdateTransactionBuilder.fromTransactionRequest(txReq);
-
-    const userMsgHash = updateTx.userMsgHash();
-    const userSig: Hex = await ecdsaSign(pk, userMsgHash);
+    const userSig: Data = await updateTx.sign(pk);
 
     const sponsorAuthInputs: SponsorAuthInputs = {
       sponsorAuth: {

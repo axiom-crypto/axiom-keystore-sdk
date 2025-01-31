@@ -16,12 +16,12 @@ import {
   concat,
 } from "viem";
 import { Bytes32, Data, Hash, KeystoreAddress } from "../types/primitives";
+import { ecdsaSign } from "../utils/ecdsa";
+import { KEYSTORE_CHAIN_ID } from "../constants";
 
 const EIP712_DOMAIN = keccak256(
   toBytes("EIP712Domain(string name,string version,uint256 chainId")
 );
-
-const CHAIN_ID = BigInt(999999999);
 
 const DOMAIN_SEPARATOR = keccak256(
   encodeAbiParameters(
@@ -35,7 +35,7 @@ const DOMAIN_SEPARATOR = keccak256(
       EIP712_DOMAIN,
       keccak256(toBytes("AxiomKeystore")),
       keccak256(toBytes("1")),
-      CHAIN_ID
+      BigInt(KEYSTORE_CHAIN_ID)
     ]
   )
 )
@@ -183,7 +183,7 @@ export class UpdateTransactionBuilder {
    * 
    * @returns The transaction bytes
    */
-  public txBytes(): Hex {
+  public txBytes(): Data {
     if (!this._txBytes) {
       const rlpEncoded = RLP.encode([
         this.nonce,
@@ -217,7 +217,7 @@ export class UpdateTransactionBuilder {
    * 
    * @returns The transaction hash
    */
-  public txHash(): Hex {
+  public txHash(): Hash {
     if (!this._txHash) {
       this._txHash = keccak256(this.txBytes());
     }
@@ -229,7 +229,7 @@ export class UpdateTransactionBuilder {
    * 
    * @returns The user message hash
    */
-  public userMsgHash(): Hex {
+  public userMsgHash(): Hash {
     const toHash1 = encodeAbiParameters(
       [
         { name: 'UPDATE_TYPEHASH', type: 'bytes32' },
@@ -254,6 +254,18 @@ export class UpdateTransactionBuilder {
       ['0x1901', DOMAIN_SEPARATOR, keccak256(toHash1)]
     );
     return keccak256(toHash2);
+  }
+
+  /**
+   * Signs the user message hash for the update transaction.
+   * 
+   * @param pk - The private key to sign with
+   * @returns The signature
+   */
+  public async sign(pk: Hash): Promise<Data> {
+    let hash = this.userMsgHash();
+    let signature = await ecdsaSign(pk, hash);
+    return signature;
   }
 
   /**

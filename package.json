@@ -1,6 +1,6 @@
 {
   "name": "@axiom-crypto/keystore-sdk",
-  "version": "0.2.1",
+  "version": "0.2.1-alpha.0",
   "author": "Intrinsic Technologies",
   "license": "MIT",
   "description": "Keystore Rollup SDK",
@@ -44,6 +44,7 @@
     "viem": "^2.22.15"
   },
   "publishConfig": {
-    "directory": "dist"
+    "directory": "dist",
+    "access": "restricted"
   }
 }
