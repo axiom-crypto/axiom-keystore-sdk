@@ -13,11 +13,19 @@ import { encodeAbiParameters, encodePacked, Hex, keccak256 } from "viem";
  * @returns The data hash
  */
 export function calcDataHash(codeHash: Hex, m: bigint, signersList: Hex[]): Hex {
-  let data_hash_data = encodeDataHashData(codeHash, m, signersList);
+  let data_hash_data = encodeMOfNData(codeHash, m, signersList);
   return keccak256(data_hash_data);
 }
 
-function encodeDataHashData(codeHash: Hex, m: bigint, signersList: Hex[]): Hex {
+/**
+ * Encodes the data hash data for the keystore account.
+ * 
+ * @param codeHash - Hash of the keystore contract code
+ * @param m - Threshold number of required signers
+ * @param signersList - List of authorized signer addresses
+ * @returns The encoded data hash data
+ */
+export function encodeMOfNData(codeHash: Hex, m: bigint, signersList: Hex[]): Hex {
   const encoded = encodeAbiParameters(
     [
       { name: 'codeHash', type: 'bytes32' },

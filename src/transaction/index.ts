@@ -3,8 +3,6 @@ import { KeystoreAccount, TransactionType } from "../types/transaction";
 import { UpdateTransactionRequest } from "../types/transactionRequest";
 import {
   keccak256,
-  encodeAbiParameters,
-  toBytes,
   hexToBytes,
   encodePacked,
   Hex,
@@ -14,39 +12,11 @@ import {
   bytesToHex,
   hexToBigInt,
   concat,
+  hashTypedData,
 } from "viem";
 import { Bytes32, Data, Hash, KeystoreAddress } from "../types/primitives";
 import { ecdsaSign } from "../utils/ecdsa";
-import { KEYSTORE_CHAIN_ID } from "../constants";
-
-const EIP712_DOMAIN = keccak256(
-  toBytes("EIP712Domain(string name,string version,uint256 chainId")
-);
-
-const DOMAIN_SEPARATOR = keccak256(
-  encodeAbiParameters(
-    [
-      { type: 'bytes32' },
-      { type: 'bytes32' },
-      { type: 'bytes32' },
-      { type: 'uint256' }
-    ],
-    [
-      EIP712_DOMAIN,
-      keccak256(toBytes("AxiomKeystore")),
-      keccak256(toBytes("1")),
-      BigInt(KEYSTORE_CHAIN_ID)
-    ]
-  )
-)
-
-const UPDATE_TYPEHASH = keccak256(
-  toBytes("Update(bytes32 userKeystoreAddress,uint256 nonce,bytes feePerGas,bytes newUserData,bytes newUserVkey)")
-)
-
-const SPONSOR_TYPEHASH = keccak256(
-  toBytes("Sponsor(bytes32 sponsorKeystoreAddress,bytes32 userMsgHash,bytes32 userKeystoreAddress)")
-)
+import { DOMAIN, UPDATE_TYPES } from "./descriptors";
 
 function encodeKeystoreAccount(acct: KeystoreAccount): Hex {
   const keystoreAddress = hexToBytes(acct.keystoreAddress, { size: 32 });
@@ -230,30 +200,18 @@ export class UpdateTransactionBuilder {
    * @returns The user message hash
    */
   public userMsgHash(): Hash {
-    const toHash1 = encodeAbiParameters(
-      [
-        { name: 'UPDATE_TYPEHASH', type: 'bytes32' },
-        { name: 'userKeystoreAddr', type: 'bytes32' },
-        { name: 'nonce', type: 'uint256' },
-        { name: 'feePerGas', type: 'bytes' },
-        { name: 'newUserDataHash', type: 'bytes32' },
-        { name: 'newUserVkeyHash', type: 'bytes32' },
-      ],
-      [
-        UPDATE_TYPEHASH,
-        this.userAcct.keystoreAddress,
-        this.nonce,
-        this.feePerGas,
-        keccak256(this.newUserData),
-        keccak256(this.newUserVkey),
-      ]
-    );
-
-    const toHash2 = encodePacked(
-      ['bytes2', 'bytes32', 'bytes32'],
-      ['0x1901', DOMAIN_SEPARATOR, keccak256(toHash1)]
-    );
-    return keccak256(toHash2);
+    return hashTypedData({
+      domain: DOMAIN,
+      types: UPDATE_TYPES,
+      primaryType: "Update",
+      message: {
+        userKeystoreAddress: this.userAcct.keystoreAddress,
+        nonce: this.nonce,
+        feePerGas: this.feePerGas,
+        newUserData: this.newUserData,
+        newUserVkey: this.newUserVkey,
+      },
+    });
   }
 
   /**
@@ -263,8 +221,8 @@ export class UpdateTransactionBuilder {
    * @returns The signature
    */
   public async sign(pk: Hash): Promise<Data> {
-    let hash = this.userMsgHash();
-    let signature = await ecdsaSign(pk, hash);
+    const hash = this.userMsgHash();
+    const signature = await ecdsaSign(pk, hash);
     return signature;
   }
 
