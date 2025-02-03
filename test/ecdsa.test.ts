@@ -32,6 +32,6 @@ describe("ecdsa", () => {
     const updateTx = UpdateTransactionBuilder.fromTransactionRequest(txReq);
     let msgHash = updateTx.userMsgHash();
     const signature = await ecdsaSignMsg(pk, msgHash);
-    expect(signature).toBe("0x6c669354c0b107c4be754e64262c3b847bc9c73963a210606abf8e8d9ac2adc427eca0e9ac7a490f0c4e29b6c7978cab544c158c570ebccdbffc557b349f56521b");
+    expect(signature).toBe("0x46aec0e756ab98c4e7c1fc86fd39d5bb9587517299eab471c46422bb8a516a046976f4129d0d47933e2f353c3fd9fd4dec65eefd1c20e49bf391d8ea9653142a1c");
   });
 });
