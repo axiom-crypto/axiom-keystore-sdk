@@ -1,6 +1,6 @@
 import { L1BlockRef, L2BlockRef } from "./block";
 import { AccountState, ImtProof, StateTransitions } from "./state";
-import { L1Address, KeystoreAddress, Hash, Quantity, Data } from "./primitives";
+import { L1Address, Hash, Data, Quantity } from "./primitives";
 import { L2Transaction, TransactionStatus } from "./transaction";
 
 /** 
@@ -15,27 +15,15 @@ export type SyncStatusResponse = {
   finalizedL1?: L1BlockRef;
 }
 
-/**
- * Rollup configuration parameters.
- */
-export type RollupConfigResponse = {
-  l1SlotTime: Quantity;
-  maxSequencerDrift: Quantity;
-  maxSequencerDelay: Quantity;
-  maxL1OriginDelay: Quantity;
-  l1InitiationDelay: Quantity;
-  maxPreblocksPerBatch: Quantity;
-  maxTransactionsPerBlock: Quantity;
-  l1InitiatedSequencerAddress: KeystoreAddress;
-}
-
 /** Just a type alias for a version string. */
 export type VersionResponse = string;
 
 /** A direct alias for a block number response. */
 export type BlockNumberResponse = Quantity;
+
 /** A direct alias for a getBalance response. */
 export type GetBalanceResponse = Quantity;
+
 /** A direct alias for retrieving an account state. */
 export type GetStateAtResponse = AccountState;
 
@@ -68,13 +56,21 @@ export type CallResponse = {
 }
 
 export type EstimateGasResponse = Quantity;
+
 export type EstimateL1DataFeeResponse = Quantity;
+
 export type GetBlockTransactionCountByHashResponse = Quantity;
+
 export type GetBlockTransactionCountByNumberResponse = Quantity;
+
 export type GetBlockByHashResponse = L2BlockRef;
+
 export type GetBlockByNumberResponse = L2BlockRef;
+
 export type GetTransactionByHashResponse = L2Transaction;
+
 export type GetTransactionByBlockHashAndIndexResponse = L2Transaction;
+
 export type GetTransactionByBlockNumberAndIndexResponse = L2Transaction;
 
 /** 
@@ -93,7 +89,6 @@ export type GetTransactionReceiptResponse = {
 }
 
 export type GetBlockNumberByStateRootResponse = Quantity;
-export type ChainIdResponse = Quantity;
 export type GasPriceResponse = Quantity;
 export type SendRawTransactionResponse = Hash;
 export type AuthenticateTransactionResponse = Hash;

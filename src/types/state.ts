@@ -1,4 +1,4 @@
-import { Byte, Hash, KeystoreAddress, Quantity, Data } from "./primitives";
+import { Byte, Hash, KeystoreAddress, Data, Quantity } from "./primitives";
 
 /**
  * An Individual Merkle Tree sibling proof element.

@@ -1,8 +1,10 @@
 import { RequestManager, HTTPTransport, Client } from "@open-rpc/client-js";
-import { AuthenticateTransactionResponse, CallResponse, EstimateGasResponse, EstimateL1DataFeeResponse, GasPriceResponse, GetAuthenticationStatusResponse, GetBalanceResponse, GetBlockByHashResponse, GetBlockByNumberResponse, GetBlockNumberByStateRootResponse, GetProofResponse, GetSponsorAuthenticationStatusResponse, GetStateAtResponse, GetTransactionByHashResponse, GetTransactionCountResponse, GetTransactionReceiptResponse, SendRawTransactionResponse, SponsorAuthenticateTransactionResponse, SyncStatusResponse } from "./types/response";
+import { AuthenticateTransactionResponse, BlockNumberResponse, CallResponse, EstimateGasResponse, EstimateL1DataFeeResponse, GasPriceResponse, GetAuthenticationStatusResponse, GetBalanceResponse, GetBlockByHashResponse, GetBlockByNumberResponse, GetBlockNumberByStateRootResponse, GetProofResponse, GetSponsorAuthenticationStatusResponse, GetStateAtResponse, GetTransactionByHashResponse, GetTransactionCountResponse, GetTransactionReceiptResponse, SendRawTransactionResponse, SponsorAuthenticateTransactionResponse, SyncStatusResponse } from "./types/response";
 import { Data, Hash, KeystoreAddress } from "./types/primitives";
 import { BlockTagOrNumber } from "./types/block";
 import { AuthInputs, SponsorAuthInputs } from "./types/input";
+import { AuthenticateTransactionResponseRpc, BlockNumberResponseRpc, CallResponseRpc, EstimateGasResponseRpc, GasPriceResponseRpc, GetAuthenticationStatusResponseRpc, GetBalanceResponseRpc, GetBlockByHashResponseRpc, GetBlockByNumberResponseRpc, GetBlockNumberByStateRootResponseRpc, GetProofResponseRpc, GetSponsorAuthenticationStatusResponseRpc, GetStateAtResponseRpc, GetTransactionByHashResponseRpc, GetTransactionCountResponseRpc, GetTransactionReceiptResponseRpc, SendRawTransactionResponseRpc, SponsorAuthenticateTransactionResponseRpc, SyncStatusResponseRpc } from "./types/rpc";
+import { formatBlockNumberResponse, formatBlockTagOrNumber, formatCallResponse, formatEstimateGasResponse, formatEstimateL1DataFeeResponse, formatGasPriceResponse, formatGetBalanceResponse, formatGetBlockByHashResponse, formatGetBlockByNumberResponse, formatGetBlockNumberByStateRootResponse, formatGetTransactionByHashResponse, formatGetTransactionCountResponse, formatGetTransactionReceiptResponse, formatSyncStatusResponse } from "./types/formatters.ts";
 
 /**
  * Provider for interacting with a keystore node.
@@ -21,99 +23,99 @@ export class KeystoreNodeProvider {
   }
 
   async syncStatus(): Promise<SyncStatusResponse> {
-    const result = await this.client.request({
+    const rpcResp: SyncStatusResponseRpc = await this.client.request({
       method: "keystore_syncStatus",
       params: []
     });
-    return result;
+    return formatSyncStatusResponse(rpcResp);
   }
 
-  async getBlockNumber(): Promise<GetBlockByNumberResponse> {
-    const result = await this.client.request({
+  async blockNumber(): Promise<BlockNumberResponse> {
+    const rpcResp: BlockNumberResponseRpc = await this.client.request({
       method: "keystore_blockNumber",
       params: []
     });
-    return result;
+    return formatBlockNumberResponse(rpcResp);
   }
 
   async getBalance(address: KeystoreAddress, block: BlockTagOrNumber): Promise<GetBalanceResponse> {
-    const result = await this.client.request({
+    const rpcResp: GetBalanceResponseRpc = await this.client.request({
       method: "keystore_getBalance",
-      params: [address, block]
+      params: [address, formatBlockTagOrNumber(block)]
     });
-    return result;
+    return formatGetBalanceResponse(rpcResp);
   }
 
   async getStateAt(address: KeystoreAddress, block: BlockTagOrNumber): Promise<GetStateAtResponse> {
-    const result = await this.client.request({
+    const rpcResp: GetStateAtResponseRpc = await this.client.request({
       method: "keystore_getStateAt",
-      params: [address, block]
+      params: [address, formatBlockTagOrNumber(block)]
     });
-    return result;
+    return rpcResp;
   }
 
   async getTransactionCount(address: KeystoreAddress, block: BlockTagOrNumber): Promise<GetTransactionCountResponse> {
-    const result = await this.client.request({
+    const rpcResp: GetTransactionCountResponseRpc = await this.client.request({
       method: "keystore_getTransactionCount",
-      params: [address, block]
+      params: [address, formatBlockTagOrNumber(block)]
     });
-    return result;
+    return formatGetTransactionCountResponse(rpcResp);
   }
 
   async getProof(address: KeystoreAddress, block: BlockTagOrNumber): Promise<GetProofResponse> {
-    const result = await this.client.request({
+    const rpcResp: GetProofResponseRpc = await this.client.request({
       method: "keystore_getProof",
-      params: [address, block]
+      params: [address, formatBlockTagOrNumber(block)]
     });
-    return result;
+    return rpcResp;
   }
 
   async call(transaction: Data, block: BlockTagOrNumber): Promise<CallResponse> {
-    const result = await this.client.request({
+    const rpcResp: CallResponseRpc = await this.client.request({
       method: "keystore_call",
-      params: [transaction, block]
+      params: [transaction, formatBlockTagOrNumber(block)]
     });
-    return result;
+    return formatCallResponse(rpcResp);
   }
 
   async getTransactionByHash(hash: Hash): Promise<GetTransactionByHashResponse> {
-    const result = await this.client.request({
+    const rpcResp: GetTransactionByHashResponseRpc = await this.client.request({
       method: "keystore_getTransactionByHash",
       params: [hash]
     });
-    return result;
+    return formatGetTransactionByHashResponse(rpcResp);
   }
 
   async getTransactionReceipt(hash: Hash): Promise<GetTransactionReceiptResponse> {
-    const result = await this.client.request({
+    const rpcResp: GetTransactionReceiptResponseRpc = await this.client.request({
       method: "keystore_getTransactionReceipt",
       params: [hash]
     });
-    return result;
+    return formatGetTransactionReceiptResponse(rpcResp);
   }
 
   async getBlockNumberByStateRoot(stateRoot: Hash): Promise<GetBlockNumberByStateRootResponse> {
-    const result = await this.client.request({
+    const rpcResp: GetBlockNumberByStateRootResponseRpc = await this.client.request({
       method: "keystore_getBlockNumberByStateRoot",
       params: [stateRoot]
     });
-    return result;
+    return formatGetBlockNumberByStateRootResponse(rpcResp);
   }
 
   async getBlockByNumber(block: BlockTagOrNumber, fullTransactions: boolean): Promise<GetBlockByNumberResponse> {
-    const result = await this.client.request({
+    const rpcResp: GetBlockByNumberResponseRpc = await this.client.request({
       method: "keystore_getBlockByNumber",
-      params: [block, fullTransactions]
+      params: [formatBlockTagOrNumber(block), fullTransactions]
     });
-    return result;
+    return formatGetBlockByNumberResponse(rpcResp);
   }
 
   async getBlockByHash(hash: Hash, fullTransactions: boolean): Promise<GetBlockByHashResponse> {
-    const result = await this.client.request({
+    const rpcResp: GetBlockByHashResponseRpc = await this.client.request({
       method: "keystore_getBlockByHash",
       params: [hash, fullTransactions]
     });
-    return result;
+    return formatGetBlockByHashResponse(rpcResp);
   }
 }
 
@@ -134,35 +136,35 @@ export class KeystoreSignatureProverProvider {
   }
 
   async authenticateTransaction(transaction: Data, authInputs: AuthInputs): Promise<AuthenticateTransactionResponse> {
-    const result = await this.client.request({
+    const rpcResp: AuthenticateTransactionResponseRpc = await this.client.request({
       method: "keystore_authenticateTransaction",
       params: [transaction, authInputs]
     });
-    return result;
+    return rpcResp;
   }
 
   async getAuthenticationStatus(requestHash: Hash): Promise<GetAuthenticationStatusResponse> {
-    const result = await this.client.request({
+    const rpcResp: GetAuthenticationStatusResponseRpc = await this.client.request({
       method: "keystore_getAuthenticationStatus",
       params: [requestHash]
     });
-    return result;
+    return rpcResp;
   }
 
   async sponsorAuthenticateTransaction(transaction: Data, sponsorAuthInputs: SponsorAuthInputs): Promise<SponsorAuthenticateTransactionResponse> {
-    const result = await this.client.request({
+    const rpcResp: SponsorAuthenticateTransactionResponseRpc = await this.client.request({
       method: "keystore_sponsorAuthenticateTransaction",
       params: [transaction, sponsorAuthInputs]
     });
-    return result;
+    return rpcResp;
   }
 
   async getSponsorAuthenticationStatus(requestHash: Hash): Promise<GetSponsorAuthenticationStatusResponse> {
-    const result = await this.client.request({
+    const rpcResp: GetSponsorAuthenticationStatusResponseRpc = await this.client.request({
       method: "keystore_getSponsorAuthenticationStatus",
       params: [requestHash]
     });
-    return result;
+    return rpcResp;
   }
 }
 
@@ -183,42 +185,42 @@ export class KeystoreSequencerProvider {
   }
 
   async sendRawTransaction(transaction: Data): Promise<SendRawTransactionResponse> {
-    const result = await this.client.request({
+    const rpcResp: SendRawTransactionResponseRpc = await this.client.request({
       method: "keystore_sendRawTransaction",
       params: [transaction]
     });
-    return result;
+    return rpcResp;
   }
 
   async gasPrice(): Promise<GasPriceResponse> {
-    const result = await this.client.request({
+    const rpcResp: GasPriceResponseRpc = await this.client.request({
       method: "keystore_gasPrice",
       params: []
     });
-    return result;
+    return formatGasPriceResponse(rpcResp);
   }
 
   async estimateGas(transaction: Data): Promise<EstimateGasResponse> {
-    const result = await this.client.request({
+    const rpcResp: EstimateGasResponseRpc = await this.client.request({
       method: "keystore_estimateGas",
       params: [transaction]
     });
-    return result;
+    return formatEstimateGasResponse(rpcResp);
   }
 
   async estimateL1DataFee(transaction: Data, block: BlockTagOrNumber): Promise<EstimateL1DataFeeResponse> {
-    const result = await this.client.request({
+    const rpcResp: EstimateGasResponseRpc = await this.client.request({
       method: "keystore_estimateL1DataFee",
-      params: [transaction, block]
+      params: [transaction, formatBlockTagOrNumber(block)]
     });
-    return result;
+    return formatEstimateL1DataFeeResponse(rpcResp);
   }
 
   async call(transaction: Data, block: BlockTagOrNumber): Promise<CallResponse> {
-    const result = await this.client.request({
+    const rpcResp = await this.client.request({
       method: "keystore_call",
-      params: [transaction, block]
+      params: [transaction, formatBlockTagOrNumber(block)]
     });
-    return result;
+    return formatCallResponse(rpcResp);
   }
 }
