@@ -9,6 +9,7 @@ import { KeystoreAccountBuilder, UpdateTransactionBuilder } from '../src/transac
 import { SponsorAuthInputs } from '../src/types/input';
 
 describe('keystore prover provider', () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let provider: KeystoreSignatureProverProvider;
 
   beforeEach(() => {
@@ -41,7 +42,7 @@ describe('keystore prover provider', () => {
     const userMsgHash = updateTx.userMsgHash();
     const userSig: Hex = await ecdsaSign(pk, userMsgHash);
 
-    const sponsorAuthInputs: SponsorAuthInputs = {
+    const sponsorAuthInputs: SponsorAuthInputs = { // eslint-disable-line @typescript-eslint/no-unused-vars
       sponsorAuth: {
         codeHash: AXIOM_CODEHASH,
         signatures: [],
@@ -54,6 +55,7 @@ describe('keystore prover provider', () => {
       }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const txBytes = updateTx.txBytes();
 
     // const requestHash = await provider.sponsorAuthenticateTransaction(txBytes, sponsorAuthInputs);

@@ -96,7 +96,7 @@ async function main() {
         return;
       }
       console.log(`Checking transaction status again in ${RETRY_INTERVAL_SEC} seconds`);
-    } catch (err) {
+    } catch {
       console.log("Transaction not yet included in block");
     }
     await new Promise(resolve => setTimeout(resolve, RETRY_INTERVAL_SEC * 1000));
