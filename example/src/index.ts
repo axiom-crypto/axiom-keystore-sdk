@@ -1,6 +1,6 @@
 import { generateRandomHex } from "@axiom-crypto/keystore-sdk/src/utils/random";
 import { AXIOM_ACCOUNT, AXIOM_ACCOUNT_AUTH_INPUTS, AXIOM_VKEY, AuthenticationStatusEnum, BlockTag, KeystoreAccountBuilder, KeystoreNodeProvider, KeystoreSequencerProvider, KeystoreSignatureProverProvider, SAMPLE_USER_CODE_HASH, SponsorAuthInputs, TransactionStatus, UpdateTransactionBuilder, UpdateTransactionRequest, calcDataHash, ecdsaSign } from "@axiom-crypto/keystore-sdk/src";
-import { Hex, hexToBigInt, stringToHex } from "viem";
+import { Hex, stringToHex } from "viem";
 
 export const NODE_URL = "http://keystore-rpc-node.axiom.xyz";
 export const SIGNATURE_PROVER_URL = "http://keystore-rpc-signatureprover.axiom.xyz";
@@ -26,8 +26,8 @@ async function main() {
   const feePerGas = await sequencerProvider.gasPrice();
 
   const txReq: UpdateTransactionRequest = {
-    nonce: hexToBigInt(nonce),
-    feePerGas: hexToBigInt(feePerGas),
+    nonce,
+    feePerGas,
     newUserData: stringToHex("newUserData"), // placeholder
     newUserVkey: AXIOM_VKEY,
     userAcct,
