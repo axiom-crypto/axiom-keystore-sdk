@@ -1,6 +1,6 @@
 import { describe, test, expect } from '@jest/globals';
 import { KeystoreNodeProvider } from "../src/provider";
-import { BlockTag } from "../src/types/block";
+import { BlockTag, BlockTransactionsKind } from "../src/types/block";
 import { GetTransactionReceiptResponse } from "../src/types/response";
 import { TransactionStatus, UpdateTransaction } from "../src/types/transaction";
 import { AXIOM_ACCOUNT_ADDRESS, EMPTY_HEX, EXISTING_BLOCK_HASH, NON_SPONSORED_UPDATE_TX_HASH, NODE_URL, NON_EXISTENT_BLOCK_HASH, NON_EXISTENT_TX_HASH, NON_EXISTING_ACCOUNT_ADDRESS, ZERO_BYTES32, SPONSORED_UPDATE_TX_HASH } from './testUtils';
@@ -84,34 +84,34 @@ describe('keystore node provider', () => {
   });
 
   test('keystore_getBlockNumberByStateRoot', async () => {
-    const block = await provider.getBlockByNumber(BlockTag.Latest, false);
+    const block = await provider.getBlockByNumber(BlockTag.Latest, BlockTransactionsKind.Hashes);
     const blockNumber = await provider.getBlockNumberByStateRoot(block.stateRoot);
     expect(blockNumber).toBe(block.number);
   });
 
   test('keystore_getBlockByNumber', async () => {
-    const block = await provider.getBlockByNumber(BlockTag.Latest, false);
+    const block = await provider.getBlockByNumber(BlockTag.Latest, BlockTransactionsKind.Full);
     expect(typeof block.number).toBe('bigint');
 
-    await provider.getBlockByNumber(BlockTag.Latest, true);
+    await provider.getBlockByNumber(BlockTag.Latest, BlockTransactionsKind.Hashes);
 
-    await provider.getBlockByNumber(BlockTag.Committed, false);
+    await provider.getBlockByNumber(BlockTag.Committed, BlockTransactionsKind.Hashes);
 
-    await provider.getBlockByNumber(BlockTag.Finalized, false);
+    await provider.getBlockByNumber(BlockTag.Finalized, BlockTransactionsKind.Hashes);
 
-    await provider.getBlockByNumber(BlockTag.Earliest, false);
+    await provider.getBlockByNumber(BlockTag.Earliest, BlockTransactionsKind.Hashes);
 
-    await provider.getBlockByNumber(1n, false);
+    await provider.getBlockByNumber(1n, BlockTransactionsKind.Hashes);
 
-    await provider.getBlockByNumber(0n, false);
+    await provider.getBlockByNumber(0n, BlockTransactionsKind.Hashes);
   });
 
   test('keystore_getBlockByHash', async () => {
-    await provider.getBlockByHash(EXISTING_BLOCK_HASH, false);
+    await provider.getBlockByHash(EXISTING_BLOCK_HASH, BlockTransactionsKind.Hashes);
 
-    await provider.getBlockByHash(EXISTING_BLOCK_HASH, true);
+    await provider.getBlockByHash(EXISTING_BLOCK_HASH, BlockTransactionsKind.Full);
 
-    await expect(provider.getBlockByHash(NON_EXISTENT_BLOCK_HASH, false))
+    await expect(provider.getBlockByHash(NON_EXISTENT_BLOCK_HASH, BlockTransactionsKind.Hashes))
       .rejects.toThrow();
   });
 });

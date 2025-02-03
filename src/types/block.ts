@@ -11,6 +11,11 @@ export enum BlockTag {
   Earliest = "earliest",
 }
 
+export enum BlockTransactionsKind {
+  Hashes, // false
+  Full, // true
+}
+
 /**
  * A union type to represent either a known block tag or a block number.
  */

@@ -1,10 +1,10 @@
 import { RequestManager, HTTPTransport, Client } from "@open-rpc/client-js";
 import { AuthenticateTransactionResponse, BlockNumberResponse, CallResponse, EstimateGasResponse, EstimateL1DataFeeResponse, GasPriceResponse, GetAuthenticationStatusResponse, GetBalanceResponse, GetBlockByHashResponse, GetBlockByNumberResponse, GetBlockNumberByStateRootResponse, GetProofResponse, GetSponsorAuthenticationStatusResponse, GetStateAtResponse, GetTransactionByHashResponse, GetTransactionCountResponse, GetTransactionReceiptResponse, SendRawTransactionResponse, SponsorAuthenticateTransactionResponse, SyncStatusResponse } from "./types/response";
 import { Data, Hash, KeystoreAddress } from "./types/primitives";
-import { BlockTagOrNumber } from "./types/block";
+import { BlockTagOrNumber, BlockTransactionsKind } from "./types/block";
 import { AuthInputs, SponsorAuthInputs } from "./types/input";
 import { AuthenticateTransactionResponseRpc, BlockNumberResponseRpc, CallResponseRpc, EstimateGasResponseRpc, GasPriceResponseRpc, GetAuthenticationStatusResponseRpc, GetBalanceResponseRpc, GetBlockByHashResponseRpc, GetBlockByNumberResponseRpc, GetBlockNumberByStateRootResponseRpc, GetProofResponseRpc, GetSponsorAuthenticationStatusResponseRpc, GetStateAtResponseRpc, GetTransactionByHashResponseRpc, GetTransactionCountResponseRpc, GetTransactionReceiptResponseRpc, SendRawTransactionResponseRpc, SponsorAuthenticateTransactionResponseRpc, SyncStatusResponseRpc } from "./types/rpc";
-import { formatBlockNumberResponse, formatBlockTagOrNumber, formatCallResponse, formatEstimateGasResponse, formatEstimateL1DataFeeResponse, formatGasPriceResponse, formatGetBalanceResponse, formatGetBlockByHashResponse, formatGetBlockByNumberResponse, formatGetBlockNumberByStateRootResponse, formatGetTransactionByHashResponse, formatGetTransactionCountResponse, formatGetTransactionReceiptResponse, formatSyncStatusResponse } from "./types/formatters.ts";
+import { formatBlockNumberResponse, formatBlockTagOrNumber, formatBlockTransactionKind, formatCallResponse, formatEstimateGasResponse, formatEstimateL1DataFeeResponse, formatGasPriceResponse, formatGetBalanceResponse, formatGetBlockByHashResponse, formatGetBlockByNumberResponse, formatGetBlockNumberByStateRootResponse, formatGetTransactionByHashResponse, formatGetTransactionCountResponse, formatGetTransactionReceiptResponse, formatSyncStatusResponse } from "./types/formatters.ts";
 
 /**
  * Provider for interacting with a keystore node.
@@ -102,18 +102,18 @@ export class KeystoreNodeProvider {
     return formatGetBlockNumberByStateRootResponse(rpcResp);
   }
 
-  async getBlockByNumber(block: BlockTagOrNumber, fullTransactions: boolean): Promise<GetBlockByNumberResponse> {
+  async getBlockByNumber(block: BlockTagOrNumber, txKind: BlockTransactionsKind): Promise<GetBlockByNumberResponse> {
     const rpcResp: GetBlockByNumberResponseRpc = await this.client.request({
       method: "keystore_getBlockByNumber",
-      params: [formatBlockTagOrNumber(block), fullTransactions]
+      params: [formatBlockTagOrNumber(block), formatBlockTransactionKind(txKind)]
     });
     return formatGetBlockByNumberResponse(rpcResp);
   }
 
-  async getBlockByHash(hash: Hash, fullTransactions: boolean): Promise<GetBlockByHashResponse> {
+  async getBlockByHash(hash: Hash, txKind: BlockTransactionsKind): Promise<GetBlockByHashResponse> {
     const rpcResp: GetBlockByHashResponseRpc = await this.client.request({
       method: "keystore_getBlockByHash",
-      params: [hash, fullTransactions]
+      params: [hash, formatBlockTransactionKind(txKind)]
     });
     return formatGetBlockByHashResponse(rpcResp);
   }
