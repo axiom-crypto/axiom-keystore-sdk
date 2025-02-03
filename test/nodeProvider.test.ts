@@ -90,10 +90,16 @@ describe('keystore node provider', () => {
   });
 
   test('keystore_getBlockByNumber', async () => {
-    const block = await provider.getBlockByNumber(BlockTag.Latest, BlockTransactionsKind.Full);
-    expect(typeof block.number).toBe('bigint');
+    const block1 = await provider.getBlockByNumber(BlockTag.Latest, BlockTransactionsKind.Full);
+    expect(typeof block1.number).toBe('bigint');
+    expect(block1.transactions).toBeDefined();
+    expect(block1.transactions).not.toHaveLength(0);
+    expect(typeof block1.transactions![0]).not.toBe('string');
 
-    await provider.getBlockByNumber(BlockTag.Latest, BlockTransactionsKind.Hashes);
+    const block2 = await provider.getBlockByNumber(BlockTag.Latest, BlockTransactionsKind.Hashes);
+    expect(block2.transactions).toBeDefined();
+    expect(block2.transactions).not.toHaveLength(0);
+    expect(typeof block2.transactions![0]).toBe('string');
 
     await provider.getBlockByNumber(BlockTag.Committed, BlockTransactionsKind.Hashes);
 
