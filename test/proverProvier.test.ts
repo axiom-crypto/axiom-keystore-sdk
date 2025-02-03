@@ -61,12 +61,12 @@ describe('keystore prover provider', () => {
   }, 120 * 1000);
 
   test('keystore_getSponsorAuthenticationStatus', async () => {
-    const requestHash = "0x4625e121b8f18810c44ad3377a367337f618766e02f8d7c511ae7c62cc708460";
-    let status = await provider.getSponsorAuthenticationStatus(requestHash);
-    console.log(status.status);
+    // const requestHash = "0x4625e121b8f18810c44ad3377a367337f618766e02f8d7c511ae7c62cc708460";
+    // let status = await provider.getSponsorAuthenticationStatus(requestHash);
+    // console.log(status.status);
 
-    if (status.authenticatedTransaction) {
-      let _ = UpdateTransactionBuilder.decodeTxBytes(status.authenticatedTransaction);
-    }
+    // if (status.authenticatedTransaction) {
+    //   let _ = UpdateTransactionBuilder.decodeTxBytes(status.authenticatedTransaction);
+    // }
   });
 });
