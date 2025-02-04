@@ -17,7 +17,7 @@ export const M_OF_N_ECDSA_VKEY = "0x01010000001001000100010100000100000000000000
 export const AXIOM_ACCOUNT: KeystoreAccount = {
   keystoreAddress: "0xc3a9b82816196f3f5692dda37ee242839ce86357dc06a205ce04da56a3651e06",
   salt: pad("0x", { size: 32 }),
-  dataHash: "0xecf85bc51a8b47c545dad1a47e868276d0a92b7cf2716033ce77d385a6b67c4b",
+  dataHash: "0xdaac56a25b9b2c131b600e9b5450a01e4193ac3f65047371bd74ebdfda25d764",
   vkey: M_OF_N_ECDSA_VKEY,
 }
 
