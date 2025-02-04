@@ -44,6 +44,7 @@ const UPDATE_TYPEHASH = keccak256(
   toBytes("Update(bytes32 userKeystoreAddress,uint256 nonce,bytes feePerGas,bytes newUserData,bytes newUserVkey)")
 )
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const SPONSOR_TYPEHASH = keccak256(
   toBytes("Sponsor(bytes32 sponsorKeystoreAddress,bytes32 userMsgHash,bytes32 userKeystoreAddress)")
 )
@@ -281,7 +282,7 @@ export class UpdateTransactionBuilder {
       throw new Error("Invalid transaction type");
     }
 
-    let isL1Initiated = bytes[1] != 0;
+    const isL1Initiated = bytes[1] != 0;
     if (isL1Initiated) {
       throw new Error("cannot decode L1 initiated transaction");
     }
