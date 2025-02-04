@@ -1,6 +1,7 @@
 # Keystore SDK
 
 ## Introduction
+
 Keystore Typescript SDK to interact with Axiom keystore rollup.
 
 ## Installation
@@ -18,15 +19,17 @@ To create a new keystore account, follow these steps:
 ```typescript
 // Initialize a counterfactual keystore account
 const acct = KeystoreAccountBuilder.initCounterfactual(salt, dataHash, vkey);
-
-// Initialize a keystore account with a known keystore address
-const acct = KeystoreAccountBuilder.initWithKeystoreAddress(keystoreAddress, dataHash, vkey); 
 ```
 
+// Initialize a keystore account with a known keystore address
 If you already have the `keystoreAddress`, you can create the account as follows:
 
 ```typescript
-const acct = KeystoreAccountBuilder.withKeystoreAddress(keystoreAddress, dataHash, vkey);
+const acct = KeystoreAccountBuilder.initWithKeystoreAddress(
+  keystoreAddress,
+  dataHash,
+  vkey
+);
 ```
 
 You can calculate the `dataHash` with this method:
@@ -35,7 +38,7 @@ You can calculate the `dataHash` with this method:
 const dataHash = calcDataHash(codeHash, 1n, [eoaAddress]);
 ```
 
-You can use `AXIOM_VKEY` as the `vkey` and `SAMPLE_USER_CODEHASH` as the `codeHash`.
+You can use `M_OF_N_ECDSA_VKEY` as the `vkey` and `SAMPLE_USER_CODEHASH` as the `codeHash`.
 
 ### Transaction Request
 
@@ -60,10 +63,10 @@ To create a transaction from a transaction request, use the `UpdateTransactionBu
 const tx = UpdateTransactionBuilder.fromTransactionRequest(txReq);
 
 // Transaction hash
-tx.txHash()
+tx.txHash();
 
 // Transaction serialized as bytes
-tx.txBytes()
+tx.txBytes();
 ```
 
 ### Authenticating a Transaction
@@ -75,7 +78,7 @@ To begin authenticating a transaction, start by creating the necessary authentic
 const authInputs: AuthInputs = {
   codeHash: SAMPLE_USER_CODE_HASH,
   signatures: [userSig],
-  eoaAddrs: [eoaAddr]
+  eoaAddrs: [eoaAddr],
 };
 
 // sponsor authentication inputs if the transaction is sponsored
@@ -84,8 +87,8 @@ const sponsorAuthInputs: SponsorAuthInputs = {
   userAuth: {
     codeHash: SAMPLE_USER_CODE_HASH,
     signatures: [userSig],
-    eoaAddrs: [eoaAddr]
-  }
+    eoaAddrs: [eoaAddr],
+  },
 };
 ```
 
@@ -93,23 +96,36 @@ Next, submit the transaction bytes along with the authentication inputs to the s
 
 ```typescript
 // instantiate the signature prover provider
-const signatureProverProvider = new KeystoreSignatureProverProvider(SIGNATURE_PROVER_URL);
+const signatureProverProvider = new KeystoreSignatureProverProvider(
+  SIGNATURE_PROVER_URL
+);
 
 // authenticate a non-sponsored transaction
-const requestHash = await signatureProverProvider.authenticateTransaction(userTx.txBytes(), sponsorAuthInputs);
+const requestHash = await signatureProverProvider.authenticateTransaction(
+  userTx.txBytes(),
+  sponsorAuthInputs
+);
 
 // authenticate a sponsored transaction
-const requestHash = await signatureProverProvider.sponsorAuthenticateTransaction(sponsoredTx.txBytes(), sponsorAuthInputs);
+const requestHash =
+  await signatureProverProvider.sponsorAuthenticateTransaction(
+    sponsoredTx.txBytes(),
+    sponsorAuthInputs
+  );
 ```
 
 After you receive the request hash, check its status to monitor the progression of your authentication request:
 
 ```typescript
 // check the authentication status of a non-sponsored transaction
-const status = await signatureProverProvider.getAuthenticationStatus(requestHash);
+const status = await signatureProverProvider.getAuthenticationStatus(
+  requestHash
+);
 
 // check the authentication status of a sponsored transaction
-const status = await signatureProverProvider.getSponsorAuthenticationStatus(requestHash);
+const status = await signatureProverProvider.getSponsorAuthenticationStatus(
+  requestHash
+);
 ```
 
 Finally, when the status indicates completion, you can retrieve and use the authenticated transaction:
@@ -144,10 +160,16 @@ const tx = await nodeProvider.getTransactionByHash(txHash);
 const receipt = await nodeProvider.getTransactionReceipt(txHash);
 
 // get the latest block with full transactions
-const block = await nodeProvider.getBlockByNumber(BlockTag.Latest, BlockTransactionsKind.Full);
+const block = await nodeProvider.getBlockByNumber(
+  BlockTag.Latest,
+  BlockTransactionsKind.Full
+);
 
 // get account state
-const accountState = await nodeProvider.getStateAt(keystoreAddress, BlockTag.Latest);
+const accountState = await nodeProvider.getStateAt(
+  keystoreAddress,
+  BlockTag.Latest
+);
 ```
 
 ## Examples

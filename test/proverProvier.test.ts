@@ -1,11 +1,8 @@
 import { describe, test } from '@jest/globals';
-import { KeystoreSignatureProverProvider } from "../src/provider";
 import { ANVIL_ACCOUNTS, CODE_HASH, SIGNATURE_PROVER_URL } from './testUtils';
 import { Hex, pad } from 'viem';
-import { AXIOM_ACCOUNT, AXIOM_CODEHASH, AXIOM_EOA, AXIOM_VKEY, ecdsaSign } from "../src";
-import { calcDataHash } from "../src/dataHash";
-import { UpdateTransactionRequest } from '../src/types/transactionRequest';
-import { KeystoreAccountBuilder, UpdateTransactionBuilder } from '../src/transaction';
+import { calcMOfNDataHash } from "../src/dataHash";
+import { AXIOM_ACCOUNT, AXIOM_CODEHASH, AXIOM_EOA, M_OF_N_ECDSA_VKEY, Data, KeystoreAccountBuilder, UpdateTransactionBuilder, UpdateTransactionRequest, KeystoreSignatureProverProvider } from '../src';
 import { SponsorAuthInputs } from '../src/types/input';
 
 describe('keystore prover provider', () => {
@@ -18,13 +15,13 @@ describe('keystore prover provider', () => {
 
   test('keystore_sponsorAuthenticateTransaction', async () => {
     const salt = pad("0x01");
-    const vk = AXIOM_VKEY;
+    const vk = M_OF_N_ECDSA_VKEY;
 
     const pk = ANVIL_ACCOUNTS[0].pk as Hex;
     const eoaAddr = ANVIL_ACCOUNTS[0].addr as Hex;
 
     const userCodeHash = CODE_HASH;
-    const dataHash = calcDataHash(userCodeHash, 1n, [eoaAddr]);
+    const dataHash = calcMOfNDataHash(userCodeHash, 1n, [eoaAddr]);
     const userAcct = KeystoreAccountBuilder.initCounterfactual(salt, dataHash, vk);
 
     const sponsorAcct = AXIOM_ACCOUNT;
@@ -38,9 +35,7 @@ describe('keystore prover provider', () => {
       sponsorAcct,
     };
     const updateTx = UpdateTransactionBuilder.fromTransactionRequest(txReq);
-
-    const userMsgHash = updateTx.userMsgHash();
-    const userSig: Hex = await ecdsaSign(pk, userMsgHash);
+    const userSig: Data = await updateTx.sign(pk);
 
     const sponsorAuthInputs: SponsorAuthInputs = { // eslint-disable-line @typescript-eslint/no-unused-vars
       sponsorAuth: {

@@ -1,12 +1,12 @@
 import { generateRandomHex } from "@axiom-crypto/keystore-sdk/src/utils/random";
-import { AXIOM_ACCOUNT, AXIOM_ACCOUNT_AUTH_INPUTS, AXIOM_VKEY, AuthenticationStatusEnum, BlockTag, KeystoreAccountBuilder, KeystoreNodeProvider, KeystoreSequencerProvider, KeystoreSignatureProverProvider, SAMPLE_USER_CODE_HASH, SponsorAuthInputs, TransactionStatus, UpdateTransactionBuilder, UpdateTransactionRequest, calcDataHash, ecdsaSign } from "@axiom-crypto/keystore-sdk/src";
-import { Hex, stringToHex } from "viem";
+import { AXIOM_ACCOUNT, AXIOM_ACCOUNT_AUTH_INPUTS, M_OF_N_ECDSA_VKEY, AuthenticationStatusEnum, BlockTag, KeystoreAccountBuilder, KeystoreNodeProvider, KeystoreSequencerProvider, KeystoreSignatureProverProvider, SAMPLE_USER_CODE_HASH, SponsorAuthInputs, TransactionStatus, UpdateTransactionBuilder, UpdateTransactionRequest, calcDataHash, Data } from "@axiom-crypto/keystore-sdk/src";
+import { stringToHex } from "viem";
 
-export const NODE_URL = "http://keystore-rpc-node.axiom.xyz";
-export const SIGNATURE_PROVER_URL = "http://keystore-rpc-signatureprover.axiom.xyz";
-export const SEQUENCER_URL = "http://keystore-rpc-sequencer.axiom.xyz";
+const NODE_URL = "http://keystore-rpc-node.axiom.xyz";
+const SIGNATURE_PROVER_URL = "http://keystore-rpc-signatureprover.axiom.xyz";
+const SEQUENCER_URL = "http://keystore-rpc-sequencer.axiom.xyz";
 
-const RETRY_INTERVAL_SEC = 20;
+const RETRY_INTERVAL_SEC = 30;
 const MAX_RETRIES = 10;
 
 async function main() {
@@ -16,7 +16,7 @@ async function main() {
 
   const salt = generateRandomHex(32);
   const dataHash = calcDataHash(SAMPLE_USER_CODE_HASH, 1n, [eoaAddr]);
-  const userAcct = KeystoreAccountBuilder.initCounterfactual(salt, dataHash, AXIOM_VKEY);
+  const userAcct = KeystoreAccountBuilder.initCounterfactual(salt, dataHash, M_OF_N_ECDSA_VKEY);
   console.log("User account:", userAcct);
 
   const nodeProvider = new KeystoreNodeProvider(NODE_URL);
@@ -29,13 +29,13 @@ async function main() {
     nonce,
     feePerGas,
     newUserData: stringToHex("newUserData"), // placeholder
-    newUserVkey: AXIOM_VKEY,
+    newUserVkey: M_OF_N_ECDSA_VKEY,
     userAcct,
     sponsorAcct: AXIOM_ACCOUNT,
   };
   console.log("Transaction request:", txReq);
   const updateTx = UpdateTransactionBuilder.fromTransactionRequest(txReq);
-  const userSig: Hex = await ecdsaSign(privateKey, updateTx.userMsgHash());
+  const userSig: Data = await updateTx.sign(privateKey);
 
   const sponsorAuthInputs: SponsorAuthInputs = {
     sponsorAuth: AXIOM_ACCOUNT_AUTH_INPUTS,
@@ -45,7 +45,6 @@ async function main() {
       eoaAddrs: [eoaAddr]
     }
   };
-
   console.log("Sending sponsor authentication request to signature prover");
 
   const signatureProverProvider = new KeystoreSignatureProverProvider(SIGNATURE_PROVER_URL);

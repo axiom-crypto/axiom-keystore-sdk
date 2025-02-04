@@ -1,16 +1,55 @@
 import { describe, test, expect } from '@jest/globals';
-import { ecdsaSign } from "../src/utils/ecdsa";
+import { ecdsaSignMsg } from "../src/utils/ecdsa";
 import { ANVIL_ACCOUNTS } from "./testUtils";
-import { keccak256, stringToHex } from 'viem';
+import { UpdateTransactionRequest } from '../src/types/transactionRequest';
+import { AXIOM_ACCOUNT, M_OF_N_ECDSA_VKEY, calcMOfNDataHash, KeystoreAccountBuilder, SAMPLE_USER_CODE_HASH, UpdateTransactionBuilder } from '../src';
+import { pad, hexToBigInt } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+import { DOMAIN, UPDATE_TYPES } from '../src/transaction/descriptors';
 
 describe("ecdsa", () => {
   test("should sign a message", async () => {
     const acct = ANVIL_ACCOUNTS[0];
     const pk = acct.pk;
-    const msg = stringToHex("message");
-    const msgHash = keccak256(msg);
-    expect(msgHash).toBe("0xc2baf6c66618acd49fb133cebc22f55bd907fe9f0d69a726d45b7539ba6bbe08");
-    const signature = await ecdsaSign(pk, msgHash);
-    expect(signature).toBe("0x8eaafbfa489264d48377de32bd1ba0c63eb6630e9002879e3bff8f4847fb86b80e4207a30c107906cc064e3a35b342d3ce28c27429cb6f7f755e5dd3695606c301");
+    const msg = "message";
+    const signature = await ecdsaSignMsg(pk, msg);
+    expect(signature).toBe("0x63fde9fec5d1924c8837bae8f19c632291725fb94bb03fb3e8d89bf6de17f52014e402e5769d27989a73e889c9aa35c7ace790d2b239d8e1d9d07046ae2d44f51c");
+  });
+
+  test("compare EIP-712 signed message with viem signTypedData", async () => {
+    const acct = ANVIL_ACCOUNTS[0];
+    const pk = acct.pk;
+    const salt = pad("0x01", { size: 32 });
+    const dataHash = calcMOfNDataHash(SAMPLE_USER_CODE_HASH, 1n, [acct.addr]);
+    const userAcct = KeystoreAccountBuilder.initCounterfactual(salt, dataHash, M_OF_N_ECDSA_VKEY);
+
+    const nonce = 1n;
+    const feePerGas = pad("0x64", { size: 32 });
+    const newUserData = "0x0101010101010101";
+    const txReq: UpdateTransactionRequest = {
+      nonce,
+      feePerGas: hexToBigInt(feePerGas),
+      newUserData,
+      newUserVkey: M_OF_N_ECDSA_VKEY,
+      userAcct,
+      sponsorAcct: AXIOM_ACCOUNT,
+    };
+    const updateTx = UpdateTransactionBuilder.fromTransactionRequest(txReq);
+    const signature = await updateTx.sign(pk);
+    
+    const account = privateKeyToAccount(pk);
+    const sigCmp = await account.signTypedData({
+      domain: DOMAIN,
+      types: UPDATE_TYPES,
+      primaryType: "Update",
+      message: {
+        userKeystoreAddress: userAcct.keystoreAddress,
+        nonce,
+        feePerGas,
+        newUserData,
+        newUserVkey: M_OF_N_ECDSA_VKEY,
+      }
+    });
+    expect(signature).toEqual(sigCmp);
   });
 });

@@ -1,8 +1,6 @@
 import { KeystoreAddress, L1Address } from "../src/types/primitives";
 import { keccak256, pad } from "viem";
-import { UpdateTransactionRequest } from "../src/types/transactionRequest";
-import { KeystoreAccountBuilder } from "../src/transaction";
-import { AXIOM_ACCOUNT } from "../src";
+import { AXIOM_ACCOUNT, UpdateTransactionRequest, KeystoreAccountBuilder } from "../src";
 
 // Default accounts from Anvil
 export const ANVIL_ACCOUNTS: { pk: KeystoreAddress, addr: L1Address }[] = [

@@ -1,12 +1,26 @@
-import { signAsync } from "@noble/secp256k1";
 import { Data, Hash } from "../types/primitives";
+import { privateKeyToAccount } from "viem/accounts";
 
-/// @dev ECDSA sign a message hash with a private key
+/// @dev Generate an ECDSA signature for a message hash with a private key
 /// @param pk The private key to sign with
-/// @param msgHash The message hash to sign
-/// @returns The signature as a 65-byte hex string (r || s || recoveryBit)
+/// @param msgHash The hash of the message to sign
+/// @returns The signature as a 65-byte hex string (r || s || v)
 export const ecdsaSign = async (pk: Hash, msgHash: Hash): Promise<Data> => {
-  const signature = await signAsync(msgHash.toString().slice(2), pk.toString().slice(2));
-  const recovery = signature.recovery.toString(16).padStart(2, '0');
-  return `0x${signature.toCompactHex()}${recovery}`;
+  const account = privateKeyToAccount(pk);
+  const signature = await account.sign({ 
+    hash: msgHash,
+  });
+  return signature;
+};
+
+/// @dev Generate an ECDSA signature for a message with a private key
+/// @param pk The private key to sign with
+/// @param msg The message to sign
+/// @returns The signature as a 65-byte hex string (r || s || v)
+export const ecdsaSignMsg = async (pk: Hash, msg: string): Promise<Data> => {
+  const account = privateKeyToAccount(pk);
+  const signature = await account.signMessage({ 
+    message: msg,
+  });
+  return signature;
 };

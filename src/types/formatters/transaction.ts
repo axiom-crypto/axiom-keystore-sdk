@@ -1,6 +1,6 @@
 import { BaseTransaction, DepositTransaction, L2Transaction, TransactionOrHash, TransactionType, UpdateTransaction, WithdrawTransaction } from "../transaction";
 import { BaseTransactionRpc, DepositTransactionRpc, L2TransactionRpc, TransactionOrHashRpc, UpdateTransactionRpc, WithdrawTransactionRpc } from "../rpc/transaction";
-import { KeystoreAccountBuilder } from "../../transaction";
+import { KeystoreAccountBuilder } from "../../account";
 
 export function formatTransactionOrHash(rpcObj: TransactionOrHashRpc): TransactionOrHash {
   if (typeof rpcObj === 'string') {
