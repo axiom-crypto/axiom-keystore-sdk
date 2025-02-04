@@ -186,7 +186,7 @@ export class UpdateTransactionBuilder {
       throw new Error("Invalid transaction type");
     }
 
-    let isL1Initiated = bytes[1] != 0;
+    const isL1Initiated = bytes[1] != 0;
     if (isL1Initiated) {
       throw new Error("cannot decode L1 initiated transaction");
     }

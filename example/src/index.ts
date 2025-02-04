@@ -1,6 +1,6 @@
 import { generateRandomHex } from "@axiom-crypto/keystore-sdk/src/utils/random";
 import { AXIOM_ACCOUNT, AXIOM_ACCOUNT_AUTH_INPUTS, M_OF_N_ECDSA_VKEY, AuthenticationStatusEnum, BlockTag, KeystoreAccountBuilder, KeystoreNodeProvider, KeystoreSequencerProvider, KeystoreSignatureProverProvider, SAMPLE_USER_CODE_HASH, SponsorAuthInputs, TransactionStatus, UpdateTransactionBuilder, UpdateTransactionRequest, calcDataHash, Data } from "@axiom-crypto/keystore-sdk/src";
-import { Hex, stringToHex } from "viem";
+import { stringToHex } from "viem";
 
 const NODE_URL = "http://keystore-rpc-node.axiom.xyz";
 const SIGNATURE_PROVER_URL = "http://keystore-rpc-signatureprover.axiom.xyz";

@@ -37,8 +37,8 @@ describe("ecdsa", () => {
     const updateTx = UpdateTransactionBuilder.fromTransactionRequest(txReq);
     const signature = await updateTx.sign(pk);
     
-    let account = privateKeyToAccount(pk);
-    let sigCmp = await account.signTypedData({
+    const account = privateKeyToAccount(pk);
+    const sigCmp = await account.signTypedData({
       domain: DOMAIN,
       types: UPDATE_TYPES,
       primaryType: "Update",
