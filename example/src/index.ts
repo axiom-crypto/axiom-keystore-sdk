@@ -1,6 +1,6 @@
 import { generateRandomHex } from "@axiom-crypto/keystore-sdk/src/utils/random";
 import { AXIOM_ACCOUNT, AXIOM_ACCOUNT_AUTH_INPUTS, M_OF_N_ECDSA_VKEY, AuthenticationStatusEnum, BlockTag, KeystoreAccountBuilder, KeystoreNodeProvider, KeystoreSequencerProvider, KeystoreSignatureProverProvider, SAMPLE_USER_CODE_HASH, SponsorAuthInputs, TransactionStatus, UpdateTransactionBuilder, UpdateTransactionRequest, calcDataHash, Data } from "@axiom-crypto/keystore-sdk/src";
-import { hexToBigInt, recoverAddress, stringToHex } from "viem";
+import { Hex, stringToHex } from "viem";
 
 const NODE_URL = "http://keystore-rpc-node.axiom.xyz";
 const SIGNATURE_PROVER_URL = "http://keystore-rpc-signatureprover.axiom.xyz";
@@ -17,6 +17,7 @@ async function main() {
   const salt = generateRandomHex(32);
   const dataHash = calcDataHash(SAMPLE_USER_CODE_HASH, 1n, [eoaAddr]);
   const userAcct = KeystoreAccountBuilder.initCounterfactual(salt, dataHash, M_OF_N_ECDSA_VKEY);
+  console.log("User account:", userAcct);
 
   const nodeProvider = new KeystoreNodeProvider(NODE_URL);
   const nonce = await nodeProvider.getTransactionCount(userAcct.keystoreAddress, BlockTag.Latest);
@@ -25,13 +26,14 @@ async function main() {
   const feePerGas = await sequencerProvider.gasPrice();
 
   const txReq: UpdateTransactionRequest = {
-    nonce: hexToBigInt(nonce),
-    feePerGas: hexToBigInt(feePerGas),
+    nonce,
+    feePerGas,
     newUserData: stringToHex("newUserData"), // placeholder
     newUserVkey: M_OF_N_ECDSA_VKEY,
     userAcct,
     sponsorAcct: AXIOM_ACCOUNT,
   };
+  console.log("Transaction request:", txReq);
   const updateTx = UpdateTransactionBuilder.fromTransactionRequest(txReq);
   const userSig: Data = await updateTx.sign(privateKey);
 
@@ -93,7 +95,7 @@ async function main() {
         return;
       }
       console.log(`Checking transaction status again in ${RETRY_INTERVAL_SEC} seconds`);
-    } catch (err) {
+    } catch {
       console.log("Transaction not yet included in block");
     }
     await new Promise(resolve => setTimeout(resolve, RETRY_INTERVAL_SEC * 1000));

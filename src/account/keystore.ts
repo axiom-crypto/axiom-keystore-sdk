@@ -10,15 +10,6 @@ import {
 } from "viem";
 import { Bytes32, Data, Hash, KeystoreAddress } from "../types/primitives";
 
-export function encodeKeystoreAccount(acct: KeystoreAccount): Hex {
-  const keystoreAddress = hexToBytes(acct.keystoreAddress, { size: 32 });
-  const salt = hexToBytes(acct.salt, { size: 32 });
-  const dataHash = hexToBytes(acct.dataHash, { size: 32 });
-  const vkey = hexToBytes(acct.vkey);
-
-  return bytesToHex(RLP.encode([keystoreAddress, salt, dataHash, vkey]));
-}
-
 export class KeystoreAccountBuilder implements KeystoreAccount {
   keystoreAddress: `0x${string}`;
   salt: `0x${string}`;
@@ -64,5 +55,21 @@ export class KeystoreAccountBuilder implements KeystoreAccount {
     const vkeyHash = keccak256(vkey);
     const keystoreAddress = keccak256(concat([paddedSalt, paddedDataHash, vkeyHash]));
     return new this(keystoreAddress, paddedSalt, paddedDataHash, vkey);
+  }
+
+  static rlpDecode(hex: Hex): KeystoreAccount {
+    const bytes = hexToBytes(hex);
+    const rlpDecoded = RLP.decode(bytes);
+
+    const keystoreAddress = bytesToHex(rlpDecoded[0] as Uint8Array);
+    const salt = bytesToHex(rlpDecoded[1] as Uint8Array);
+    const dataHash = bytesToHex(rlpDecoded[2] as Uint8Array);
+    const vkey = bytesToHex(rlpDecoded[3] as Uint8Array);
+
+    return new this(keystoreAddress, salt, dataHash, vkey);
+  }
+
+  public rlpEncode(): Hex {
+    return bytesToHex(RLP.encode([this.keystoreAddress, this.salt, this.dataHash, this.vkey]));
   }
 }

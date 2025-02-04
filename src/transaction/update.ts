@@ -16,7 +16,6 @@ import { Data, Hash } from "../types/primitives";
 import { ecdsaSign } from "../utils/ecdsa";
 import { DOMAIN, UPDATE_TYPES } from "./descriptors";
 import { KeystoreAccountBuilder } from "../account";
-import { encodeKeystoreAccount } from "../account/keystore";
 
 export class UpdateTransactionBuilder {
   private readonly isL1Initiated: Hex
@@ -73,7 +72,7 @@ export class UpdateTransactionBuilder {
     const userAcct = new KeystoreAccountBuilder(txReq.userAcct.keystoreAddress, txReq.userAcct.salt, txReq.userAcct.dataHash, txReq.userAcct.vkey);
     const userProof = "0x";
     const sponsorAcctBytes = txReq.sponsorAcct
-      ? encodeKeystoreAccount(txReq.sponsorAcct)
+      ? new KeystoreAccountBuilder(txReq.sponsorAcct.keystoreAddress, txReq.sponsorAcct.salt, txReq.sponsorAcct.dataHash, txReq.sponsorAcct.vkey).rlpEncode()
       : "0x";
     const sponsorProof = "0x";
 

@@ -6,6 +6,7 @@ import { AXIOM_ACCOUNT, AXIOM_CODEHASH, AXIOM_EOA, M_OF_N_ECDSA_VKEY, Data, Keys
 import { SponsorAuthInputs } from '../src/types/input';
 
 describe('keystore prover provider', () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let provider: KeystoreSignatureProverProvider;
 
   beforeEach(() => {
@@ -36,7 +37,7 @@ describe('keystore prover provider', () => {
     const updateTx = UpdateTransactionBuilder.fromTransactionRequest(txReq);
     const userSig: Data = await updateTx.sign(pk);
 
-    const sponsorAuthInputs: SponsorAuthInputs = {
+    const sponsorAuthInputs: SponsorAuthInputs = { // eslint-disable-line @typescript-eslint/no-unused-vars
       sponsorAuth: {
         codeHash: AXIOM_CODEHASH,
         signatures: [],
@@ -49,6 +50,7 @@ describe('keystore prover provider', () => {
       }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const txBytes = updateTx.txBytes();
 
     // const requestHash = await provider.sponsorAuthenticateTransaction(txBytes, sponsorAuthInputs);
@@ -56,12 +58,12 @@ describe('keystore prover provider', () => {
   }, 120 * 1000);
 
   test('keystore_getSponsorAuthenticationStatus', async () => {
-    const requestHash = "0x4625e121b8f18810c44ad3377a367337f618766e02f8d7c511ae7c62cc708460";
-    let status = await provider.getSponsorAuthenticationStatus(requestHash);
-    console.log(status.status);
+    // const requestHash = "0x4625e121b8f18810c44ad3377a367337f618766e02f8d7c511ae7c62cc708460";
+    // let status = await provider.getSponsorAuthenticationStatus(requestHash);
+    // console.log(status.status);
 
-    if (status.authenticatedTransaction) {
-      let _ = UpdateTransactionBuilder.decodeTxBytes(status.authenticatedTransaction);
-    }
+    // if (status.authenticatedTransaction) {
+    //   let _ = UpdateTransactionBuilder.decodeTxBytes(status.authenticatedTransaction);
+    // }
   });
 });

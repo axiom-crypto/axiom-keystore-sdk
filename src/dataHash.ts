@@ -13,7 +13,7 @@ import { encodeAbiParameters, encodePacked, Hex, keccak256 } from "viem";
  * @returns The data hash
  */
 export function calcDataHash(codeHash: Hex, m: bigint, signersList: Hex[]): Hex {
-  let data_hash_data = encodeMOfNData(codeHash, m, signersList);
+  const data_hash_data = encodeMOfNData(codeHash, m, signersList);
   return keccak256(data_hash_data);
 }
 

@@ -44,8 +44,14 @@ export type DepositTransaction = BaseTransaction & {
 export type WithdrawTransaction = BaseTransaction & {
   isL1Initiated: boolean;
   nonce: Quantity;
-  feePerGas: Data;
-  l1InitiatedNonce: Data;
+  /**
+   * If the transaction is L1 initiated, this will be undefined.
+   */
+  feePerGas: Quantity | undefined;
+  /**
+   * If the transaction is NOT L1 initiated, this will be undefined.
+   */
+  l1InitiatedNonce: Quantity | undefined;
   to: L1Address;
   amt: Quantity;
   userAcct: KeystoreAccount;
@@ -58,14 +64,26 @@ export type WithdrawTransaction = BaseTransaction & {
 export type UpdateTransaction = BaseTransaction & {
   isL1Initiated: boolean;
   nonce: Quantity;
-  feePerGas: Data;
-  l1InitiatedNonce: Data;
+  /**
+   * If the transaction is L1 initiated, this will be undefined.
+   */
+  feePerGas: Quantity | undefined;
+  /**
+   * If the transaction is NOT L1 initiated, this will be undefined.
+   */
+  l1InitiatedNonce: Quantity | undefined;
   newUserData: Data;
   newUserVkey: Data;
   userAcct: KeystoreAccount;
   userProof: Data;
-  sponsorAcctBytes: Data;
-  sponsorProof: Data;
+  /**
+   * If the transaction is NOT sponsored, this will be undefined.
+   */
+  sponsorAcct: KeystoreAccount | undefined;
+  /**
+   * If the transaction is NOT sponsored, this will be undefined.
+   */
+  sponsorProof: Data | undefined;
 }
 
 export enum TransactionType {
