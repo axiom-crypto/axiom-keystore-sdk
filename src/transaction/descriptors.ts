@@ -4,13 +4,13 @@ export const DOMAIN = {
   name: 'AxiomKeystore',
   version: '1',
   chainId: KEYSTORE_CHAIN_ID,
-}
+} as const;
 
 export const EIP712_DOMAIN_TYPES = [
   { "name": "name", "type": "string" },
   { "name": "version", "type": "string" },
   { "name": "chainId", "type": "uint256" }
-];
+] as const;
 
 export const UPDATE_TYPES = {
   "EIP712Domain": EIP712_DOMAIN_TYPES,
@@ -21,4 +21,4 @@ export const UPDATE_TYPES = {
     { "name": "newUserData", "type": "bytes" },
     { "name": "newUserVkey", "type": "bytes" }
   ]
-};
+} as const;

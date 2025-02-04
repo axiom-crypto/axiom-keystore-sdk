@@ -41,7 +41,7 @@
     "@open-rpc/client-js": "^1.8.1",
     "dotenv": "^16.4.7",
     "ts-node": "^10.9.2",
-    "viem": "^2.22.15"
+    "viem": "link:../tmp/viem/src"
   },
   "publishConfig": {
     "directory": "dist",

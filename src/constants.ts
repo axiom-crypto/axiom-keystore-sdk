@@ -4,7 +4,7 @@ import { AuthInputs } from "./types/input";
 
 export const SAMPLE_USER_CODE_HASH = "0x595b7552e60f6430c898abc2b292aa805e94834a576f57969406940f6d12d4d9";
 
-export const KEYSTORE_CHAIN_ID = 999999999;
+export const KEYSTORE_CHAIN_ID = 999999999n;
 
 export const NODE_URL = "http://keystore-rpc-node.axiom.xyz";
 export const SIGNATURE_PROVER_URL = "http://keystore-rpc-signatureprover.axiom.xyz";
