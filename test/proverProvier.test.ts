@@ -1,11 +1,8 @@
 import { describe, test } from '@jest/globals';
-import { KeystoreSignatureProverProvider } from "../src/provider";
 import { ANVIL_ACCOUNTS, CODE_HASH, SIGNATURE_PROVER_URL } from './testUtils';
 import { Hex, pad } from 'viem';
-import { AXIOM_ACCOUNT, AXIOM_CODEHASH, AXIOM_EOA, M_OF_N_ECDSA_VKEY, Data } from "../src";
 import { calcDataHash } from "../src/dataHash";
-import { UpdateTransactionRequest } from '../src/types/transactionRequest';
-import { KeystoreAccountBuilder, UpdateTransactionBuilder } from '../src/transaction';
+import { AXIOM_ACCOUNT, AXIOM_CODEHASH, AXIOM_EOA, M_OF_N_ECDSA_VKEY, Data, KeystoreAccountBuilder, UpdateTransactionBuilder, UpdateTransactionRequest, KeystoreSignatureProverProvider } from '../src';
 import { SponsorAuthInputs } from '../src/types/input';
 
 describe('keystore prover provider', () => {

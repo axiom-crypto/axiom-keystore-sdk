@@ -33,7 +33,7 @@ async function main() {
     sponsorAcct: AXIOM_ACCOUNT,
   };
   const updateTx = UpdateTransactionBuilder.fromTransactionRequest(txReq);
-  let userSig: Data = await updateTx.sign(privateKey);
+  const userSig: Data = await updateTx.sign(privateKey);
 
   const sponsorAuthInputs: SponsorAuthInputs = {
     sponsorAuth: AXIOM_ACCOUNT_AUTH_INPUTS,

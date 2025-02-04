@@ -16,7 +16,7 @@ describe("ecdsa", () => {
     expect(signature).toBe("0x63fde9fec5d1924c8837bae8f19c632291725fb94bb03fb3e8d89bf6de17f52014e402e5769d27989a73e889c9aa35c7ace790d2b239d8e1d9d07046ae2d44f51c");
   });
 
-  test("should sign EIP-712 message", async () => {
+  test("compare EIP-712 signed message with viem signTypedData", async () => {
     const acct = ANVIL_ACCOUNTS[0];
     const pk = acct.pk;
     const salt = pad("0x01", { size: 32 });
