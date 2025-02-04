@@ -12,7 +12,7 @@ import { encodeAbiParameters, encodePacked, Hex, keccak256 } from "viem";
  * @param signersList - List of authorized signer addresses
  * @returns The data hash
  */
-export function calcDataHash(codeHash: Hex, m: bigint, signersList: Hex[]): Hex {
+export function calcMOfNDataHash(codeHash: Hex, m: bigint, signersList: Hex[]): Hex {
   const data_hash_data = encodeMOfNData(codeHash, m, signersList);
   return keccak256(data_hash_data);
 }
