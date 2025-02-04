@@ -144,7 +144,7 @@ const tx = await nodeProvider.getTransactionByHash(txHash);
 const receipt = await nodeProvider.getTransactionReceipt(txHash);
 
 // get the latest block with full transactions
-const block = await nodeProvider.getBlockByNumber(BlockTag.Latest, true);
+const block = await nodeProvider.getBlockByNumber(BlockTag.Latest, BlockTransactionsKind.Full);
 
 // get account state
 const accountState = await nodeProvider.getStateAt(keystoreAddress, BlockTag.Latest);

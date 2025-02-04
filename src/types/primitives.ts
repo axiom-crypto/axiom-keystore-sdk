@@ -25,10 +25,7 @@ export type Hash = Hex;
  */
 export type Byte = Hex;
 
-/**
- * Represents a number as a hex string (e.g., "0x1").
- */
-export type Quantity = Hex;
+export type Quantity = bigint;
 
 /**
  * Represents "0x"-prefixed 32-byte strings.

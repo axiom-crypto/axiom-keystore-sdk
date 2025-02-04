@@ -17,21 +17,24 @@ describe('KeystoreSequencerProvider', () => {
   });
 
   test('keystore_gasPrice', async () => {
-    const _gasPrice = await provider.gasPrice();
+    const gasPrice = await provider.gasPrice();
+    expect(typeof gasPrice).toBe('bigint');
   });
 
   test('keystore_estimateGas', async () => {
     const tx = UpdateTransactionBuilder.fromTransactionRequest(TEST_TX_REQ);
-    const _gasEstimate = await provider.estimateGas(tx.txBytes());
+    const gasEstimate = await provider.estimateGas(tx.txBytes());
+    expect(typeof gasEstimate).toBe('bigint');
   });
 
   test('keystore_estimateL1DataFee', async () => {
     const tx = UpdateTransactionBuilder.fromTransactionRequest(TEST_TX_REQ);
-    const _l1FeeEstimate = await provider.estimateL1DataFee(tx.txBytes(), BlockTag.Latest);
+    const l1FeeEstimate = await provider.estimateL1DataFee(tx.txBytes(), BlockTag.Latest);
+    expect(typeof l1FeeEstimate).toBe('bigint');
   });
 
   test('keystore_call', async () => {
     const tx = UpdateTransactionBuilder.fromTransactionRequest(TEST_TX_REQ);
-    const _callResult = await provider.call(tx.txBytes(), BlockTag.Latest);
+    await provider.call(tx.txBytes(), BlockTag.Latest);
   });
 });

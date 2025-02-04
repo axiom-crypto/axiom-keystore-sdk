@@ -1,9 +1,9 @@
 import { describe, test, expect } from '@jest/globals';
 import { KeystoreNodeProvider } from "../src/provider";
-import { BlockTag } from "../src/types/block";
+import { BlockTag, BlockTransactionsKind } from "../src/types/block";
 import { GetTransactionReceiptResponse } from "../src/types/response";
-import { TransactionStatus } from "../src/types/transaction";
-import { AXIOM_ACCOUNT_ADDRESS, EMPTY_HEX, EXISTING_BLOCK_HASH, EXISTING_TX_HASH, NODE_URL, NON_EXISTENT_BLOCK_HASH, NON_EXISTENT_TX_HASH, NON_EXISTING_ACCOUNT_ADDRESS, ZERO_BYTES32 } from './testUtils';
+import { TransactionStatus, UpdateTransaction } from "../src/types/transaction";
+import { AXIOM_ACCOUNT_ADDRESS, EMPTY_HEX, EXISTING_BLOCK_HASH, NON_SPONSORED_UPDATE_TX_HASH, NODE_URL, NON_EXISTENT_BLOCK_HASH, NON_EXISTENT_TX_HASH, NON_EXISTING_ACCOUNT_ADDRESS, ZERO_BYTES32, SPONSORED_UPDATE_TX_HASH } from './testUtils';
 
 describe('keystore node provider', () => {
   let provider: KeystoreNodeProvider;
@@ -19,15 +19,16 @@ describe('keystore node provider', () => {
   });
 
   test('keystore_blockNumber', async () => {
-    await provider.getBlockNumber();
+    const resp = await provider.blockNumber();
+    expect(typeof resp).toBe('bigint');
   });
 
   test('keystore_getBalance', async () => {
     const balance1 = await provider.getBalance(AXIOM_ACCOUNT_ADDRESS, BlockTag.Latest);
-    expect(BigInt(balance1)).toBeGreaterThan(0n);
+    expect(balance1).toBeGreaterThan(0n);
 
     const balance2 = await provider.getBalance(NON_EXISTING_ACCOUNT_ADDRESS, BlockTag.Latest);
-    expect(BigInt(balance2)).toBe(0n);
+    expect(balance2).toBe(0n);
   });
 
   test('keystore_getStateAt', async () => {
@@ -46,10 +47,10 @@ describe('keystore node provider', () => {
 
   test('keystore_getTransactionCount', async () => {
     const nonce1 = await provider.getTransactionCount(AXIOM_ACCOUNT_ADDRESS, BlockTag.Latest);
-    expect(BigInt(nonce1)).toBeGreaterThan(0n);
+    expect(nonce1).toBeGreaterThan(0n);
 
     const nonce2 = await provider.getTransactionCount(NON_EXISTING_ACCOUNT_ADDRESS, BlockTag.Latest);
-    expect(BigInt(nonce2)).toBe(0n);
+    expect(nonce2).toBe(0n);
   });
 
   test('keystore_getProof', async () => {
@@ -61,43 +62,62 @@ describe('keystore node provider', () => {
   });
 
   test('keystore_getTransactionByHash', async () => {
-    const tx = await provider.getTransactionByHash(EXISTING_TX_HASH);
-    expect(tx.hash).toBe(EXISTING_TX_HASH);
+    const tx1 = await provider.getTransactionByHash(NON_SPONSORED_UPDATE_TX_HASH) as UpdateTransaction;
+    expect(tx1.hash).toBe(NON_SPONSORED_UPDATE_TX_HASH);
+    expect(tx1.sponsorAcct).toBeUndefined();
+    expect(tx1.sponsorProof).toBeUndefined();
+
+    const tx2 = await provider.getTransactionByHash(SPONSORED_UPDATE_TX_HASH) as UpdateTransaction;
+    expect(tx2.hash).toBe(SPONSORED_UPDATE_TX_HASH);
+    expect(tx2.sponsorAcct).toBeDefined();
+    expect(tx2.sponsorProof).toBeDefined();
 
     await expect(provider.getTransactionByHash(NON_EXISTENT_TX_HASH))
       .rejects.toThrow();
   });
 
   test('keystore_getTransactionReceipt', async () => {
-    const receipt: GetTransactionReceiptResponse = await provider.getTransactionReceipt(EXISTING_TX_HASH);
+    const receipt: GetTransactionReceiptResponse = await provider.getTransactionReceipt(NON_SPONSORED_UPDATE_TX_HASH);
     expect(receipt.status).toBe(TransactionStatus.L2FinalizedL1Included);
 
     await expect(provider.getTransactionReceipt(NON_EXISTENT_TX_HASH)).rejects.toThrow();
   });
 
   test('keystore_getBlockNumberByStateRoot', async () => {
-    const block = await provider.getBlockByNumber(BlockTag.Latest, false);
+    const block = await provider.getBlockByNumber(BlockTag.Latest, BlockTransactionsKind.Hashes);
     const blockNumber = await provider.getBlockNumberByStateRoot(block.stateRoot);
     expect(blockNumber).toBe(block.number);
   });
 
   test('keystore_getBlockByNumber', async () => {
-    await provider.getBlockByNumber(BlockTag.Latest, false);
-    await provider.getBlockByNumber(BlockTag.Latest, true);
+    const block1 = await provider.getBlockByNumber(BlockTag.Latest, BlockTransactionsKind.Full);
+    expect(typeof block1.number).toBe('bigint');
+    expect(block1.transactions).toBeDefined();
+    expect(block1.transactions).not.toHaveLength(0);
+    expect(typeof block1.transactions![0]).not.toBe('string');
 
-    await provider.getBlockByNumber(BlockTag.Committed, false);
+    const block2 = await provider.getBlockByNumber(BlockTag.Latest, BlockTransactionsKind.Hashes);
+    expect(block2.transactions).toBeDefined();
+    expect(block2.transactions).not.toHaveLength(0);
+    expect(typeof block2.transactions![0]).toBe('string');
 
-    await provider.getBlockByNumber(BlockTag.Finalized, false);
+    await provider.getBlockByNumber(BlockTag.Committed, BlockTransactionsKind.Hashes);
 
-    await provider.getBlockByNumber(BlockTag.Earliest, false);
+    await provider.getBlockByNumber(BlockTag.Finalized, BlockTransactionsKind.Hashes);
+
+    await provider.getBlockByNumber(BlockTag.Earliest, BlockTransactionsKind.Hashes);
+
+    await provider.getBlockByNumber(1n, BlockTransactionsKind.Hashes);
+
+    await provider.getBlockByNumber(0n, BlockTransactionsKind.Hashes);
   });
 
   test('keystore_getBlockByHash', async () => {
-    await provider.getBlockByHash(EXISTING_BLOCK_HASH, false);
+    await provider.getBlockByHash(EXISTING_BLOCK_HASH, BlockTransactionsKind.Hashes);
 
-    await provider.getBlockByHash(EXISTING_BLOCK_HASH, true);
+    await provider.getBlockByHash(EXISTING_BLOCK_HASH, BlockTransactionsKind.Full);
 
-    await expect(provider.getBlockByHash(NON_EXISTENT_BLOCK_HASH, false))
+    await expect(provider.getBlockByHash(NON_EXISTENT_BLOCK_HASH, BlockTransactionsKind.Hashes))
       .rejects.toThrow();
   });
 });
