@@ -12,7 +12,7 @@ import {
   hexToBigInt,
   hashTypedData,
 } from "viem";
-import { Data, Hash } from "../types/primitives";
+import { Bytes32, Data, Hash } from "../types/primitives";
 import { ecdsaSign } from "../utils/ecdsa";
 import { DOMAIN, UPDATE_TYPES } from "./descriptors";
 import { KeystoreAccountBuilder } from "../account";
@@ -162,7 +162,7 @@ export class UpdateTransactionBuilder {
    * @param pk - The private key to sign with
    * @returns The signature
    */
-  public async sign(pk: Hash): Promise<Data> {
+  public async sign(pk: Bytes32): Promise<Data> {
     const hash = this.userMsgHash();
     const signature = await ecdsaSign(pk, hash);
     return signature;

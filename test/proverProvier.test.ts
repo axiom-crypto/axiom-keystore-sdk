@@ -1,7 +1,7 @@
 import { describe, test } from '@jest/globals';
 import { ANVIL_ACCOUNTS, CODE_HASH, SIGNATURE_PROVER_URL } from './testUtils';
 import { Hex, pad } from 'viem';
-import { calcDataHash } from "../src/dataHash";
+import { calcMOfNDataHash } from "../src/dataHash";
 import { AXIOM_ACCOUNT, AXIOM_CODEHASH, AXIOM_EOA, M_OF_N_ECDSA_VKEY, Data, KeystoreAccountBuilder, UpdateTransactionBuilder, UpdateTransactionRequest, KeystoreSignatureProverProvider } from '../src';
 import { SponsorAuthInputs } from '../src/types/input';
 
@@ -21,7 +21,7 @@ describe('keystore prover provider', () => {
     const eoaAddr = ANVIL_ACCOUNTS[0].addr as Hex;
 
     const userCodeHash = CODE_HASH;
-    const dataHash = calcDataHash(userCodeHash, 1n, [eoaAddr]);
+    const dataHash = calcMOfNDataHash(userCodeHash, 1n, [eoaAddr]);
     const userAcct = KeystoreAccountBuilder.initCounterfactual(salt, dataHash, vk);
 
     const sponsorAcct = AXIOM_ACCOUNT;

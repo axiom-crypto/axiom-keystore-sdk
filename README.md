@@ -19,19 +19,13 @@ To create a new keystore account, follow these steps:
 ```typescript
 // Initialize a counterfactual keystore account
 const acct = KeystoreAccountBuilder.initCounterfactual(salt, dataHash, vkey);
-
-// Initialize a keystore account with a known keystore address
-const acct = KeystoreAccountBuilder.initWithKeystoreAddress(
-  keystoreAddress,
-  dataHash,
-  vkey
-);
 ```
 
+// Initialize a keystore account with a known keystore address
 If you already have the `keystoreAddress`, you can create the account as follows:
 
 ```typescript
-const acct = KeystoreAccountBuilder.withKeystoreAddress(
+const acct = KeystoreAccountBuilder.initWithKeystoreAddress(
   keystoreAddress,
   dataHash,
   vkey
@@ -166,7 +160,10 @@ const tx = await nodeProvider.getTransactionByHash(txHash);
 const receipt = await nodeProvider.getTransactionReceipt(txHash);
 
 // get the latest block with full transactions
-const block = await nodeProvider.getBlockByNumber(BlockTag.Latest, BlockTransactionsKind.Full);
+const block = await nodeProvider.getBlockByNumber(
+  BlockTag.Latest,
+  BlockTransactionsKind.Full
+);
 
 // get account state
 const accountState = await nodeProvider.getStateAt(

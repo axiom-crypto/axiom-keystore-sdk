@@ -2,7 +2,7 @@ import { describe, test, expect } from '@jest/globals';
 import { ecdsaSignMsg } from "../src/utils/ecdsa";
 import { ANVIL_ACCOUNTS } from "./testUtils";
 import { UpdateTransactionRequest } from '../src/types/transactionRequest';
-import { AXIOM_ACCOUNT, M_OF_N_ECDSA_VKEY, calcDataHash, KeystoreAccountBuilder, SAMPLE_USER_CODE_HASH, UpdateTransactionBuilder } from '../src';
+import { AXIOM_ACCOUNT, M_OF_N_ECDSA_VKEY, calcMOfNDataHash, KeystoreAccountBuilder, SAMPLE_USER_CODE_HASH, UpdateTransactionBuilder } from '../src';
 import { pad, hexToBigInt } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { DOMAIN, UPDATE_TYPES } from '../src/transaction/descriptors';
@@ -20,7 +20,7 @@ describe("ecdsa", () => {
     const acct = ANVIL_ACCOUNTS[0];
     const pk = acct.pk;
     const salt = pad("0x01", { size: 32 });
-    const dataHash = calcDataHash(SAMPLE_USER_CODE_HASH, 1n, [acct.addr]);
+    const dataHash = calcMOfNDataHash(SAMPLE_USER_CODE_HASH, 1n, [acct.addr]);
     const userAcct = KeystoreAccountBuilder.initCounterfactual(salt, dataHash, M_OF_N_ECDSA_VKEY);
 
     const nonce = 1n;

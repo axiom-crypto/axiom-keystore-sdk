@@ -14,7 +14,7 @@ import { encodeAbiParameters, encodePacked, Hex, keccak256 } from "viem";
  */
 export function calcMOfNDataHash(codeHash: Hex, m: bigint, signersList: Hex[]): Hex {
   const mOfNData = encodeMOfNData(codeHash, m, signersList);
-  return keccak256(data_hash_data);
+  return keccak256(mOfNData);
 }
 
 /**
