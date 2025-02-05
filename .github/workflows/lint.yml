@@ -41,6 +41,8 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Format
+        run: npx prettier . --check
+
       - name: Lint
         run: pnpm run lint
-
