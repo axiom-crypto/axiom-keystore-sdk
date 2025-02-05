@@ -65,7 +65,7 @@ export class UpdateTransactionBuilder {
   public static fromTransactionRequest(txReq: UpdateTransactionRequest) {
     const isL1Initiated = boolToHex(false, { size: 1 });
     const nonce = txReq.nonce;
-    const feePerGas = numberToHex(txReq.feePerGas, { size: 32 });
+    const feePerGas = numberToHex(txReq.feePerGas);
     const l1InitiatedNonce = "0x";
     const newUserData = txReq.newUserData;
     const newUserVkey = txReq.newUserVkey;
