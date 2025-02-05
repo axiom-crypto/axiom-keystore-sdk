@@ -24,7 +24,7 @@ describe("ecdsa", () => {
     const userAcct = KeystoreAccountBuilder.initCounterfactual(salt, dataHash, M_OF_N_ECDSA_VKEY);
 
     const nonce = 1n;
-    const feePerGas = pad("0x64", { size: 32 });
+    const feePerGas = "0x64";
     const newUserData = "0x0101010101010101";
     const txReq: UpdateTransactionRequest = {
       nonce,
