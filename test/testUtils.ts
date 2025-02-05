@@ -22,7 +22,7 @@ export const NODE_URL = "http://keystore-rpc-node.axiom.xyz";
 export const SIGNATURE_PROVER_URL = "http://keystore-rpc-signatureprover.axiom.xyz";
 export const SEQUENCER_URL = "http://keystore-rpc-sequencer.axiom.xyz";
 
-export const AXIOM_ACCOUNT_ADDRESS = "0xc3a9b82816196f3f5692dda37ee242839ce86357dc06a205ce04da56a3651e06";
+export const AXIOM_ACCOUNT_ADDRESS = "0x17fda3a85e8162f13219f485220d258b013438fcc0b031ef9651c610c1ef2437";
 export const NON_EXISTING_ACCOUNT_ADDRESS = "0x1111111111111111111111111111111111111111111111111111111111111111";
 
 export const NON_SPONSORED_UPDATE_TX_HASH = "0x3e9fe5542eda9ea70da8f12141f19629f281ef92f2458188b1c206e13c2430cc";
