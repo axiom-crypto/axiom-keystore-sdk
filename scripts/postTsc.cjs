@@ -9,7 +9,10 @@ function copyPackageJson() {
   delete packageJsonCopy.scripts;
   delete packageJsonCopy.devDependencies;
   delete packageJsonCopy.publishConfig;
-  fs.writeFileSync('./dist/package.json', JSON.stringify(packageJsonCopy, null, 2));
+  fs.writeFileSync(
+    "./dist/package.json",
+    JSON.stringify(packageJsonCopy, null, 2),
+  );
 }
 
 function copyReadme() {

@@ -9,13 +9,13 @@ export type BaseTransactionRpc = {
   transactionIndex: HexQuantity;
   blockHash: Hash;
   blockNumber: HexQuantity;
-}
+};
 
 export type DepositTransactionRpc = BaseTransactionRpc & {
   l1InitiatedNonce: HexQuantity;
   amt: HexQuantity;
   keystoreAddress: KeystoreAddress;
-}
+};
 
 export type WithdrawTransactionRpc = BaseTransactionRpc & {
   isL1Initiated: boolean;
@@ -26,7 +26,7 @@ export type WithdrawTransactionRpc = BaseTransactionRpc & {
   amt: HexQuantity;
   userAcct: KeystoreAccount;
   userProof: Data;
-}
+};
 
 export type UpdateTransactionRpc = BaseTransactionRpc & {
   isL1Initiated: boolean;
@@ -39,7 +39,7 @@ export type UpdateTransactionRpc = BaseTransactionRpc & {
   userProof: Data;
   sponsorAcctBytes: Data;
   sponsorProof: Data;
-}
+};
 
 export type L2TransactionRpc =
   | ({ type: TransactionType.Deposit } & DepositTransactionRpc)

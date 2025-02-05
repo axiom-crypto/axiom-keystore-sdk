@@ -5,42 +5,45 @@ import { encodeAbiParameters, encodePacked, Hex, keccak256 } from "viem";
  * Data hash is computed as:
  * ```
  * data_hash = keccak256(abi.encodePacked(0x00, abi.encode(codehash, m, signersList[])))
- * ``` 
- * 
+ * ```
+ *
  * @param codeHash - Hash of the keystore contract code
  * @param m - Threshold number of required signers
  * @param signersList - List of authorized signer addresses
  * @returns The data hash
  */
-export function calcMOfNDataHash(codeHash: Hex, m: bigint, signersList: Hex[]): Hex {
+export function calcMOfNDataHash(
+  codeHash: Hex,
+  m: bigint,
+  signersList: Hex[],
+): Hex {
   const mOfNData = encodeMOfNData(codeHash, m, signersList);
   return keccak256(mOfNData);
 }
 
 /**
  * Encodes the data hash data for the keystore account.
- * 
+ *
  * @param codeHash - Hash of the keystore contract code
  * @param m - Threshold number of required signers
  * @param signersList - List of authorized signer addresses
  * @returns The encoded data hash data
  */
-export function encodeMOfNData(codeHash: Hex, m: bigint, signersList: Hex[]): Hex {
+export function encodeMOfNData(
+  codeHash: Hex,
+  m: bigint,
+  signersList: Hex[],
+): Hex {
   const encoded = encodeAbiParameters(
     [
-      { name: 'codeHash', type: 'bytes32' },
-      { name: 'm', type: 'uint256' },
-      { name: 'signerList', type: 'address[]' }
+      { name: "codeHash", type: "bytes32" },
+      { name: "m", type: "uint256" },
+      { name: "signerList", type: "address[]" },
     ],
-    [
-      codeHash, m, signersList
-    ]
+    [codeHash, m, signersList],
   );
 
-  const packedEncoded = encodePacked(
-    ['bytes1', 'bytes'],
-    ['0x00', encoded]
-  );
+  const packedEncoded = encodePacked(["bytes1", "bytes"], ["0x00", encoded]);
 
   return packedEncoded;
 }

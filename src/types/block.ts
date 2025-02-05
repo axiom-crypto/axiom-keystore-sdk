@@ -29,7 +29,7 @@ export type L1BlockRef = {
   number: Quantity;
   parentHash: Hash;
   timestamp: Quantity;
-}
+};
 
 /**
  * L2 block reference, containing additional fields like
@@ -47,4 +47,4 @@ export type L2BlockRef = {
   l1Origin?: Quantity;
   source?: Byte;
   transactions?: TransactionOrHash[];
-}
+};

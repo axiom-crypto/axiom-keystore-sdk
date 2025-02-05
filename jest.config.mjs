@@ -1,26 +1,24 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 // import { createDefaultPreset } from 'ts-jest';
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config({
-  path: '.env'
+  path: ".env",
 });
-  
+
 export default {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  extensionsToTreatAsEsm: ['.ts'],
+  preset: "ts-jest",
+  testEnvironment: "node",
+  extensionsToTreatAsEsm: [".ts"],
   transform: {
-    '^.+\\.tsx?$': [
-      'ts-jest',
+    "^.+\\.tsx?$": [
+      "ts-jest",
       {
         useESM: true,
-        tsconfig: './tsconfig.test.json'
-      }
-    ]
+        tsconfig: "./tsconfig.test.json",
+      },
+    ],
   },
   modulePathIgnorePatterns: ["<rootDir>/dist/"],
-  transformIgnorePatterns: [
-    "/node_modules/(?!(@noble)/).*"
-  ],
+  transformIgnorePatterns: ["/node_modules/(?!(@noble)/).*"],
 };

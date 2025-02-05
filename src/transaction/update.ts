@@ -18,19 +18,19 @@ import { DOMAIN, UPDATE_TYPES } from "./descriptors";
 import { KeystoreAccountBuilder } from "../account";
 
 export class UpdateTransactionBuilder {
-  private readonly isL1Initiated: Hex
-  private readonly nonce: bigint
-  private readonly feePerGas: Hex
-  private readonly l1InitiatedNonce: Hex
-  private readonly newUserData: Hex
-  private readonly newUserVkey: Hex
-  private readonly userAcct: KeystoreAccount
-  private readonly userProof: Hex
-  private readonly sponsorAcctBytes: Hex
-  private readonly sponsorProof: Hex
+  private readonly isL1Initiated: Hex;
+  private readonly nonce: bigint;
+  private readonly feePerGas: Hex;
+  private readonly l1InitiatedNonce: Hex;
+  private readonly newUserData: Hex;
+  private readonly newUserVkey: Hex;
+  private readonly userAcct: KeystoreAccount;
+  private readonly userProof: Hex;
+  private readonly sponsorAcctBytes: Hex;
+  private readonly sponsorProof: Hex;
 
-  private _txBytes?: Hex
-  private _txHash?: Hex
+  private _txBytes?: Hex;
+  private _txHash?: Hex;
 
   constructor(
     isL1Initiated: Hex,
@@ -58,7 +58,7 @@ export class UpdateTransactionBuilder {
 
   /**
    * Creates a new UpdateTransactionBuilder from an UpdateTransactionRequest.
-   * 
+   *
    * @param txReq - The transaction request object
    * @returns UpdateTransactionBuilder with the provided transaction request
    */
@@ -69,10 +69,20 @@ export class UpdateTransactionBuilder {
     const l1InitiatedNonce = "0x";
     const newUserData = txReq.newUserData;
     const newUserVkey = txReq.newUserVkey;
-    const userAcct = new KeystoreAccountBuilder(txReq.userAcct.keystoreAddress, txReq.userAcct.salt, txReq.userAcct.dataHash, txReq.userAcct.vkey);
+    const userAcct = new KeystoreAccountBuilder(
+      txReq.userAcct.keystoreAddress,
+      txReq.userAcct.salt,
+      txReq.userAcct.dataHash,
+      txReq.userAcct.vkey,
+    );
     const userProof = "0x";
     const sponsorAcctBytes = txReq.sponsorAcct
-      ? new KeystoreAccountBuilder(txReq.sponsorAcct.keystoreAddress, txReq.sponsorAcct.salt, txReq.sponsorAcct.dataHash, txReq.sponsorAcct.vkey).rlpEncode()
+      ? new KeystoreAccountBuilder(
+          txReq.sponsorAcct.keystoreAddress,
+          txReq.sponsorAcct.salt,
+          txReq.sponsorAcct.dataHash,
+          txReq.sponsorAcct.vkey,
+        ).rlpEncode()
       : "0x";
     const sponsorProof = "0x";
 
@@ -92,7 +102,7 @@ export class UpdateTransactionBuilder {
 
   /**
    * Returns the transaction bytes for the update transaction.
-   * 
+   *
    * @returns The transaction bytes
    */
   public txBytes(): Data {
@@ -108,17 +118,17 @@ export class UpdateTransactionBuilder {
         this.userAcct.vkey,
         this.userProof,
         this.sponsorAcctBytes,
-        this.sponsorProof
+        this.sponsorProof,
       ]);
 
       this._txBytes = encodePacked(
-        ['bytes1', 'bytes1', 'bytes', 'bytes'],
+        ["bytes1", "bytes1", "bytes", "bytes"],
         [
           TransactionType.Update,
           this.isL1Initiated,
           this.l1InitiatedNonce,
           bytesToHex(rlpEncoded),
-        ]
+        ],
       );
     }
     return this._txBytes;
@@ -126,7 +136,7 @@ export class UpdateTransactionBuilder {
 
   /**
    * Returns the transaction hash for the update transaction.
-   * 
+   *
    * @returns The transaction hash
    */
   public txHash(): Hash {
@@ -138,7 +148,7 @@ export class UpdateTransactionBuilder {
 
   /**
    * Returns the user message hash for the update transaction.
-   * 
+   *
    * @returns The user message hash
    */
   public userMsgHash(): Hash {
@@ -158,7 +168,7 @@ export class UpdateTransactionBuilder {
 
   /**
    * Signs the user message hash for the update transaction.
-   * 
+   *
    * @param pk - The private key to sign with
    * @returns The signature
    */
@@ -170,7 +180,7 @@ export class UpdateTransactionBuilder {
 
   /**
    * Decodes the transaction bytes for an update transaction.
-   * 
+   *
    * @param hex - The transaction bytes
    * @returns UpdateTransactionBuilder with the decoded transaction
    */
@@ -206,10 +216,15 @@ export class UpdateTransactionBuilder {
     const sponsorAcctBytes = rlpDecoded[9] as Uint8Array;
     const sponsorProof = rlpDecoded[10] as Uint8Array;
 
-    const userAcct = new KeystoreAccountBuilder(bytesToHex(userAcctKeystoreAddress), bytesToHex(userAcctSalt), bytesToHex(userAcctDataHash), bytesToHex(userAcctVkey));
+    const userAcct = new KeystoreAccountBuilder(
+      bytesToHex(userAcctKeystoreAddress),
+      bytesToHex(userAcctSalt),
+      bytesToHex(userAcctDataHash),
+      bytesToHex(userAcctVkey),
+    );
 
     const nonceHex = bytesToHex(nonce);
-    const nonceBigInt = nonceHex == '0x' ? 0n : hexToBigInt(nonceHex);
+    const nonceBigInt = nonceHex == "0x" ? 0n : hexToBigInt(nonceHex);
 
     return new UpdateTransactionBuilder(
       boolToHex(isL1Initiated, { size: 1 }),

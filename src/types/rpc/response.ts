@@ -14,7 +14,7 @@ export type SyncStatusResponseRpc = {
   currentL1?: L1BlockRefRpc;
   safeL1?: L1BlockRefRpc;
   finalizedL1?: L1BlockRefRpc;
-}
+};
 
 export type VersionResponseRpc = string;
 
@@ -27,20 +27,20 @@ export type GetStateAtResponseRpc = AccountState;
 export type GetProofResponseRpc = {
   state: AccountState;
   proof: ImtProof;
-}
+};
 
 export type GetWithdrawalProofResponseRpc = {
   to: L1Address;
   amt: HexQuantity;
   proof: ImtProof;
-}
+};
 
 export type GetTransactionCountResponseRpc = HexQuantity;
 
 export type CallResponseRpc = {
   success: boolean;
   stateTransitions?: StateTransitionsRpc;
-}
+};
 
 export type EstimateGasResponseRpc = HexQuantity;
 
@@ -70,7 +70,7 @@ export type GetTransactionReceiptResponseRpc = {
   gasPrice?: HexQuantity;
   l1DataFee?: HexQuantity;
   amount?: HexQuantity;
-}
+};
 
 export type GetBlockNumberByStateRootResponseRpc = HexQuantity;
 

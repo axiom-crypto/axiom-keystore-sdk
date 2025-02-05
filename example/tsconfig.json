@@ -9,10 +9,7 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "importHelpers": true,
-    "lib": [
-      "es2020",
-      "es6"
-    ],
+    "lib": ["es2020", "es6"],
     "preserveSymlinks": true,
     "preserveWatchOutput": true,
     "pretty": false,
@@ -20,14 +17,9 @@
     "sourceMap": true,
     "skipLibCheck": true,
     "outDir": "dist",
-    "types": [
-      "node"
-    ]
+    "types": ["node"]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.json"
-  ],
+  "include": ["src/**/*.ts", "src/**/*.json"],
   "exclude": [
     "dist",
     "test",

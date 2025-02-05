@@ -5,5 +5,5 @@ export function generateRandomBytes(length: number): Uint8Array {
 }
 
 export function generateRandomHex(length: number): Hex {
-  return bytesToHex(generateRandomBytes(length))
+  return bytesToHex(generateRandomBytes(length));
 }

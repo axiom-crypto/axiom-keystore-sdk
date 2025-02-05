@@ -3,8 +3,8 @@ import { AccountState, ImtProof, StateTransitions } from "./state";
 import { L1Address, Hash, Data, Quantity } from "./primitives";
 import { L2Transaction, TransactionStatus } from "./transaction";
 
-/** 
- * Sync status response with L2 and L1 references. 
+/**
+ * Sync status response with L2 and L1 references.
  */
 export type SyncStatusResponse = {
   preconfirmedL2?: L2BlockRef;
@@ -13,7 +13,7 @@ export type SyncStatusResponse = {
   currentL1?: L1BlockRef;
   safeL1?: L1BlockRef;
   finalizedL1?: L1BlockRef;
-}
+};
 
 /** Just a type alias for a version string. */
 export type VersionResponse = string;
@@ -27,13 +27,13 @@ export type GetBalanceResponse = Quantity;
 /** A direct alias for retrieving an account state. */
 export type GetStateAtResponse = AccountState;
 
-/** 
- * GetProofResponse includes the account state plus the IMT proof. 
+/**
+ * GetProofResponse includes the account state plus the IMT proof.
  */
 export type GetProofResponse = {
   state: AccountState;
   proof: ImtProof;
-}
+};
 
 /**
  * GetWithdrawalProofResponse includes the L1 target address, amount, and the IMT proof.
@@ -42,7 +42,7 @@ export type GetWithdrawalProofResponse = {
   to: L1Address;
   amt: Quantity;
   proof: ImtProof;
-}
+};
 
 /** A direct alias for retrieving a transaction count. */
 export type GetTransactionCountResponse = Quantity;
@@ -53,7 +53,7 @@ export type GetTransactionCountResponse = Quantity;
 export type CallResponse = {
   success: boolean;
   stateTransitions?: StateTransitions;
-}
+};
 
 export type EstimateGasResponse = Quantity;
 
@@ -73,7 +73,7 @@ export type GetTransactionByBlockHashAndIndexResponse = L2Transaction;
 
 export type GetTransactionByBlockNumberAndIndexResponse = L2Transaction;
 
-/** 
+/**
  * The transaction receipt structure.
  */
 export type GetTransactionReceiptResponse = {
@@ -86,7 +86,7 @@ export type GetTransactionReceiptResponse = {
   gasPrice?: Quantity;
   l1DataFee?: Quantity;
   amount?: Quantity;
-}
+};
 
 export type GetBlockNumberByStateRootResponse = Quantity;
 export type GasPriceResponse = Quantity;
@@ -105,9 +105,9 @@ export type AuthenticationStatus = {
   status: AuthenticationStatusEnum;
   authenticatedTransaction?: Data;
   error?: string;
-}
+};
 
-/** 
+/**
  * Authentication status enum (pending, completed, failed).
  */
 export enum AuthenticationStatusEnum {

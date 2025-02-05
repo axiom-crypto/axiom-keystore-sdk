@@ -1,5 +1,22 @@
 import { generateRandomHex } from "@axiom-crypto/keystore-sdk/src/utils/random";
-import { AXIOM_ACCOUNT, AXIOM_ACCOUNT_AUTH_INPUTS, M_OF_N_ECDSA_VKEY, AuthenticationStatusEnum, BlockTag, KeystoreAccountBuilder, KeystoreNodeProvider, KeystoreSequencerProvider, KeystoreSignatureProverProvider, SAMPLE_USER_CODE_HASH, SponsorAuthInputs, TransactionStatus, UpdateTransactionBuilder, UpdateTransactionRequest, Data, calcMOfNDataHash } from "@axiom-crypto/keystore-sdk/src";
+import {
+  AXIOM_ACCOUNT,
+  AXIOM_ACCOUNT_AUTH_INPUTS,
+  M_OF_N_ECDSA_VKEY,
+  AuthenticationStatusEnum,
+  BlockTag,
+  KeystoreAccountBuilder,
+  KeystoreNodeProvider,
+  KeystoreSequencerProvider,
+  KeystoreSignatureProverProvider,
+  SAMPLE_USER_CODE_HASH,
+  SponsorAuthInputs,
+  TransactionStatus,
+  UpdateTransactionBuilder,
+  UpdateTransactionRequest,
+  Data,
+  calcMOfNDataHash,
+} from "@axiom-crypto/keystore-sdk/src";
 import { stringToHex } from "viem";
 
 const NODE_URL = "http://keystore-rpc-node.axiom.xyz";
@@ -11,16 +28,24 @@ const MAX_RETRIES = 10;
 
 async function main() {
   // anvil keys
-  const privateKey = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+  const privateKey =
+    "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
   const eoaAddr = "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266";
 
   const salt = generateRandomHex(32);
   const dataHash = calcMOfNDataHash(SAMPLE_USER_CODE_HASH, 1n, [eoaAddr]);
-  const userAcct = KeystoreAccountBuilder.initCounterfactual(salt, dataHash, M_OF_N_ECDSA_VKEY);
+  const userAcct = KeystoreAccountBuilder.initCounterfactual(
+    salt,
+    dataHash,
+    M_OF_N_ECDSA_VKEY,
+  );
   console.log("User account:", userAcct);
 
   const nodeProvider = new KeystoreNodeProvider(NODE_URL);
-  const nonce = await nodeProvider.getTransactionCount(userAcct.keystoreAddress, BlockTag.Latest);
+  const nonce = await nodeProvider.getTransactionCount(
+    userAcct.keystoreAddress,
+    BlockTag.Latest,
+  );
 
   const sequencerProvider = new KeystoreSequencerProvider(SEQUENCER_URL);
   const feePerGas = await sequencerProvider.gasPrice();
@@ -42,25 +67,38 @@ async function main() {
     userAuth: {
       codeHash: SAMPLE_USER_CODE_HASH,
       signatures: [userSig],
-      eoaAddrs: [eoaAddr]
-    }
+      eoaAddrs: [eoaAddr],
+    },
   };
   console.log("Sending sponsor authentication request to signature prover");
 
-  const signatureProverProvider = new KeystoreSignatureProverProvider(SIGNATURE_PROVER_URL);
-  const requestHash = await signatureProverProvider.sponsorAuthenticateTransaction(updateTx.txBytes(), sponsorAuthInputs);
+  const signatureProverProvider = new KeystoreSignatureProverProvider(
+    SIGNATURE_PROVER_URL,
+  );
+  const requestHash =
+    await signatureProverProvider.sponsorAuthenticateTransaction(
+      updateTx.txBytes(),
+      sponsorAuthInputs,
+    );
 
   console.log("Request hash:", requestHash);
-  console.log("Waiting for sponsor authentication to complete. This may take several minutes...");
+  console.log(
+    "Waiting for sponsor authentication to complete. This may take several minutes...",
+  );
 
   // polls the request status until it's completed
   const authenticatedTx = await (async () => {
     while (true) {
-      const status = await signatureProverProvider.getSponsorAuthenticationStatus(requestHash);
+      const status =
+        await signatureProverProvider.getSponsorAuthenticationStatus(
+          requestHash,
+        );
       console.log("Sponsor authentication status:", status.status);
       switch (status.status) {
         case AuthenticationStatusEnum.Pending:
-          await new Promise(resolve => setTimeout(resolve, RETRY_INTERVAL_SEC * 1000));
+          await new Promise((resolve) =>
+            setTimeout(resolve, RETRY_INTERVAL_SEC * 1000),
+          );
           continue;
         case AuthenticationStatusEnum.Failed:
           throw new Error("Transaction authentication failed");
@@ -94,13 +132,19 @@ async function main() {
         console.log("Success: transaction finalized!");
         return;
       }
-      console.log(`Checking transaction status again in ${RETRY_INTERVAL_SEC} seconds`);
+      console.log(
+        `Checking transaction status again in ${RETRY_INTERVAL_SEC} seconds`,
+      );
     } catch {
       console.log("Transaction not yet included in block");
     }
-    await new Promise(resolve => setTimeout(resolve, RETRY_INTERVAL_SEC * 1000));
+    await new Promise((resolve) =>
+      setTimeout(resolve, RETRY_INTERVAL_SEC * 1000),
+    );
   }
-  console.log(`Transaction not finalized in ${MAX_RETRIES * RETRY_INTERVAL_SEC} seconds`);
+  console.log(
+    `Transaction not finalized in ${MAX_RETRIES * RETRY_INTERVAL_SEC} seconds`,
+  );
 }
 
-main()
+main();

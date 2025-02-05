@@ -28,7 +28,7 @@ If you already have the `keystoreAddress`, you can create the account as follows
 const acct = KeystoreAccountBuilder.initWithKeystoreAddress(
   keystoreAddress,
   dataHash,
-  vkey
+  vkey,
 );
 ```
 
@@ -97,20 +97,20 @@ Next, submit the transaction bytes along with the authentication inputs to the s
 ```typescript
 // instantiate the signature prover provider
 const signatureProverProvider = new KeystoreSignatureProverProvider(
-  SIGNATURE_PROVER_URL
+  SIGNATURE_PROVER_URL,
 );
 
 // authenticate a non-sponsored transaction
 const requestHash = await signatureProverProvider.authenticateTransaction(
   userTx.txBytes(),
-  sponsorAuthInputs
+  sponsorAuthInputs,
 );
 
 // authenticate a sponsored transaction
 const requestHash =
   await signatureProverProvider.sponsorAuthenticateTransaction(
     sponsoredTx.txBytes(),
-    sponsorAuthInputs
+    sponsorAuthInputs,
   );
 ```
 
@@ -118,14 +118,12 @@ After you receive the request hash, check its status to monitor the progression 
 
 ```typescript
 // check the authentication status of a non-sponsored transaction
-const status = await signatureProverProvider.getAuthenticationStatus(
-  requestHash
-);
+const status =
+  await signatureProverProvider.getAuthenticationStatus(requestHash);
 
 // check the authentication status of a sponsored transaction
-const status = await signatureProverProvider.getSponsorAuthenticationStatus(
-  requestHash
-);
+const status =
+  await signatureProverProvider.getSponsorAuthenticationStatus(requestHash);
 ```
 
 Finally, when the status indicates completion, you can retrieve and use the authenticated transaction:
@@ -162,13 +160,13 @@ const receipt = await nodeProvider.getTransactionReceipt(txHash);
 // get the latest block with full transactions
 const block = await nodeProvider.getBlockByNumber(
   BlockTag.Latest,
-  BlockTransactionsKind.Full
+  BlockTransactionsKind.Full,
 );
 
 // get account state
 const accountState = await nodeProvider.getStateAt(
   keystoreAddress,
-  BlockTag.Latest
+  BlockTag.Latest,
 );
 ```
 
