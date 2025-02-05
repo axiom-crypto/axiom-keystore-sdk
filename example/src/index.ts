@@ -1,5 +1,5 @@
 import { generateRandomHex } from "@axiom-crypto/keystore-sdk/src/utils/random";
-import { AXIOM_ACCOUNT, AXIOM_ACCOUNT_AUTH_INPUTS, M_OF_N_ECDSA_VKEY, AuthenticationStatusEnum, BlockTag, KeystoreAccountBuilder, KeystoreNodeProvider, KeystoreSequencerProvider, KeystoreSignatureProverProvider, SAMPLE_USER_CODE_HASH, SponsorAuthInputs, TransactionStatus, UpdateTransactionBuilder, UpdateTransactionRequest, calcDataHash, Data } from "@axiom-crypto/keystore-sdk/src";
+import { AXIOM_ACCOUNT, AXIOM_ACCOUNT_AUTH_INPUTS, M_OF_N_ECDSA_VKEY, AuthenticationStatusEnum, BlockTag, KeystoreAccountBuilder, KeystoreNodeProvider, KeystoreSequencerProvider, KeystoreSignatureProverProvider, SAMPLE_USER_CODE_HASH, SponsorAuthInputs, TransactionStatus, UpdateTransactionBuilder, UpdateTransactionRequest, Data, calcMOfNDataHash } from "@axiom-crypto/keystore-sdk/src";
 import { stringToHex } from "viem";
 
 const NODE_URL = "http://keystore-rpc-node.axiom.xyz";
@@ -15,7 +15,7 @@ async function main() {
   const eoaAddr = "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266";
 
   const salt = generateRandomHex(32);
-  const dataHash = calcDataHash(SAMPLE_USER_CODE_HASH, 1n, [eoaAddr]);
+  const dataHash = calcMOfNDataHash(SAMPLE_USER_CODE_HASH, 1n, [eoaAddr]);
   const userAcct = KeystoreAccountBuilder.initCounterfactual(salt, dataHash, M_OF_N_ECDSA_VKEY);
   console.log("User account:", userAcct);
 
