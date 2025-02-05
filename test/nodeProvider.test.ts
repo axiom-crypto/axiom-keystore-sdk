@@ -3,7 +3,8 @@ import { KeystoreNodeProvider } from "../src/provider";
 import { BlockTag, BlockTransactionsKind } from "../src/types/block";
 import { GetTransactionReceiptResponse } from "../src/types/response";
 import { TransactionStatus, UpdateTransaction } from "../src/types/transaction";
-import { AXIOM_ACCOUNT_ADDRESS, EMPTY_HEX, EXISTING_BLOCK_HASH, NON_SPONSORED_UPDATE_TX_HASH, NODE_URL, NON_EXISTENT_BLOCK_HASH, NON_EXISTENT_TX_HASH, NON_EXISTING_ACCOUNT_ADDRESS, ZERO_BYTES32, SPONSORED_UPDATE_TX_HASH } from './testUtils';
+import { AXIOM_ACCOUNT_ADDRESS, EMPTY_HEX, EXISTING_BLOCK_HASH, NON_SPONSORED_UPDATE_TX_HASH, NODE_URL, NON_EXISTENT_BLOCK_HASH, NON_EXISTENT_TX_HASH, NON_EXISTING_ACCOUNT_ADDRESS, ZERO_BYTES32, SPONSORED_UPDATE_TX_HASH, TEST_TX_REQ } from './testUtils';
+import { UpdateTransactionBuilder } from '../src';
 
 describe('keystore node provider', () => {
   let provider: KeystoreNodeProvider;
@@ -119,5 +120,10 @@ describe('keystore node provider', () => {
 
     await expect(provider.getBlockByHash(NON_EXISTENT_BLOCK_HASH, BlockTransactionsKind.Hashes))
       .rejects.toThrow();
+  });
+
+  test('keystore_call', async () => {
+    const tx = UpdateTransactionBuilder.fromTransactionRequest(TEST_TX_REQ);
+    await provider.call(tx.txBytes(), BlockTag.Latest);
   });
 });
