@@ -10,7 +10,7 @@ export type L1BlockRefRpc = {
   number: HexQuantity;
   parentHash: Hash;
   timestamp: HexQuantity;
-}
+};
 
 export type L2BlockRefRpc = {
   hash: Hash;
@@ -24,4 +24,4 @@ export type L2BlockRefRpc = {
   l1Origin?: HexQuantity;
   source?: Byte;
   transactions?: TransactionOrHashRpc[];
-}
+};
