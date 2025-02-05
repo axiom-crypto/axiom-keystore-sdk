@@ -53,8 +53,8 @@ describe("keystore prover provider", () => {
       const updateTx = UpdateTransactionBuilder.fromTransactionRequest(txReq);
       const userSig: Data = await updateTx.sign(pk);
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const sponsorAuthInputs: SponsorAuthInputs = {
-        // eslint-disable-line @typescript-eslint/no-unused-vars
         sponsorAuth: {
           codeHash: AXIOM_CODEHASH,
           signatures: [],
