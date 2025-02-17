@@ -108,7 +108,7 @@ const requestHash = await signatureProverProvider.authenticateTransaction(
 
 // authenticate a sponsored transaction
 const requestHash =
-  await signatureProverProvider.sponsorAuthenticateTransaction(
+  await signatureProverProvider.authenticateSponsoredTransaction(
     sponsoredTx.txBytes(),
     sponsorAuthInputs,
   );
@@ -123,7 +123,7 @@ const status =
 
 // check the authentication status of a sponsored transaction
 const status =
-  await signatureProverProvider.getSponsorAuthenticationStatus(requestHash);
+  await signatureProverProvider.getSponsoredAuthenticationStatus(requestHash);
 ```
 
 Finally, when the status indicates completion, you can retrieve and use the authenticated transaction:
