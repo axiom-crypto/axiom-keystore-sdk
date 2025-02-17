@@ -13,7 +13,7 @@ import {
   UpdateTransactionRequest,
   KeystoreSignatureProverProvider,
 } from "../src";
-import { generateMOfNEcdsaAuthInputs, SponsorAuthInputs } from "../src/types/input";
+import { generateMOfNEcdsaAuthInputs, SponsorAuthInputs, toSponsorAuthInputs } from "../src/types/input";
 
 describe("keystore prover provider", () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -54,10 +54,10 @@ describe("keystore prover provider", () => {
       const userSig: Data = await updateTx.sign(pk);
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const sponsorAuthInputs: SponsorAuthInputs = {
-        sponsorAuth: generateMOfNEcdsaAuthInputs(AXIOM_CODEHASH, [], [AXIOM_EOA], vk),
-        userAuth: generateMOfNEcdsaAuthInputs(userCodeHash, [userSig], [eoaAddr], vk),
-      };
+      const sponsorAuthInputs: SponsorAuthInputs = toSponsorAuthInputs(
+        generateMOfNEcdsaAuthInputs(AXIOM_CODEHASH, [], [AXIOM_EOA], vk),
+        generateMOfNEcdsaAuthInputs(userCodeHash, [userSig], [eoaAddr], vk),
+      );
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const txBytes = updateTx.txBytes();

@@ -9,8 +9,12 @@ export type AuthInputs = {
 }
 
 export type SponsorAuthInputs = {
-  sponsorAuth: AuthInputs;
-  userAuth?: AuthInputs;
+  sponsorKeyData: Data;
+  sponsorAuthData: Data;
+  sponsorVkeyHash: Hash;
+  userKeyData?: Data;
+  userAuthData?: Data;
+  userVkeyHash?: Hash;
 };
 
 export function generateMOfNEcdsaAuthInputs(codeHash: Hash, signatures: Data[], eoaAddrs: L1Address[], vkey: Data): AuthInputs {
@@ -21,5 +25,16 @@ export function generateMOfNEcdsaAuthInputs(codeHash: Hash, signatures: Data[], 
     keyData,
     authData,
     vkeyHash,
+  };
+}
+
+export function toSponsorAuthInputs(sponsorAuthInputs: AuthInputs, userAuthInputs?: AuthInputs): SponsorAuthInputs {
+  return {
+    sponsorKeyData: sponsorAuthInputs.keyData,
+    sponsorAuthData: sponsorAuthInputs.authData,
+    sponsorVkeyHash: sponsorAuthInputs.vkeyHash,
+    userKeyData: userAuthInputs?.keyData,
+    userAuthData: userAuthInputs?.authData,
+    userVkeyHash: userAuthInputs?.vkeyHash,
   };
 }

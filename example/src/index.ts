@@ -12,6 +12,7 @@ import {
   generateMOfNEcdsaAuthInputs,
   SAMPLE_USER_CODE_HASH,
   SponsorAuthInputs,
+  toSponsorAuthInputs,
   TransactionStatus,
   UpdateTransactionBuilder,
   UpdateTransactionRequest,
@@ -63,10 +64,7 @@ async function main() {
   const updateTx = UpdateTransactionBuilder.fromTransactionRequest(txReq);
   const userSig: Data = await updateTx.sign(privateKey);
 
-  const sponsorAuthInputs: SponsorAuthInputs = {
-    sponsorAuth: AXIOM_ACCOUNT_AUTH_INPUTS,
-    userAuth: generateMOfNEcdsaAuthInputs(SAMPLE_USER_CODE_HASH, [userSig], [eoaAddr], M_OF_N_ECDSA_VKEY),
-  };
+  const sponsorAuthInputs: SponsorAuthInputs = toSponsorAuthInputs(AXIOM_ACCOUNT_AUTH_INPUTS, generateMOfNEcdsaAuthInputs(SAMPLE_USER_CODE_HASH, [userSig], [eoaAddr], M_OF_N_ECDSA_VKEY));
   console.log("Sending sponsor authentication request to signature prover");
 
   const signatureProverProvider = new KeystoreSignatureProverProvider(
