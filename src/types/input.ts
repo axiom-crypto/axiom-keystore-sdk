@@ -19,7 +19,7 @@ export type SponsorAuthInputs = {
 
 export function generateMOfNEcdsaAuthInputs(codeHash: Hash, signatures: Data[], eoaAddrs: L1Address[], vkey: Data): AuthInputs {
   const keyData = encodeMOfNData(codeHash, BigInt(signatures.length), eoaAddrs);
-  const authData = concat(signatures);
+  const authData = signatures.length > 0 ? concat(signatures) : '0x';
   const vkeyHash = keccak256(vkey);
   return {
     keyData,
