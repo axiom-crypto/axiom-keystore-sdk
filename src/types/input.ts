@@ -6,7 +6,7 @@ export type AuthInputs = {
   keyData: Data;
   authData: Data;
   vkeyHash: Hash;
-}
+};
 
 export type SponsorAuthInputs = {
   sponsorKeyData: Data;
@@ -17,9 +17,14 @@ export type SponsorAuthInputs = {
   userVkeyHash?: Hash;
 };
 
-export function generateMOfNEcdsaAuthInputs(codeHash: Hash, signatures: Data[], eoaAddrs: L1Address[], vkey: Data): AuthInputs {
+export function generateMOfNEcdsaAuthInputs(
+  codeHash: Hash,
+  signatures: Data[],
+  eoaAddrs: L1Address[],
+  vkey: Data,
+): AuthInputs {
   const keyData = encodeMOfNData(codeHash, BigInt(signatures.length), eoaAddrs);
-  const authData = signatures.length > 0 ? concat(signatures) : '0x';
+  const authData = signatures.length > 0 ? concat(signatures) : "0x";
   const vkeyHash = keccak256(vkey);
   return {
     keyData,
@@ -28,7 +33,10 @@ export function generateMOfNEcdsaAuthInputs(codeHash: Hash, signatures: Data[], 
   };
 }
 
-export function toSponsorAuthInputs(sponsorAuthInputs: AuthInputs, userAuthInputs?: AuthInputs): SponsorAuthInputs {
+export function toSponsorAuthInputs(
+  sponsorAuthInputs: AuthInputs,
+  userAuthInputs?: AuthInputs,
+): SponsorAuthInputs {
   return {
     sponsorKeyData: sponsorAuthInputs.keyData,
     sponsorAuthData: sponsorAuthInputs.authData,

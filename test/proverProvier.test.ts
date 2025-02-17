@@ -13,7 +13,11 @@ import {
   UpdateTransactionRequest,
   KeystoreSignatureProverProvider,
 } from "../src";
-import { generateMOfNEcdsaAuthInputs, SponsorAuthInputs, toSponsorAuthInputs } from "../src/types/input";
+import {
+  generateMOfNEcdsaAuthInputs,
+  SponsorAuthInputs,
+  toSponsorAuthInputs,
+} from "../src/types/input";
 
 describe("keystore prover provider", () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
