@@ -64,14 +64,15 @@ async function main() {
   const userSig: Data = await updateTx.sign(privateKey);
 
   const sponsorAuthInputs: SponsoredAuthInputs = {
-    type: "ProveSponsored",
-    userAuthInputs: AXIOM_ACCOUNT_AUTH_INPUTS,
-    sponsorAuthInputs: makeMOfNEcdsaAuthInputs(
-      SAMPLE_USER_CODE_HASH,
-      [userSig],
-      [eoaAddr],
-      M_OF_N_ECDSA_VKEY,
-    ),
+    proveSponsored: {
+      userAuthInputs: AXIOM_ACCOUNT_AUTH_INPUTS,
+      sponsorAuthInputs: makeMOfNEcdsaAuthInputs(
+        SAMPLE_USER_CODE_HASH,
+        [userSig],
+        [eoaAddr],
+        M_OF_N_ECDSA_VKEY,
+      ),
+    }
   };
   console.log("Sending sponsor authentication request to signature prover");
 

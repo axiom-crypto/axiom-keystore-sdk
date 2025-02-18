@@ -8,18 +8,24 @@ export type AuthInputs = {
   vkeyHash: Hash;
 };
 
-export type SponsoredAuthInputs = {
-  type: "ProveSponsored";
-  userAuthInputs: AuthInputs;
-  sponsorAuthInputs: AuthInputs;
-} | {
-  type: "ProveOnlySponsored";
-  userProof: Data;
-  sponsorAuthInputs: AuthInputs;
-} | {
-  type: "AutoSponsor";
-  userAuthInputs: AuthInputs;
-};
+export type SponsoredAuthInputs =
+  | {
+      proveSponsored: {
+        userAuthInputs: AuthInputs;
+        sponsorAuthInputs: AuthInputs;
+      };
+    }
+  | {
+      proveOnlySponsored: {
+        userProof: Data;
+        sponsorAuthInputs: AuthInputs;
+      };
+    }
+  | {
+      autoSponsor: {
+        userAuthInputs: AuthInputs;
+      };
+    };
 
 export function makeMOfNEcdsaAuthInputs(
   codeHash: Hash,

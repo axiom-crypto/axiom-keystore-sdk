@@ -83,12 +83,13 @@ const authInputs: AuthInputs = {
 
 // sponsor authentication inputs if the transaction is sponsored
 const sponsoredAuthInputs: SponsoredAuthInputs = {
-  type: "ProveSponsored",
-  sponsorAuth: AXIOM_ACCOUNT_AUTH_INPUTS,
-  userAuth: {
-    codeHash: SAMPLE_USER_CODE_HASH,
-    signatures: [userSig],
-    eoaAddrs: [eoaAddr],
+  proveSponsored: {
+    sponsorAuth: AXIOM_ACCOUNT_AUTH_INPUTS,
+    userAuth: {
+      codeHash: SAMPLE_USER_CODE_HASH,
+      signatures: [userSig],
+      eoaAddrs: [eoaAddr],
+    },
   },
 };
 ```
