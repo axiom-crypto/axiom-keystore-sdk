@@ -65,8 +65,8 @@ async function main() {
 
   const sponsorAuthInputs: SponsoredAuthInputs = {
     proveSponsored: {
-      userAuthInputs: AXIOM_ACCOUNT_AUTH_INPUTS,
-      sponsorAuthInputs: makeMOfNEcdsaAuthInputs(
+      sponsorAuthInputs: AXIOM_ACCOUNT_AUTH_INPUTS,
+      userAuthInputs: makeMOfNEcdsaAuthInputs(
         SAMPLE_USER_CODE_HASH,
         [userSig],
         [eoaAddr],
