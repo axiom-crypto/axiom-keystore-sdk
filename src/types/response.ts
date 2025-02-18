@@ -117,9 +117,9 @@ export enum AuthenticationStatusEnum {
 }
 
 /** A direct alias for sponsor authentication request hash. */
-export type SponsorAuthenticateTransactionResponse = Hash;
+export type AuthenticateSponsoredTransactionResponse = Hash;
 
 /**
  * Sponsor authentication status can be null or a status object.
  */
-export type GetSponsorAuthenticationStatusResponse = AuthenticationStatus;
+export type GetSponsoredAuthenticationStatusResponse = AuthenticationStatus;

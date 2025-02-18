@@ -9,8 +9,10 @@ import {
   KeystoreNodeProvider,
   KeystoreSequencerProvider,
   KeystoreSignatureProverProvider,
+  generateMOfNEcdsaAuthInputs,
   SAMPLE_USER_CODE_HASH,
   SponsorAuthInputs,
+  toSponsorAuthInputs,
   TransactionStatus,
   UpdateTransactionBuilder,
   UpdateTransactionRequest,
@@ -62,21 +64,22 @@ async function main() {
   const updateTx = UpdateTransactionBuilder.fromTransactionRequest(txReq);
   const userSig: Data = await updateTx.sign(privateKey);
 
-  const sponsorAuthInputs: SponsorAuthInputs = {
-    sponsorAuth: AXIOM_ACCOUNT_AUTH_INPUTS,
-    userAuth: {
-      codeHash: SAMPLE_USER_CODE_HASH,
-      signatures: [userSig],
-      eoaAddrs: [eoaAddr],
-    },
-  };
+  const sponsorAuthInputs: SponsorAuthInputs = toSponsorAuthInputs(
+    AXIOM_ACCOUNT_AUTH_INPUTS,
+    generateMOfNEcdsaAuthInputs(
+      SAMPLE_USER_CODE_HASH,
+      [userSig],
+      [eoaAddr],
+      M_OF_N_ECDSA_VKEY,
+    ),
+  );
   console.log("Sending sponsor authentication request to signature prover");
 
   const signatureProverProvider = new KeystoreSignatureProverProvider(
     SIGNATURE_PROVER_URL,
   );
   const requestHash =
-    await signatureProverProvider.sponsorAuthenticateTransaction(
+    await signatureProverProvider.authenticateSponsoredTransaction(
       updateTx.txBytes(),
       sponsorAuthInputs,
     );
@@ -90,10 +93,10 @@ async function main() {
   const authenticatedTx = await (async () => {
     while (true) {
       const status =
-        await signatureProverProvider.getSponsorAuthenticationStatus(
+        await signatureProverProvider.getSponsoredAuthenticationStatus(
           requestHash,
         );
-      console.log("Sponsor authentication status:", status.status);
+      console.log("Sponsored authentication status:", status.status);
       switch (status.status) {
         case AuthenticationStatusEnum.Pending:
           await new Promise((resolve) =>

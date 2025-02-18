@@ -17,7 +17,7 @@
     "start": "tsx src/index.ts"
   },
   "dependencies": {
-    "@axiom-crypto/keystore-sdk": "file:.."
+    "@axiom-crypto/keystore-sdk": "link:.."
   },
   "devDependencies": {
     "tsx": "^4.19.2",

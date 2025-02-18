@@ -13,7 +13,11 @@ import {
   UpdateTransactionRequest,
   KeystoreSignatureProverProvider,
 } from "../src";
-import { SponsorAuthInputs } from "../src/types/input";
+import {
+  generateMOfNEcdsaAuthInputs,
+  SponsorAuthInputs,
+  toSponsorAuthInputs,
+} from "../src/types/input";
 
 describe("keystore prover provider", () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -24,7 +28,7 @@ describe("keystore prover provider", () => {
   });
 
   test(
-    "keystore_sponsorAuthenticateTransaction",
+    "keystore_authenticateSponsoredTransaction",
     async () => {
       const salt = pad("0x01");
       const vk = M_OF_N_ECDSA_VKEY;
@@ -54,31 +58,23 @@ describe("keystore prover provider", () => {
       const userSig: Data = await updateTx.sign(pk);
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const sponsorAuthInputs: SponsorAuthInputs = {
-        sponsorAuth: {
-          codeHash: AXIOM_CODEHASH,
-          signatures: [],
-          eoaAddrs: [AXIOM_EOA],
-        },
-        userAuth: {
-          codeHash: userCodeHash,
-          signatures: [userSig],
-          eoaAddrs: [eoaAddr],
-        },
-      };
+      const sponsorAuthInputs: SponsorAuthInputs = toSponsorAuthInputs(
+        generateMOfNEcdsaAuthInputs(AXIOM_CODEHASH, [], [AXIOM_EOA], vk),
+        generateMOfNEcdsaAuthInputs(userCodeHash, [userSig], [eoaAddr], vk),
+      );
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const txBytes = updateTx.txBytes();
 
-      // const requestHash = await provider.sponsorAuthenticateTransaction(txBytes, sponsorAuthInputs);
+      // const requestHash = await provider.authenticateSponsoredTransaction(txBytes, sponsorAuthInputs);
       // console.log(requestHash);
     },
     120 * 1000,
   );
 
-  test("keystore_getSponsorAuthenticationStatus", async () => {
+  test("keystore_getSponsoredAuthenticationStatus", async () => {
     // const requestHash = "0x4625e121b8f18810c44ad3377a367337f618766e02f8d7c511ae7c62cc708460";
-    // let status = await provider.getSponsorAuthenticationStatus(requestHash);
+    // let status = await provider.getSponsoredAuthenticationStatus(requestHash);
     // console.log(status.status);
     // if (status.authenticatedTransaction) {
     //   let _ = UpdateTransactionBuilder.decodeTxBytes(status.authenticatedTransaction);

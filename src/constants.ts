@@ -1,6 +1,6 @@
 import { pad } from "viem";
 import { KeystoreAccount } from "./types/transaction";
-import { AuthInputs } from "./types/input";
+import { AuthInputs, generateMOfNEcdsaAuthInputs } from "./types/input";
 
 export const SAMPLE_USER_CODE_HASH =
   "0x595b7552e60f6430c898abc2b292aa805e94834a576f57969406940f6d12d4d9";
@@ -27,8 +27,10 @@ export const AXIOM_ACCOUNT: KeystoreAccount = {
   vkey: M_OF_N_ECDSA_VKEY,
 };
 
-export const AXIOM_ACCOUNT_AUTH_INPUTS: AuthInputs = {
-  codeHash: AXIOM_CODEHASH,
-  signatures: [],
-  eoaAddrs: [AXIOM_EOA],
-};
+export const AXIOM_ACCOUNT_AUTH_INPUTS: AuthInputs =
+  generateMOfNEcdsaAuthInputs(
+    AXIOM_CODEHASH,
+    [],
+    [AXIOM_EOA],
+    M_OF_N_ECDSA_VKEY,
+  );

@@ -82,6 +82,6 @@ export type AuthenticateTransactionResponseRpc = Hash;
 
 export type GetAuthenticationStatusResponseRpc = AuthenticationStatus;
 
-export type SponsorAuthenticateTransactionResponseRpc = Hash;
+export type AuthenticateSponsoredTransactionResponseRpc = Hash;
 
-export type GetSponsorAuthenticationStatusResponseRpc = AuthenticationStatus;
+export type GetSponsoredAuthenticationStatusResponseRpc = AuthenticationStatus;

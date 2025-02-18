@@ -12,13 +12,13 @@ import {
   GetBlockByNumberResponse,
   GetBlockNumberByStateRootResponse,
   GetProofResponse,
-  GetSponsorAuthenticationStatusResponse,
+  GetSponsoredAuthenticationStatusResponse,
   GetStateAtResponse,
   GetTransactionByHashResponse,
   GetTransactionCountResponse,
   GetTransactionReceiptResponse,
   SendRawTransactionResponse,
-  SponsorAuthenticateTransactionResponse,
+  AuthenticateSponsoredTransactionResponse,
   SyncStatusResponse,
 } from "./types/response";
 import { Data, Hash, KeystoreAddress } from "./types/primitives";
@@ -36,13 +36,13 @@ import {
   GetBlockByNumberResponseRpc,
   GetBlockNumberByStateRootResponseRpc,
   GetProofResponseRpc,
-  GetSponsorAuthenticationStatusResponseRpc,
+  GetSponsoredAuthenticationStatusResponseRpc,
   GetStateAtResponseRpc,
   GetTransactionByHashResponseRpc,
   GetTransactionCountResponseRpc,
   GetTransactionReceiptResponseRpc,
   SendRawTransactionResponseRpc,
-  SponsorAuthenticateTransactionResponseRpc,
+  AuthenticateSponsoredTransactionResponseRpc,
   SyncStatusResponseRpc,
 } from "./types/rpc";
 import {
@@ -248,24 +248,24 @@ export class KeystoreSignatureProverProvider {
     return rpcResp;
   }
 
-  async sponsorAuthenticateTransaction(
+  async authenticateSponsoredTransaction(
     transaction: Data,
     sponsorAuthInputs: SponsorAuthInputs,
-  ): Promise<SponsorAuthenticateTransactionResponse> {
-    const rpcResp: SponsorAuthenticateTransactionResponseRpc =
+  ): Promise<AuthenticateSponsoredTransactionResponse> {
+    const rpcResp: AuthenticateSponsoredTransactionResponseRpc =
       await this.client.request({
-        method: "keystore_sponsorAuthenticateTransaction",
+        method: "keystore_authenticateSponsoredTransaction",
         params: [transaction, sponsorAuthInputs],
       });
     return rpcResp;
   }
 
-  async getSponsorAuthenticationStatus(
+  async getSponsoredAuthenticationStatus(
     requestHash: Hash,
-  ): Promise<GetSponsorAuthenticationStatusResponse> {
-    const rpcResp: GetSponsorAuthenticationStatusResponseRpc =
+  ): Promise<GetSponsoredAuthenticationStatusResponse> {
+    const rpcResp: GetSponsoredAuthenticationStatusResponseRpc =
       await this.client.request({
-        method: "keystore_getSponsorAuthenticationStatus",
+        method: "keystore_getSponsoredAuthenticationStatus",
         params: [requestHash],
       });
     return rpcResp;
