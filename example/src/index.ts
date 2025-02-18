@@ -70,7 +70,6 @@ async function main() {
         SAMPLE_USER_CODE_HASH,
         [userSig],
         [eoaAddr],
-        M_OF_N_ECDSA_VKEY,
       ),
     }
   };

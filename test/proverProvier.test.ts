@@ -59,8 +59,8 @@ describe("keystore prover provider", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const sponsoredAuthInputs: SponsoredAuthInputs = {
         proveSponsored: {
-          userAuthInputs: makeMOfNEcdsaAuthInputs(AXIOM_CODEHASH, [], [AXIOM_EOA], vk),
-          sponsorAuthInputs: makeMOfNEcdsaAuthInputs(userCodeHash, [userSig], [eoaAddr], vk),
+          userAuthInputs: makeMOfNEcdsaAuthInputs(AXIOM_CODEHASH, [], [AXIOM_EOA]),
+          sponsorAuthInputs: makeMOfNEcdsaAuthInputs(userCodeHash, [userSig], [eoaAddr]),
         }
       };
 
