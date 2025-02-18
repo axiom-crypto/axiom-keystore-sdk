@@ -1,6 +1,6 @@
 import { encodeMOfNData } from "../dataHash";
 import { Data, Hash, L1Address } from "./primitives";
-import { concat, keccak256 } from "viem";
+import { concat } from "viem";
 
 export type AuthInputs = {
   keyData: Data;
