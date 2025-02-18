@@ -23,7 +23,7 @@ import {
 } from "./types/response";
 import { Data, Hash, KeystoreAddress } from "./types/primitives";
 import { BlockTagOrNumber, BlockTransactionsKind } from "./types/block";
-import { AuthInputs, SponsorAuthInputs } from "./types/input";
+import { AuthInputs, SponsoredAuthInputs } from "./types/input";
 import {
   AuthenticateTransactionResponseRpc,
   BlockNumberResponseRpc,
@@ -250,7 +250,7 @@ export class KeystoreSignatureProverProvider {
 
   async authenticateSponsoredTransaction(
     transaction: Data,
-    sponsorAuthInputs: SponsorAuthInputs,
+    sponsorAuthInputs: SponsoredAuthInputs,
   ): Promise<AuthenticateSponsoredTransactionResponse> {
     const rpcResp: AuthenticateSponsoredTransactionResponseRpc =
       await this.client.request({

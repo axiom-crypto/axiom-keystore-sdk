@@ -8,16 +8,20 @@ export type AuthInputs = {
   vkeyHash: Hash;
 };
 
-export type SponsorAuthInputs = {
-  sponsorKeyData: Data;
-  sponsorAuthData: Data;
-  sponsorVkeyHash: Hash;
-  userKeyData?: Data;
-  userAuthData?: Data;
-  userVkeyHash?: Hash;
+export type SponsoredAuthInputs = {
+  type: "ProveSponsored";
+  userAuthInputs: AuthInputs;
+  sponsorAuthInputs: AuthInputs;
+} | {
+  type: "ProveOnlySponsored";
+  userProof: Data;
+  sponsorAuthInputs: AuthInputs;
+} | {
+  type: "AutoSponsor";
+  userAuthInputs: AuthInputs;
 };
 
-export function generateMOfNEcdsaAuthInputs(
+export function makeMOfNEcdsaAuthInputs(
   codeHash: Hash,
   signatures: Data[],
   eoaAddrs: L1Address[],
@@ -30,19 +34,5 @@ export function generateMOfNEcdsaAuthInputs(
     keyData,
     authData,
     vkeyHash,
-  };
-}
-
-export function toSponsorAuthInputs(
-  sponsorAuthInputs: AuthInputs,
-  userAuthInputs?: AuthInputs,
-): SponsorAuthInputs {
-  return {
-    sponsorKeyData: sponsorAuthInputs.keyData,
-    sponsorAuthData: sponsorAuthInputs.authData,
-    sponsorVkeyHash: sponsorAuthInputs.vkeyHash,
-    userKeyData: userAuthInputs?.keyData,
-    userAuthData: userAuthInputs?.authData,
-    userVkeyHash: userAuthInputs?.vkeyHash,
   };
 }
