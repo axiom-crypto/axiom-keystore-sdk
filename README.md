@@ -76,18 +76,19 @@ To begin authenticating a transaction, start by creating the necessary authentic
 ```typescript
 // user authentication inputs if the transaction is not sponsored
 const authInputs: AuthInputs = {
-  codeHash: SAMPLE_USER_CODE_HASH,
-  signatures: [userSig],
-  eoaAddrs: [eoaAddr],
+  keyData: encodeMOfNData(SAMPLE_USER_CODE_HASH, BigInt(userSig.length), [eoaAddr]);
+  aithData: [userSig],
 };
 
 // sponsor authentication inputs if the transaction is sponsored
-const sponsorAuthInputs: SponsorAuthInputs = {
-  sponsorAuth: AXIOM_ACCOUNT_AUTH_INPUTS,
-  userAuth: {
-    codeHash: SAMPLE_USER_CODE_HASH,
-    signatures: [userSig],
-    eoaAddrs: [eoaAddr],
+const sponsoredAuthInputs: SponsoredAuthInputs = {
+  proveSponsored: {
+    sponsorAuthInputs: AXIOM_ACCOUNT_AUTH_INPUTS,
+    userAuthInputs: makeMOfNEcdsaAuthInputs(
+      SAMPLE_USER_CODE_HASH,
+      [userSig],
+      [eoaAddr],
+    ),
   },
 };
 ```

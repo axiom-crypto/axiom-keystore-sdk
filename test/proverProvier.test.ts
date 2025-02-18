@@ -14,9 +14,8 @@ import {
   KeystoreSignatureProverProvider,
 } from "../src";
 import {
-  generateMOfNEcdsaAuthInputs,
-  SponsorAuthInputs,
-  toSponsorAuthInputs,
+  makeMOfNEcdsaAuthInputs,
+  SponsoredAuthInputs,
 } from "../src/types/input";
 
 describe("keystore prover provider", () => {
@@ -58,15 +57,25 @@ describe("keystore prover provider", () => {
       const userSig: Data = await updateTx.sign(pk);
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const sponsorAuthInputs: SponsorAuthInputs = toSponsorAuthInputs(
-        generateMOfNEcdsaAuthInputs(AXIOM_CODEHASH, [], [AXIOM_EOA], vk),
-        generateMOfNEcdsaAuthInputs(userCodeHash, [userSig], [eoaAddr], vk),
-      );
+      const sponsoredAuthInputs: SponsoredAuthInputs = {
+        proveSponsored: {
+          userAuthInputs: makeMOfNEcdsaAuthInputs(
+            AXIOM_CODEHASH,
+            [],
+            [AXIOM_EOA],
+          ),
+          sponsorAuthInputs: makeMOfNEcdsaAuthInputs(
+            userCodeHash,
+            [userSig],
+            [eoaAddr],
+          ),
+        },
+      };
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const txBytes = updateTx.txBytes();
 
-      // const requestHash = await provider.authenticateSponsoredTransaction(txBytes, sponsorAuthInputs);
+      // const requestHash = await provider.authenticateSponsoredTransaction(txBytes, sponsoredAuthInputs);
       // console.log(requestHash);
     },
     120 * 1000,
