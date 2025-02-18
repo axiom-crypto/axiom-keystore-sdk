@@ -27,9 +27,8 @@ export const AXIOM_ACCOUNT: KeystoreAccount = {
   vkey: M_OF_N_ECDSA_VKEY,
 };
 
-export const AXIOM_ACCOUNT_AUTH_INPUTS: AuthInputs =
-  makeMOfNEcdsaAuthInputs(
-    AXIOM_CODEHASH,
-    [],
-    [AXIOM_EOA],
-  );
+export const AXIOM_ACCOUNT_AUTH_INPUTS: AuthInputs = makeMOfNEcdsaAuthInputs(
+  AXIOM_CODEHASH,
+  [],
+  [AXIOM_EOA],
+);

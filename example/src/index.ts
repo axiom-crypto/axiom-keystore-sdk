@@ -71,7 +71,7 @@ async function main() {
         [userSig],
         [eoaAddr],
       ),
-    }
+    },
   };
   console.log("Sending sponsor authentication request to signature prover");
 
