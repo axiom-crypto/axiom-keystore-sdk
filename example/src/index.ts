@@ -20,9 +20,9 @@ import {
 } from "@axiom-crypto/keystore-sdk/src";
 import { stringToHex } from "viem";
 
-const NODE_URL = "http://keystore-rpc-node.axiom.xyz";
-const SIGNATURE_PROVER_URL = "http://keystore-rpc-signatureprover.axiom.xyz";
-const SEQUENCER_URL = "http://keystore-rpc-sequencer.axiom.xyz";
+const NODE_URL = "https://keystore-rpc-node.axiom.xyz";
+const SIGNATURE_PROVER_URL = "https://keystore-rpc-signatureprover.axiom.xyz";
+const SEQUENCER_URL = "https://keystore-rpc-sequencer.axiom.xyz";
 
 const RETRY_INTERVAL_SEC = 30;
 const MAX_RETRIES = 10;

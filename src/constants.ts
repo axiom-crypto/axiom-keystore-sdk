@@ -7,10 +7,10 @@ export const SAMPLE_USER_CODE_HASH =
 
 export const KEYSTORE_CHAIN_ID = 999999999n;
 
-export const NODE_URL = "http://keystore-rpc-node.axiom.xyz";
+export const NODE_URL = "https://keystore-rpc-node.axiom.xyz";
 export const SIGNATURE_PROVER_URL =
-  "http://keystore-rpc-signatureprover.axiom.xyz";
-export const SEQUENCER_URL = "http://keystore-rpc-sequencer.axiom.xyz";
+  "https://keystore-rpc-signatureprover.axiom.xyz";
+export const SEQUENCER_URL = "https://keystore-rpc-sequencer.axiom.xyz";
 
 export const AXIOM_EOA = "0xD7548a3ED8c51FA30D26ff2D7Db5C33d27fd48f2";
 export const AXIOM_CODEHASH =
