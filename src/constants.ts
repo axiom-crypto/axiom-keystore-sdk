@@ -20,7 +20,7 @@ export const M_OF_N_ECDSA_VKEY =
 
 export const AXIOM_ACCOUNT: KeystoreAccount = {
   keystoreAddress:
-    "0x17fda3a85e8162f13219f485220d258b013438fcc0b031ef9651c610c1ef2437",
+    "0xb5ce21832ca3bbf53de610c6dda13d6a735b0a8ea3422aeaab678a01e298269d",
   salt: pad("0x", { size: 32 }),
   dataHash:
     "0xecf85bc51a8b47c545dad1a47e868276d0a92b7cf2716033ce77d385a6b67c4b",
