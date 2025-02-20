@@ -4,7 +4,6 @@ import { BlockTag, BlockTransactionsKind } from "../src/types/block";
 import { GetTransactionReceiptResponse } from "../src/types/response";
 import { TransactionStatus, UpdateTransaction } from "../src/types/transaction";
 import {
-  AXIOM_ACCOUNT_ADDRESS,
   EMPTY_HEX,
   EXISTING_BLOCK_HASH,
   NON_SPONSORED_UPDATE_TX_HASH,
@@ -16,7 +15,7 @@ import {
   SPONSORED_UPDATE_TX_HASH,
   TEST_TX_REQ,
 } from "./testUtils";
-import { UpdateTransactionBuilder } from "../src";
+import { AXIOM_KEYSTORE_ADDRESS, UpdateTransactionBuilder } from "../src";
 
 describe("keystore node provider", () => {
   let provider: KeystoreNodeProvider;
@@ -38,7 +37,7 @@ describe("keystore node provider", () => {
 
   test("keystore_getBalance", async () => {
     const balance1 = await provider.getBalance(
-      AXIOM_ACCOUNT_ADDRESS,
+      AXIOM_KEYSTORE_ADDRESS,
       BlockTag.Latest,
     );
     expect(balance1).toBeGreaterThan(0n);
@@ -52,7 +51,7 @@ describe("keystore node provider", () => {
 
   test("keystore_getStateAt", async () => {
     const res1 = await provider.getStateAt(
-      AXIOM_ACCOUNT_ADDRESS,
+      AXIOM_KEYSTORE_ADDRESS,
       BlockTag.Latest,
     );
     expect(res1.dataHash).not.toBe(ZERO_BYTES32);
@@ -72,7 +71,7 @@ describe("keystore node provider", () => {
 
   test("keystore_getTransactionCount", async () => {
     const nonce1 = await provider.getTransactionCount(
-      AXIOM_ACCOUNT_ADDRESS,
+      AXIOM_KEYSTORE_ADDRESS,
       BlockTag.Latest,
     );
     expect(nonce1).toBeGreaterThan(0n);
@@ -86,7 +85,7 @@ describe("keystore node provider", () => {
 
   test("keystore_getProof", async () => {
     const getProofResp1 = await provider.getProof(
-      AXIOM_ACCOUNT_ADDRESS,
+      AXIOM_KEYSTORE_ADDRESS,
       BlockTag.Latest,
     );
     expect(getProofResp1.proof.isExclusionProof).toBe(false);
