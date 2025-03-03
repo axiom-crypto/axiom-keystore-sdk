@@ -1,6 +1,6 @@
 {
   "name": "keystore-sdk-example",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "Intrinsic Technologies",
   "license": "MIT",
   "description": "Keystore Rollup SDK Example",
@@ -17,7 +17,8 @@
     "start": "tsx src/index.ts"
   },
   "dependencies": {
-    "@axiom-crypto/keystore-sdk": "link:.."
+    "@axiom-crypto/keystore-sdk": "link:..",
+    "@axiom-crypto/signature-prover-ecdsa": "link:../../signature-prover-ecdsa"
   },
   "devDependencies": {
     "tsx": "^4.19.2",

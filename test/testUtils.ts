@@ -1,10 +1,9 @@
 import { KeystoreAddress, L1Address } from "../src/types/primitives";
-import { keccak256, pad } from "viem";
-import {
-  AXIOM_ACCOUNT,
-  UpdateTransactionRequest,
-  KeystoreAccountBuilder,
-} from "../src";
+// import { keccak256, pad } from "viem";
+import {} from // AXIOM_ACCOUNT,
+// UpdateTransactionRequest,
+// KeystoreAccountBuilder,
+"../src";
 
 // Default accounts from Anvil
 export const ANVIL_ACCOUNTS: { pk: KeystoreAddress; addr: L1Address }[] = [
@@ -23,8 +22,7 @@ export const ANVIL_ACCOUNTS: { pk: KeystoreAddress; addr: L1Address }[] = [
 ];
 
 export const NODE_URL = "https://keystore-rpc-node.axiom.xyz";
-export const SIGNATURE_PROVER_URL =
-  "https://keystore-rpc-signatureprover.axiom.xyz";
+export const SIGNATURE_PROVER_URL = "https://keystore-rpc-signatureprover.axiom.xyz";
 export const SEQUENCER_URL = "https://keystore-rpc-sequencer.axiom.xyz";
 
 export const NON_EXISTING_ACCOUNT_ADDRESS =
@@ -43,20 +41,19 @@ export const NON_EXISTENT_BLOCK_HASH =
   "0x1111111111111111111111111111111111111111111111111111111111111111";
 
 export const EMPTY_HEX = "0x";
-export const ZERO_BYTES32 = pad("0x", { size: 32 });
+// export const ZERO_BYTES32 = pad("0x", { size: 32 });
 
-export const CODE_HASH =
-  "0x595b7552e60f6430c898abc2b292aa805e94834a576f57969406940f6d12d4d9";
+export const CODE_HASH = "0x595b7552e60f6430c898abc2b292aa805e94834a576f57969406940f6d12d4d9";
 
-export const TEST_TX_REQ: UpdateTransactionRequest = {
-  nonce: 0n,
-  feePerGas: 100n,
-  newUserData: "0x12345",
-  newUserVkey: "0x12345",
-  userAcct: KeystoreAccountBuilder.initCounterfactual(
-    pad("0x2"),
-    keccak256("0x1234"),
-    "0x1234",
-  ),
-  sponsorAcct: AXIOM_ACCOUNT,
-};
+// export const TEST_TX_REQ: UpdateTransactionRequest = {
+//   nonce: 0n,
+//   feePerGas: 100n,
+//   newUserData: "0x12345",
+//   newUserVkey: "0x12345",
+//   userAcct: KeystoreAccountBuilder.initCounterfactual(
+//     pad("0x2"),
+//     keccak256("0x1234"),
+//     "0x1234",
+//   ),
+//   sponsorAcct: AXIOM_ACCOUNT,
+// };

@@ -4,7 +4,7 @@ import {
   L2Transaction,
   TransactionOrHash,
   TransactionType,
-  UpdateTransaction,
+  // UpdateTransaction,
   WithdrawTransaction,
 } from "../transaction";
 import {
@@ -15,11 +15,10 @@ import {
   UpdateTransactionRpc,
   WithdrawTransactionRpc,
 } from "../rpc/transaction";
-import { KeystoreAccountBuilder } from "../../account";
+import { UpdateTransaction } from "@/transaction";
+// import { KeystoreAccountBuilder } from "../../account";
 
-export function formatTransactionOrHash(
-  rpcObj: TransactionOrHashRpc,
-): TransactionOrHash {
+export function formatTransactionOrHash(rpcObj: TransactionOrHashRpc): TransactionOrHash {
   if (typeof rpcObj === "string") {
     return rpcObj;
   }
@@ -35,9 +34,7 @@ function formatBaseTransaction(rpcObj: BaseTransactionRpc): BaseTransaction {
   };
 }
 
-export function formatDepositTransaction(
-  rpcObj: DepositTransactionRpc,
-): DepositTransaction {
+export function formatDepositTransaction(rpcObj: DepositTransactionRpc): DepositTransaction {
   return {
     ...formatBaseTransaction(rpcObj),
     l1InitiatedNonce: BigInt(rpcObj.l1InitiatedNonce),
@@ -46,18 +43,13 @@ export function formatDepositTransaction(
   };
 }
 
-export function formatWithdrawTransaction(
-  rpcObj: WithdrawTransactionRpc,
-): WithdrawTransaction {
+export function formatWithdrawTransaction(rpcObj: WithdrawTransactionRpc): WithdrawTransaction {
   return {
     ...formatBaseTransaction(rpcObj),
     isL1Initiated: rpcObj.isL1Initiated,
     nonce: BigInt(rpcObj.nonce),
     feePerGas: rpcObj.feePerGas == "0x" ? undefined : BigInt(rpcObj.feePerGas),
-    l1InitiatedNonce:
-      rpcObj.l1InitiatedNonce == "0x"
-        ? undefined
-        : BigInt(rpcObj.l1InitiatedNonce),
+    l1InitiatedNonce: rpcObj.l1InitiatedNonce == "0x" ? undefined : BigInt(rpcObj.l1InitiatedNonce),
     to: rpcObj.to,
     amt: BigInt(rpcObj.amt),
     userAcct: rpcObj.userAcct,
@@ -65,26 +57,18 @@ export function formatWithdrawTransaction(
   };
 }
 
-function formatUpdateTransaction(
-  rpcObj: UpdateTransactionRpc,
-): UpdateTransaction {
+function formatUpdateTransaction(rpcObj: UpdateTransactionRpc): UpdateTransaction {
   return {
     ...formatBaseTransaction(rpcObj),
     isL1Initiated: rpcObj.isL1Initiated,
     nonce: BigInt(rpcObj.nonce),
     feePerGas: rpcObj.feePerGas == "0x" ? undefined : BigInt(rpcObj.feePerGas),
-    l1InitiatedNonce:
-      rpcObj.l1InitiatedNonce == "0x"
-        ? undefined
-        : BigInt(rpcObj.l1InitiatedNonce),
+    l1InitiatedNonce: rpcObj.l1InitiatedNonce == "0x" ? undefined : BigInt(rpcObj.l1InitiatedNonce),
     newUserData: rpcObj.newUserData,
     newUserVkey: rpcObj.newUserVkey,
     userAcct: rpcObj.userAcct,
     userProof: rpcObj.userProof,
-    sponsorAcct:
-      rpcObj.sponsorAcctBytes == "0x"
-        ? undefined
-        : KeystoreAccountBuilder.rlpDecode(rpcObj.sponsorAcctBytes),
+    sponsorAcct: rpcObj.sponsorAcctBytes == "0x" ? undefined : undefined, //KeystoreAccountBuilder.rlpDecode(rpcObj.sponsorAcctBytes),
     sponsorProof: rpcObj.sponsorProof == "0x" ? undefined : rpcObj.sponsorProof,
   };
 }
