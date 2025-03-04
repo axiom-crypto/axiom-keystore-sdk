@@ -13,14 +13,30 @@ import {
 import Client, { HTTPTransport, RequestManager } from "@open-rpc/client-js";
 import { keccak256 } from "viem";
 
+/**
+ * Extend this interface to add custom fields to your keyData encoder.
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface CustomKeyDataEncoderFields {}
+
+/**
+ * Extend this interface to add custom fields to your authData encoder.
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface CustomAuthDataEncoderFields {}
+
 export interface CustomSignatureProver {
   url: string;
   vkey: Data;
-  keyDataEncoder: (...args: unknown[]) => Data;
-  authDataEncoder: (...args: unknown[]) => Data;
+  keyDataEncoder: (fields: CustomKeyDataEncoderFields) => Data;
+  authDataEncoder: (fields: CustomAuthDataEncoderFields) => Data;
 }
 
 export interface SignatureProverClient extends CustomSignatureProver {
+  dataHash: () => Data;
+
+  waitForAuthentication: (txHash: Hash) => Promise<Data>;
+
   authenticateTransaction: ({
     transaction,
     authInputs,
@@ -48,10 +64,6 @@ export interface SignatureProverClient extends CustomSignatureProver {
   }: {
     requestHash: Hash;
   }) => Promise<GetSponsoredAuthenticationStatusResponse>;
-
-  dataHash: () => Data;
-
-  waitForAuthentication: (txHash: Hash) => Promise<Data>;
 }
 
 export interface SignatureProverClientConfig extends CustomSignatureProver {
@@ -119,9 +131,8 @@ export function createSignatureProverClient(
     });
   };
 
-  // TODO: fix this; we need to use the concrete values passed in for the keyDataEncoder's function args
-  const dataHash = () => {
-    return keccak256(signatureProver.keyDataEncoder());
+  const dataHash = (fields: CustomKeyDataEncoderFields) => {
+    return keccak256(signatureProver.keyDataEncoder(fields));
   };
 
   const waitForAuthentication = async (txHash: Hash): Promise<Data> => {
@@ -157,7 +168,7 @@ export function createSignatureProverClient(
         await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
       }
     }
-    throw new Error(`Polling timed out after ${pollingRetries} attempts`);
+    throw new Error(`Timed out after ${(pollingRetries * pollingIntervalMs) / 1000} seconds`);
   };
 
   return {

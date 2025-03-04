@@ -4,12 +4,13 @@ import {
   initAccountCounterfactual,
   initAccountFromAddress,
   createUpdateTransaction,
+  createSequencerClient,
 } from "@axiom-crypto/keystore-sdk/src";
+import { generateRandomHex } from "@axiom-crypto/keystore-sdk/src/utils/random";
 import {
   MOfNEcdsaSignatureProver,
   M_OF_N_ECDSA_VKEY,
 } from "@axiom-crypto/signature-prover-ecdsa/src";
-import { pad } from "viem";
 
 const NODE_URL = "https://keystore-rpc-node.axiom.xyz";
 const SEQUENCER_URL = "https://keystore-rpc-sequencer.axiom.xyz";
@@ -27,30 +28,35 @@ async function main() {
   const dataHash = mOfNEcdsaClient.dataHash();
 
   const nodeClient = createNodeClient({ url: NODE_URL });
+  const sequencerClient = createSequencerClient({ url: SEQUENCER_URL });
 
-  const salt = pad("0x00", { size: 32 });
+  const salt = generateRandomHex(32);
   const userAccount = initAccountCounterfactual({
     salt,
     dataHash,
     vkey: M_OF_N_ECDSA_VKEY,
     nodeClient,
   });
+  console.log("User account initialized:", userAccount);
+
   const sponsorAccount = initAccountFromAddress({
-    address: ECDSA_ADDR,
-    dataHash: ECDSA_DATA_HASH,
+    address: M_OF_N_ECDSA_ADDR,
+    dataHash: M_OF_N_ECDSA_DATA_HASH,
     vkey: M_OF_N_ECDSA_VKEY,
   });
   const updateTx = createUpdateTransaction({
     nonce: await userAccount.getNonce(),
-    feePerGas: await nodeClient.gasPrice(),
+    feePerGas: await sequencerClient.gasPrice(),
     newUserData: "",
     newUserVkey: "",
     userAccount,
     sponsorAccount,
   });
-  const signedTx = await mOfNEcdsaClient.signTransaction(updateTx);
+  console.log("Transaction request:", updateTx);
+  const signedTx = await updateTx.sign(account.privateKey);
 
   const userAuthInputs = "";
+  const sponsorAuthInputs = "";
   const sponsoredTx = await mOfNEcdsaClient.authenticateSponsoredTransaction({
     transaction: updateTx.toBytes(),
     sponsoredAuthInputs: {
@@ -60,7 +66,13 @@ async function main() {
       },
     },
   });
-  const receipt = await mOfNEcdsaClient.waitForTransactionReceipt(sponsoredTx);
+  const authenticatedTx = await mOfNEcdsaClient.waitForAuthentication(sponsoredTx);
+  console.log("Authenticated transaction:", authenticatedTx);
+
+  const txHash = await sequencerClient.sendRawTransaction({ transactionData: authenticatedTx });
+  console.log("Transaction sent to sequencer:", txHash);
+
+  const receipt = await sequencerClient.waitForTransactionInclusion(txHash);
   console.log("Transaction receipt:", receipt);
 }
 
