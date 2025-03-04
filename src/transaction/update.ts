@@ -3,7 +3,7 @@ import { Bytes32, Data, Hash, TransactionType } from "@/types";
 import { DOMAIN, UPDATE_TYPES } from "@/types/eip712";
 import { ecdsaSign } from "@/utils/ecdsa";
 import { RLP } from "@ethereumjs/rlp";
-import { boolToHex, bytesToHex, encodePacked, hashTypedData, keccak256 } from "viem";
+import { boolToHex, bytesToHex, encodePacked, hashTypedData, keccak256, numberToHex } from "viem";
 
 export interface BaseTransactionAction {
   toBytes: () => Data;
@@ -12,48 +12,50 @@ export interface BaseTransactionAction {
   sign: (pk: Bytes32) => Promise<Data>;
 }
 
-export interface UpdateTransactionData {
+export interface UpdateTransaction {
   nonce: bigint;
-  feePerGas: bigint;
+  feePerGas?: bigint;
   newUserData: Data;
   newUserVkey: Data;
-  userAccount: KeystoreAccount;
-  sponsorAccount?: KeystoreAccount;
+  userAcct: KeystoreAccount;
+  sponsorAcct?: KeystoreAccount;
   userProof?: Data;
   sponsorProof?: Data;
-  l1InitiatedNonce?: Data;
+  l1InitiatedNonce?: bigint;
   isL1Initiated?: boolean;
 }
 
-export interface UpdateTransaction extends UpdateTransactionData, BaseTransactionAction {}
+export interface UpdateTransactionClient extends UpdateTransaction, BaseTransactionAction {}
 
-export function createUpdateTransaction(tx: UpdateTransactionData): UpdateTransaction {
+export function createUpdateTransactionClient(tx: UpdateTransaction): UpdateTransactionClient {
   const isL1Initiated = boolToHex(false, { size: 1 });
   const l1InitiatedNonce = tx.l1InitiatedNonce ?? "0x";
-  const userAccount = initAccountFromAddress({
-    address: tx.userAccount.address,
-    dataHash: tx.userAccount.dataHash,
-    vkey: tx.userAccount.vkey,
+  const feePerGas = numberToHex(tx.feePerGas ?? 0n);
+  const userAcct = initAccountFromAddress({
+    address: tx.userAcct.address,
+    dataHash: tx.userAcct.dataHash,
+    vkey: tx.userAcct.vkey,
   });
-  const sponsorAccountBytes = tx.sponsorAccount
+  const sponsorAcctBytes = tx.sponsorAcct
     ? initAccountFromAddress({
-        address: tx.sponsorAccount.address,
-        dataHash: tx.sponsorAccount.dataHash,
-        vkey: tx.sponsorAccount.vkey,
+        address: tx.sponsorAcct.address,
+        dataHash: tx.sponsorAcct.dataHash,
+        vkey: tx.sponsorAcct.vkey,
       }).rlpEncode()
     : "0x";
+  console.log("sponsorAcctBytes", sponsorAcctBytes);
   const toBytes = (): Data => {
     const rlpEncoded = RLP.encode([
       tx.nonce,
-      tx.feePerGas,
+      feePerGas,
       tx.newUserData,
       tx.newUserVkey,
-      userAccount.address,
-      userAccount.salt,
-      userAccount.dataHash,
-      userAccount.vkey,
+      userAcct.address,
+      userAcct.salt,
+      userAcct.dataHash,
+      userAcct.vkey,
       tx.userProof,
-      sponsorAccountBytes,
+      sponsorAcctBytes,
       tx.sponsorProof,
     ]);
 
@@ -66,14 +68,26 @@ export function createUpdateTransaction(tx: UpdateTransactionData): UpdateTransa
   const txHash = (): Hash => keccak256(toBytes());
 
   const userMsgHash = (): Hash => {
+    console.log("hashTypedData", {
+      domain: DOMAIN,
+      types: UPDATE_TYPES,
+      primaryType: "Update",
+      message: {
+        userKeystoreAddress: userAcct.address,
+        nonce: tx.nonce,
+        feePerGas,
+        newUserData: tx.newUserData,
+        newUserVkey: tx.newUserVkey,
+      },
+    });
     return hashTypedData({
       domain: DOMAIN,
       types: UPDATE_TYPES,
       primaryType: "Update",
       message: {
-        userKeystoreAddress: userAccount.address,
+        userKeystoreAddress: userAcct.address,
         nonce: tx.nonce,
-        feePerGas: tx.feePerGas,
+        feePerGas,
         newUserData: tx.newUserData,
         newUserVkey: tx.newUserVkey,
       },
@@ -90,8 +104,8 @@ export function createUpdateTransaction(tx: UpdateTransactionData): UpdateTransa
     feePerGas: tx.feePerGas,
     newUserData: tx.newUserData,
     newUserVkey: tx.newUserVkey,
-    userAccount,
-    sponsorAccount: tx.sponsorAccount,
+    userAcct,
+    sponsorAcct: tx.sponsorAcct,
     userProof: tx.userProof,
     sponsorProof: tx.sponsorProof,
     l1InitiatedNonce: tx.l1InitiatedNonce,

@@ -11,7 +11,7 @@ export interface KeystoreAccountData {
 
 export interface KeystoreAccountActions {
   rlpEncode: () => Data;
-  getNonce: ({ block }: { block?: BlockTagOrNumber }) => Promise<bigint>;
-  getBalance: ({ block }: { block?: BlockTagOrNumber }) => Promise<bigint>;
-  getState: ({ block }: { block?: BlockTagOrNumber }) => Promise<AccountState>;
+  getNonce: (params?: { block?: BlockTagOrNumber }) => Promise<bigint>;
+  getBalance: (params?: { block?: BlockTagOrNumber }) => Promise<bigint>;
+  getState: (params?: { block?: BlockTagOrNumber }) => Promise<AccountState>;
 }

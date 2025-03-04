@@ -1,5 +1,5 @@
+import { KeystoreAccount } from "./keystoreAccount";
 import { Data } from "./primitives";
-import { KeystoreAccount } from "./transaction";
 
 /**
  * The transaction request object for an update transaction.

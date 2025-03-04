@@ -17,8 +17,8 @@
     "start": "tsx src/index.ts"
   },
   "dependencies": {
-    "@axiom-crypto/keystore-sdk": "link:..",
-    "@axiom-crypto/signature-prover-ecdsa": "link:../../signature-prover-ecdsa"
+    "@axiom-crypto/keystore-sdk": "link:../dist",
+    "@axiom-crypto/signature-prover-ecdsa": "link:../../signature-prover-ecdsa/dist"
   },
   "devDependencies": {
     "tsx": "^4.19.2",

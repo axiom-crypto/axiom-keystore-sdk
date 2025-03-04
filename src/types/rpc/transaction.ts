@@ -1,5 +1,6 @@
+import { KeystoreAccount } from "../keystoreAccount";
 import { Data, Hash, KeystoreAddress, L1Address } from "../primitives";
-import { KeystoreAccount, TransactionType } from "../transaction";
+import { TransactionType } from "../transaction";
 import { HexQuantity } from "./primitives";
 
 export type TransactionOrHashRpc = Hash | L2TransactionRpc;

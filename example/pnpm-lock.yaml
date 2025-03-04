@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@axiom-crypto/keystore-sdk':
-        specifier: link:..
-        version: link:..
+        specifier: link:../dist
+        version: link:../dist
       '@axiom-crypto/signature-prover-ecdsa':
-        specifier: link:../../signature-prover-ecdsa
-        version: link:../../signature-prover-ecdsa
+        specifier: link:../../signature-prover-ecdsa/dist
+        version: link:../../signature-prover-ecdsa/dist
     devDependencies:
       tsx:
         specifier: ^4.19.2

@@ -115,19 +115,19 @@ function keystoreAccountActions({
     rlpEncode: (): Data => {
       return bytesToHex(RLP.encode([address, salt, dataHash, vkey]));
     },
-    getNonce: async ({ block }: { block?: BlockTagOrNumber }): Promise<bigint> => {
+    getNonce: async ({ block }: { block?: BlockTagOrNumber } = {}): Promise<bigint> => {
       if (!nodeClient) {
         throw new Error("A NodeClient is required for `getNonce`");
       }
       return await nodeClient.getTransactionCount({ address, block });
     },
-    getBalance: async ({ block }: { block?: BlockTagOrNumber }): Promise<bigint> => {
+    getBalance: async ({ block }: { block?: BlockTagOrNumber } = {}): Promise<bigint> => {
       if (!nodeClient) {
         throw new Error("A NodeClient is required for `getBalance`");
       }
       return await nodeClient.getBalance({ address, block });
     },
-    getState: async ({ block }: { block?: BlockTagOrNumber }): Promise<AccountState> => {
+    getState: async ({ block }: { block?: BlockTagOrNumber } = {}): Promise<AccountState> => {
       if (!nodeClient) {
         throw new Error("A NodeClient is required for `getState`");
       }

@@ -10,32 +10,39 @@ import {
   Hash,
   SponsoredAuthInputs,
 } from "@/types";
-import Client, { HTTPTransport, RequestManager } from "@open-rpc/client-js";
+import { Client, HTTPTransport, RequestManager } from "@open-rpc/client-js";
 import { keccak256 } from "viem";
 
-/**
- * Extend this interface to add custom fields to your keyData encoder.
- */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface CustomKeyDataEncoderFields {}
+// /**
+//  * Extend this interface to add custom fields to your keyData encoder.
+//  */
+// // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+// export interface CustomKeyDataEncoderFields {}
 
-/**
- * Extend this interface to add custom fields to your authData encoder.
- */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface CustomAuthDataEncoderFields {}
+// /**
+//  * Extend this interface to add custom fields to your authData encoder.
+//  */
+// // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+// export interface CustomAuthDataEncoderFields {}
 
-export interface CustomSignatureProver {
+// /**
+//  * Extend this interface to add custom fields to
+//  */
+// // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+// export interface CustomAuthInputs {}
+
+export interface CustomSignatureProver<KD, AD, AI> {
   url: string;
   vkey: Data;
-  keyDataEncoder: (fields: CustomKeyDataEncoderFields) => Data;
-  authDataEncoder: (fields: CustomAuthDataEncoderFields) => Data;
+  keyDataEncoder: (fields: KD) => Data;
+  authDataEncoder: (fields: AD) => Data;
+  makeAuthInputs: (fields: AI) => AuthInputs;
 }
 
-export interface SignatureProverClient extends CustomSignatureProver {
-  dataHash: () => Data;
+export interface SignatureProverClient<KD, AD, AI> extends CustomSignatureProver<KD, AD, AI> {
+  dataHash: (fields: KD) => Data;
 
-  waitForAuthentication: (txHash: Hash) => Promise<Data>;
+  waitForAuthentication: ({ hash }: { hash: Hash }) => Promise<Data>;
 
   authenticateTransaction: ({
     transaction,
@@ -66,14 +73,14 @@ export interface SignatureProverClient extends CustomSignatureProver {
   }) => Promise<GetSponsoredAuthenticationStatusResponse>;
 }
 
-export interface SignatureProverClientConfig extends CustomSignatureProver {
+export interface SignatureProverClientConfig<KD, AD, AI> extends CustomSignatureProver<KD, AD, AI> {
   pollingIntervalMs?: number;
   pollingRetries?: number;
 }
 
-export function createSignatureProverClient(
-  signatureProver: SignatureProverClientConfig,
-): SignatureProverClient {
+export function createSignatureProverClient<KD, AD, AI>(
+  signatureProver: SignatureProverClientConfig<KD, AD, AI>,
+): SignatureProverClient<KD, AD, AI> {
   const {
     url,
     pollingIntervalMs = DEFAULTS.POLLING_INTERVAL_MS,
@@ -131,16 +138,16 @@ export function createSignatureProverClient(
     });
   };
 
-  const dataHash = (fields: CustomKeyDataEncoderFields) => {
+  const dataHash = (fields: KD) => {
     return keccak256(signatureProver.keyDataEncoder(fields));
   };
 
-  const waitForAuthentication = async (txHash: Hash): Promise<Data> => {
+  const waitForAuthentication = async ({ hash }: { hash: Hash }): Promise<Data> => {
     let attempts = 0;
     while (attempts < pollingRetries) {
       try {
         const status = await getSponsoredAuthenticationStatus({
-          requestHash: txHash,
+          requestHash: hash,
         });
         console.log("Sponsored authentication status:", status.status);
 
@@ -149,7 +156,7 @@ export function createSignatureProverClient(
             if (!status.authenticatedTransaction) {
               throw new Error("No authenticated transaction found");
             }
-            console.log("Sponsor authentication completed");
+            console.log("Sponsored authentication completed");
             return status.authenticatedTransaction;
           case AuthenticationStatusEnum.Failed:
             throw new Error("Transaction authentication failed");
