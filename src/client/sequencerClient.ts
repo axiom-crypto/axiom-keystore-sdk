@@ -67,6 +67,7 @@ export function createSequencerClient(config: SequencerClientConfig): SequencerC
   }: {
     hash: Hash;
   }): Promise<GetTransactionReceiptResponse> => {
+    console.log("Waiting for transaction inclusion, this may take serveral minutes...");
     let attempts = 0;
     while (attempts < pollingRetries) {
       try {

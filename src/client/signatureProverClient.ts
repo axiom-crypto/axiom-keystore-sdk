@@ -13,24 +13,6 @@ import {
 import { Client, HTTPTransport, RequestManager } from "@open-rpc/client-js";
 import { keccak256 } from "viem";
 
-// /**
-//  * Extend this interface to add custom fields to your keyData encoder.
-//  */
-// // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-// export interface CustomKeyDataEncoderFields {}
-
-// /**
-//  * Extend this interface to add custom fields to your authData encoder.
-//  */
-// // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-// export interface CustomAuthDataEncoderFields {}
-
-// /**
-//  * Extend this interface to add custom fields to
-//  */
-// // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-// export interface CustomAuthInputs {}
-
 export interface CustomSignatureProver<KD, AD, AI> {
   url: string;
   vkey: Data;
@@ -90,6 +72,41 @@ export function createSignatureProverClient<KD, AD, AI>(
   const transport = new HTTPTransport(url);
   const client = new Client(new RequestManager([transport]));
 
+  const dataHash = (fields: KD) => {
+    return keccak256(signatureProver.keyDataEncoder(fields));
+  };
+
+  const waitForAuthentication = async ({ hash }: { hash: Hash }): Promise<Data> => {
+    console.log("Waiting for authentication, this may take serveral minutes...");
+    let attempts = 0;
+    while (attempts < pollingRetries) {
+      try {
+        const status = await getSponsoredAuthenticationStatus({
+          requestHash: hash,
+        });
+        switch (status.status) {
+          case AuthenticationStatusEnum.Completed:
+            if (!status.authenticatedTransaction) {
+              throw new Error("No authenticated transaction found");
+            }
+            console.log("Sponsored authentication completed");
+            return status.authenticatedTransaction;
+          case AuthenticationStatusEnum.Failed:
+            throw new Error("Transaction authentication failed");
+          case AuthenticationStatusEnum.Pending:
+            attempts++;
+            await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
+            continue;
+          default:
+            throw new Error("Invalid authentication status");
+        }
+      } catch (error) {
+        throw new Error(`Error waiting for authentication: ${error}`);
+      }
+    }
+    throw new Error(`Timed out after ${(pollingRetries * pollingIntervalMs) / 1000} seconds`);
+  };
+
   const authenticateTransaction = async ({
     transaction,
     authInputs,
@@ -138,53 +155,13 @@ export function createSignatureProverClient<KD, AD, AI>(
     });
   };
 
-  const dataHash = (fields: KD) => {
-    return keccak256(signatureProver.keyDataEncoder(fields));
-  };
-
-  const waitForAuthentication = async ({ hash }: { hash: Hash }): Promise<Data> => {
-    let attempts = 0;
-    while (attempts < pollingRetries) {
-      try {
-        const status = await getSponsoredAuthenticationStatus({
-          requestHash: hash,
-        });
-        console.log("Sponsored authentication status:", status.status);
-
-        switch (status.status) {
-          case AuthenticationStatusEnum.Completed:
-            if (!status.authenticatedTransaction) {
-              throw new Error("No authenticated transaction found");
-            }
-            console.log("Sponsored authentication completed");
-            return status.authenticatedTransaction;
-          case AuthenticationStatusEnum.Failed:
-            throw new Error("Transaction authentication failed");
-          case AuthenticationStatusEnum.Pending:
-            attempts++;
-            await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
-            continue;
-          default:
-            throw new Error("Invalid authentication status");
-        }
-      } catch (error) {
-        if (attempts >= pollingRetries - 1) {
-          throw error;
-        }
-        attempts++;
-        await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
-      }
-    }
-    throw new Error(`Timed out after ${(pollingRetries * pollingIntervalMs) / 1000} seconds`);
-  };
-
   return {
     ...signatureProver,
+    dataHash,
+    waitForAuthentication,
     authenticateTransaction,
     getAuthenticationStatus,
     authenticateSponsoredTransaction,
     getSponsoredAuthenticationStatus,
-    dataHash,
-    waitForAuthentication,
   };
 }

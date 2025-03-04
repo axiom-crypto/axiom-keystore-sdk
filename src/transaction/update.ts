@@ -1,4 +1,4 @@
-import { initAccountFromAddress, KeystoreAccount } from "@/account";
+import { initAccount, KeystoreAccount } from "@/account";
 import { Bytes32, Data, Hash, TransactionType } from "@/types";
 import { DOMAIN, UPDATE_TYPES } from "@/types/eip712";
 import { ecdsaSign } from "@/utils/ecdsa";
@@ -31,19 +31,20 @@ export function createUpdateTransactionClient(tx: UpdateTransaction): UpdateTran
   const isL1Initiated = boolToHex(false, { size: 1 });
   const l1InitiatedNonce = tx.l1InitiatedNonce ?? "0x";
   const feePerGas = numberToHex(tx.feePerGas ?? 0n);
-  const userAcct = initAccountFromAddress({
+  const userAcct = initAccount({
     address: tx.userAcct.address,
+    salt: tx.userAcct.salt,
     dataHash: tx.userAcct.dataHash,
     vkey: tx.userAcct.vkey,
   });
   const sponsorAcctBytes = tx.sponsorAcct
-    ? initAccountFromAddress({
+    ? initAccount({
         address: tx.sponsorAcct.address,
+        salt: tx.sponsorAcct.salt,
         dataHash: tx.sponsorAcct.dataHash,
         vkey: tx.sponsorAcct.vkey,
       }).rlpEncode()
     : "0x";
-  console.log("sponsorAcctBytes", sponsorAcctBytes);
   const toBytes = (): Data => {
     const rlpEncoded = RLP.encode([
       tx.nonce,

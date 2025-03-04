@@ -23,23 +23,13 @@ export function initAccountCounterfactual({
   const paddedDataHash = pad(dataHash, { size: 32 });
   const vkeyHash = keccak256(vkey);
   const keystoreAddress = keccak256(concat([paddedSalt, paddedDataHash, vkeyHash]));
-  const accountData: KeystoreAccountData = {
-    address: keystoreAddress,
-    salt: paddedSalt,
-    dataHash: paddedDataHash,
-    vkey,
-  };
-  const accountActions = keystoreAccountActions({
+  return initAccount({
     address: keystoreAddress,
     salt: paddedSalt,
     dataHash: paddedDataHash,
     vkey,
     nodeClient,
   });
-  return {
-    ...accountData,
-    ...accountActions,
-  };
 }
 
 export function initAccountFromAddress({
@@ -54,15 +44,37 @@ export function initAccountFromAddress({
   nodeClient?: NodeClient;
 }): KeystoreAccount {
   const paddedSalt = pad("0x00", { size: 32 });
-  const accountData: KeystoreAccountData = {
+  return initAccount({
     address,
     salt: paddedSalt,
+    dataHash,
+    vkey,
+    nodeClient,
+  });
+}
+
+export function initAccount({
+  address,
+  salt,
+  dataHash,
+  vkey,
+  nodeClient,
+}: {
+  address: KeystoreAddress;
+  salt: Bytes32;
+  dataHash: Hash;
+  vkey: Data;
+  nodeClient?: NodeClient;
+}): KeystoreAccount {
+  const accountData: KeystoreAccountData = {
+    address,
+    salt,
     dataHash,
     vkey,
   };
   const accountActions = keystoreAccountActions({
     address,
-    salt: paddedSalt,
+    salt,
     dataHash,
     vkey,
     nodeClient,
