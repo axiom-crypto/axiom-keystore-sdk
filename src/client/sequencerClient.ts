@@ -26,13 +26,13 @@ export interface SequencerClient extends NodeClient {
 
   gasPrice: () => Promise<GasPriceResponse>;
 
-  estimateGas: ({ transaction }: { transaction: Data }) => Promise<EstimateGasResponse>;
+  estimateGas: ({ txData }: { txData: Data }) => Promise<EstimateGasResponse>;
 
   estimateL1DataFee: ({
-    transaction,
+    txData,
     block,
   }: {
-    transaction: Data;
+    txData: Data;
     block?: BlockTagOrNumber;
   }) => Promise<EstimateL1DataFeeResponse>;
 }
@@ -97,25 +97,21 @@ export function createSequencerClient(config: SequencerClientConfig): SequencerC
     return formatGasPriceResponse(res);
   };
 
-  const estimateGas = async ({
-    transaction,
-  }: {
-    transaction: Data;
-  }): Promise<EstimateGasResponse> => {
-    const res = await client.request({ method: "keystore_estimateGas", params: [transaction] });
+  const estimateGas = async ({ txData }: { txData: Data }): Promise<EstimateGasResponse> => {
+    const res = await client.request({ method: "keystore_estimateGas", params: [txData] });
     return formatEstimateGasResponse(res);
   };
 
   const estimateL1DataFee = async ({
-    transaction,
+    txData,
     block,
   }: {
-    transaction: Data;
+    txData: Data;
     block?: BlockTagOrNumber;
   }): Promise<EstimateL1DataFeeResponse> => {
     const res = await client.request({
       method: "keystore_estimateL1DataFee",
-      params: [transaction, formatBlockTagOrNumber(block)],
+      params: [txData, formatBlockTagOrNumber(block)],
     });
     return formatEstimateL1DataFeeResponse(res);
   };

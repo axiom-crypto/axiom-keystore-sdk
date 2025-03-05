@@ -1,6 +1,7 @@
-import { initAccount, KeystoreAccount } from "@/account";
+import { initAccount } from "@/account";
 import { Bytes32, Data, Hash, TransactionType } from "@/types";
 import { DOMAIN, UPDATE_TYPES } from "@/types/eip712";
+import { KeystoreAccount } from "@/types/keystoreAccount";
 import { ecdsaSign } from "@/utils/ecdsa";
 import { RLP } from "@ethereumjs/rlp";
 import { boolToHex, bytesToHex, encodePacked, hashTypedData, keccak256, numberToHex } from "viem";
