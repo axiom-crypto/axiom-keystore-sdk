@@ -84,7 +84,9 @@ export function createSequencerClient(config: SequencerClientConfig): SequencerC
             continue;
         }
       } catch {
-        console.log("Transaction not yet included in block");
+        // If getTransactionReceipt fails (transaction not yet included), continue polling
+        attempts++;
+        await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
       }
     }
     throw new Error(`Timed out after ${(pollingRetries * pollingIntervalMs) / 1000} seconds`);

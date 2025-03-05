@@ -8,8 +8,8 @@ import {
   L1Address,
   initAccountFromAddress,
 } from "@axiom-crypto/keystore-sdk";
+import { generateRandomHex } from "@axiom-crypto/keystore-sdk/utils/random";
 import { MOfNEcdsaSignatureProver } from "@axiom-crypto/signature-prover-ecdsa";
-import { pad } from "viem";
 
 const NODE_URL = "https://keystore-rpc-node.axiom.xyz";
 const SEQUENCER_URL = "https://keystore-rpc-sequencer.axiom.xyz";
@@ -38,13 +38,11 @@ async function main() {
     m: BigInt(1),
     signersList: [account.address],
   });
-  console.log("Data hash:", dataHash);
 
   const nodeClient = createNodeClient({ url: NODE_URL });
   const sequencerClient = createSequencerClient({ url: SEQUENCER_URL });
 
-  // const salt = generateRandomHex(32);
-  const salt = pad("0x08", { size: 32 });
+  const salt = generateRandomHex(32);
   const userAcct = initAccountCounterfactual({
     salt,
     dataHash,
@@ -67,9 +65,9 @@ async function main() {
     userAcct,
     sponsorAcct,
   });
-  console.log("Transaction request:", updateTx);
   const signedTx = await updateTx.sign(account.privateKey);
 
+  console.log("Authenticating sponsored transaction...");
   const userAuthInputs = mOfNEcdsaClient.makeAuthInputs({
     codehash: EXAMPLE_USER_CODEHASH,
     signatures: [signedTx],
@@ -89,12 +87,9 @@ async function main() {
       },
     },
   });
-
   const authenticatedTx = await mOfNEcdsaClient.waitForAuthentication({ hash: authHash });
-  console.log("Authenticated transaction:", authenticatedTx);
-
   const txHash = await sequencerClient.sendRawTransaction({ data: authenticatedTx });
-  console.log("Transaction sent to sequencer:", txHash);
+  console.log("Transaction authenticated. Sending to sequencer:", txHash);
 
   const receipt = await sequencerClient.waitForTransactionInclusion({ hash: txHash });
   console.log("Transaction receipt:", receipt);

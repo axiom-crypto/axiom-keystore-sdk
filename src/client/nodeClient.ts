@@ -131,7 +131,7 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     const res = await client.request({ method: "keystore_blockNumber", params: [] });
     return formatBlockNumberResponse(res);
   };
- 
+
   const getBalance = async ({
     address,
     block,
@@ -145,7 +145,7 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     });
     return formatGetBalanceResponse(res);
   };
-  
+
   const getStateAt = async ({
     address,
     block,
@@ -156,8 +156,8 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     await client.request({
       method: "keystore_getStateAt",
       params: [address, formatBlockTagOrNumber(block)],
-   });
-  
+    });
+
   const getTransactionCount = async ({
     address,
     block,
@@ -171,7 +171,7 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     });
     return formatGetTransactionCountResponse(res);
   };
-  
+
   const getProof = async ({
     address,
     block,
@@ -182,9 +182,9 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     await client.request({
       method: "keystore_getProof",
       params: [address, formatBlockTagOrNumber(block)],
-   });
-  
-    const call = async ({
+    });
+
+  const call = async ({
     transaction,
     block,
   }: {
@@ -197,7 +197,7 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     });
     return formatCallResponse(res);
   };
-  
+
   const getTransactionByHash = async ({
     hash,
   }: {
@@ -209,7 +209,7 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     });
     return formatGetTransactionByHashResponse(res);
   };
-  
+
   const getTransactionReceipt = async ({
     hash,
   }: {
@@ -221,7 +221,7 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     });
     return formatGetTransactionReceiptResponse(res);
   };
-  
+
   const getBlockNumberByStateRoot = async ({
     stateRoot,
   }: {
@@ -233,7 +233,7 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     });
     return formatGetBlockNumberByStateRootResponse(res);
   };
-  
+
   const getBlockByNumber = async ({
     block,
     txKind,
@@ -247,7 +247,7 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     });
     return formatGetBlockByNumberResponse(res);
   };
-  
+
   const getBlockByHash = async ({
     hash,
     txKind,

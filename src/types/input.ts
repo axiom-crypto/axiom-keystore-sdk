@@ -1,7 +1,3 @@
-// import { encodeMOfNData } from "../dataHash";
-// import { Data, Hash, L1Address } from "./primitives";
-// import { concat } from "viem";
-
 import { Data } from "./primitives";
 
 export type AuthInputs = {
@@ -28,15 +24,8 @@ export type SponsoredAuthInputs =
       };
     };
 
-// export function makeMOfNEcdsaAuthInputs(
-//   codeHash: Hash,
-//   signatures: Data[],
-//   eoaAddrs: L1Address[],
-// ): AuthInputs {
-//   const keyData = encodeMOfNData(codeHash, BigInt(signatures.length), eoaAddrs);
-//   const authData = signatures.length > 0 ? concat(signatures) : "0x";
-//   return {
-//     keyData,
-//     authData,
-//   };
-// }
+export type AuthenticateSponsoredTransactionSponsoredAuthInputs = {
+  userAuthInputs?: AuthInputs;
+  sponsorAuthInputs?: AuthInputs;
+  userProof?: Data;
+};
