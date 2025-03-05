@@ -6,8 +6,8 @@ import {
 } from "../src";
 import { keccak256, pad } from "viem";
 
-// Default accounts from Anvil
-export const ANVIL_ACCOUNTS: { pk: KeystoreAddress; addr: L1Address }[] = [
+// Accounts from test seed phrase `test test test test test test test test test test test junk`
+export const TEST_ACCOUNTS: { pk: KeystoreAddress; addr: L1Address }[] = [
   {
     pk: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
     addr: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",

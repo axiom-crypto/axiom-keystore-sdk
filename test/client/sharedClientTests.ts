@@ -5,6 +5,7 @@ import {
   GetTransactionReceiptResponse,
   NodeClient,
   TransactionStatus,
+  UpdateTransaction,
 } from "../../src";
 import {
   EMPTY_HEX,
@@ -107,14 +108,16 @@ export function runNodeClientTests(client: NodeClient) {
   });
 
   test("keystore_getTransactionByHash", async () => {
-    const tx1 = await client.getTransactionByHash({
+    const tx1 = (await client.getTransactionByHash({
       hash: NON_SPONSORED_UPDATE_TX_HASH,
-    });
+    })) as UpdateTransaction;
     expect(tx1.hash).toBe(NON_SPONSORED_UPDATE_TX_HASH);
     expect(tx1.sponsorAcct).toBeUndefined();
     expect(tx1.sponsorProof).toBeUndefined();
 
-    const tx2 = await client.getTransactionByHash({ hash: SPONSORED_UPDATE_TX_HASH });
+    const tx2 = (await client.getTransactionByHash({
+      hash: SPONSORED_UPDATE_TX_HASH,
+    })) as UpdateTransaction;
     expect(tx2.hash).toBe(SPONSORED_UPDATE_TX_HASH);
     expect(tx2.sponsorAcct).toBeDefined();
     expect(tx2.sponsorProof).toBeDefined();

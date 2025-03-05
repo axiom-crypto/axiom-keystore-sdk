@@ -1,7 +1,7 @@
 import { createSignatureProverClient, Data, SignatureProverClient } from "../../src";
 import { ecdsaSign } from "../../src/utils/ecdsa";
 import {
-  ANVIL_ACCOUNTS,
+  TEST_ACCOUNTS,
   CODE_HASH,
   EXAMPLE_SPONSOR_DATA_HASH,
   EXAMPLE_SPONSOR_EOA,
@@ -41,8 +41,8 @@ describe("Signature Prover Client", () => {
     expect(authData1).toBe("0x");
 
     const sigs: Data[] = [];
-    for (let i = 0; i < ANVIL_ACCOUNTS.length; i++) {
-      const sig = await ecdsaSign(ANVIL_ACCOUNTS[i].pk, EXAMPLE_SPONSOR_DATA_HASH);
+    for (let i = 0; i < TEST_ACCOUNTS.length; i++) {
+      const sig = await ecdsaSign(TEST_ACCOUNTS[i].pk, EXAMPLE_SPONSOR_DATA_HASH);
       sigs.push(sig);
     }
     const authData2 = signatureProverClient.authDataEncoder({

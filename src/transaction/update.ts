@@ -13,7 +13,7 @@ export interface BaseTransactionAction {
   sign: (pk: Bytes32) => Promise<Data>;
 }
 
-export interface UpdateTransaction {
+export interface UpdateTransactionData {
   nonce: bigint;
   feePerGas?: bigint;
   newUserData: Data;
@@ -26,9 +26,9 @@ export interface UpdateTransaction {
   isL1Initiated?: boolean;
 }
 
-export interface UpdateTransactionClient extends UpdateTransaction, BaseTransactionAction {}
+export interface UpdateTransactionClient extends UpdateTransactionData, BaseTransactionAction {}
 
-export function createUpdateTransactionClient(tx: UpdateTransaction): UpdateTransactionClient {
+export function createUpdateTransactionClient(tx: UpdateTransactionData): UpdateTransactionClient {
   const isL1Initiated = boolToHex(false, { size: 1 });
   const l1InitiatedNonce = tx.l1InitiatedNonce ?? "0x";
   const feePerGas = numberToHex(tx.feePerGas ?? 0n);

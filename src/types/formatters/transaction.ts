@@ -4,7 +4,7 @@ import {
   L2Transaction,
   TransactionOrHash,
   TransactionType,
-  // UpdateTransaction,
+  UpdateTransaction,
   WithdrawTransaction,
 } from "../transaction";
 import {
@@ -15,8 +15,6 @@ import {
   UpdateTransactionRpc,
   WithdrawTransactionRpc,
 } from "../rpc/transaction";
-import { UpdateTransaction } from "@/transaction";
-// import { KeystoreAccountBuilder } from "../../account";
 
 export function formatTransactionOrHash(rpcObj: TransactionOrHashRpc): TransactionOrHash {
   if (typeof rpcObj === "string") {
