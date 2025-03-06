@@ -1,4 +1,3 @@
-// import { DEFAULTS } from "@/constants/global";
 import {
   BlockNumberResponse,
   BlockTagOrNumber,
@@ -16,6 +15,8 @@ import {
   GetTransactionReceiptResponse,
   Hash,
   KeystoreAddress,
+  NodeClient,
+  NodeClientConfig,
   SyncStatusResponse,
 } from "@/types";
 import {
@@ -34,90 +35,8 @@ import {
 } from "@/types/formatters";
 import { Client, HTTPTransport, RequestManager } from "@open-rpc/client-js";
 
-export interface NodeClient {
-  syncStatus: () => Promise<SyncStatusResponse>;
-
-  blockNumber: () => Promise<BlockNumberResponse>;
-
-  getBalance: ({
-    address,
-    block,
-  }: {
-    address: KeystoreAddress;
-    block?: BlockTagOrNumber;
-  }) => Promise<GetBalanceResponse>;
-
-  getStateAt: ({
-    address,
-    block,
-  }: {
-    address: KeystoreAddress;
-    block?: BlockTagOrNumber;
-  }) => Promise<GetStateAtResponse>;
-
-  getTransactionCount: ({
-    address,
-    block,
-  }: {
-    address: KeystoreAddress;
-    block?: BlockTagOrNumber;
-  }) => Promise<GetTransactionCountResponse>;
-
-  getProof: ({
-    address,
-    block,
-  }: {
-    address: KeystoreAddress;
-    block?: BlockTagOrNumber;
-  }) => Promise<GetProofResponse>;
-
-  call: ({
-    transaction,
-    block,
-  }: {
-    transaction: Data;
-    block?: BlockTagOrNumber;
-  }) => Promise<CallResponse>;
-
-  getTransactionByHash: ({ hash }: { hash: Hash }) => Promise<GetTransactionByHashResponse>;
-
-  getTransactionReceipt: ({ hash }: { hash: Hash }) => Promise<GetTransactionReceiptResponse>;
-
-  getBlockNumberByStateRoot: ({
-    stateRoot,
-  }: {
-    stateRoot: Hash;
-  }) => Promise<GetBlockNumberByStateRootResponse>;
-
-  getBlockByNumber: ({
-    block,
-    txKind,
-  }: {
-    block: BlockTagOrNumber;
-    txKind: BlockTransactionsKind;
-  }) => Promise<GetBlockByNumberResponse>;
-
-  getBlockByHash: ({
-    hash,
-    txKind,
-  }: {
-    hash: Hash;
-    txKind: BlockTransactionsKind;
-  }) => Promise<GetBlockByHashResponse>;
-}
-
-export interface NodeClientConfig {
-  url: string;
-  pollingIntervalMs?: number;
-  pollingRetries?: number;
-}
-
 export function createNodeClient(config: NodeClientConfig): NodeClient {
-  const {
-    url,
-    // pollingIntervalMs = DEFAULTS.POLLING_INTERVAL_MS,
-    // pollingRetries = DEFAULTS.POLLING_RETRIES,
-  } = config;
+  const { url } = config;
 
   const transport = new HTTPTransport(url);
   const client = new Client(new RequestManager([transport]));

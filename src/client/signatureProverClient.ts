@@ -8,57 +8,12 @@ import {
   GetAuthenticationStatusResponse,
   GetSponsoredAuthenticationStatusResponse,
   Hash,
+  SignatureProverClient,
+  SignatureProverClientConfig,
   SponsoredAuthInputs,
 } from "@/types";
 import { Client, HTTPTransport, RequestManager } from "@open-rpc/client-js";
 import { keccak256 } from "viem";
-
-export interface CustomSignatureProver<KD, AD, AI> {
-  url: string;
-  vkey: Data;
-  keyDataEncoder: (fields: KD) => Data;
-  authDataEncoder: (fields: AD) => Data;
-  makeAuthInputs: (fields: AI) => AuthInputs;
-}
-
-export interface SignatureProverClient<KD, AD, AI> extends CustomSignatureProver<KD, AD, AI> {
-  dataHash: (fields: KD) => Data;
-
-  waitForAuthentication: ({ hash }: { hash: Hash }) => Promise<Data>;
-
-  authenticateTransaction: ({
-    transaction,
-    authInputs,
-  }: {
-    transaction: Data;
-    authInputs: AuthInputs;
-  }) => Promise<AuthenticateTransactionResponse>;
-
-  getAuthenticationStatus: ({
-    requestHash,
-  }: {
-    requestHash: Hash;
-  }) => Promise<GetAuthenticationStatusResponse>;
-
-  authenticateSponsoredTransaction: ({
-    transaction,
-    sponsoredAuthInputs,
-  }: {
-    transaction: Data;
-    sponsoredAuthInputs: SponsoredAuthInputs;
-  }) => Promise<AuthenticateSponsoredTransactionResponse>;
-
-  getSponsoredAuthenticationStatus: ({
-    requestHash,
-  }: {
-    requestHash: Hash;
-  }) => Promise<GetSponsoredAuthenticationStatusResponse>;
-}
-
-export interface SignatureProverClientConfig<KD, AD, AI> extends CustomSignatureProver<KD, AD, AI> {
-  pollingIntervalMs?: number;
-  pollingRetries?: number;
-}
 
 export function createSignatureProverClient<KD, AD, AI>(
   signatureProver: SignatureProverClientConfig<KD, AD, AI>,

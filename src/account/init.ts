@@ -1,5 +1,12 @@
-import { NodeClient } from "@/client";
-import { AccountState, BlockTagOrNumber, Bytes32, Data, Hash, KeystoreAddress } from "@/types";
+import {
+  AccountState,
+  BlockTagOrNumber,
+  Bytes32,
+  Data,
+  Hash,
+  KeystoreAddress,
+  NodeClient,
+} from "@/types";
 import {
   KeystoreAccount,
   KeystoreAccountActions,
