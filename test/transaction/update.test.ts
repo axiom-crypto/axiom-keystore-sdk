@@ -48,6 +48,63 @@ describe("Update Transaction", () => {
     );
   });
 
+  test("Get EIP712 Typed Data", () => {
+    const typedData = updateTx.toTypedData();
+    expect(typedData).toEqual({
+      domain: {
+        chainId: 999999999n,
+        name: "AxiomKeystore",
+        version: "1",
+      },
+      message: {
+        feePerGas: "0x0",
+        newUserData: "0x1234",
+        newUserVkey: "0x1234",
+        nonce: 0n,
+        userKeystoreAddress: "0xdafd7a698501896eefef0a3893d88ca07bc07a09888ee54ab60a4b079baa2179",
+      },
+      primaryType: "Update",
+      types: {
+        EIP712Domain: [
+          {
+            name: "name",
+            type: "string",
+          },
+          {
+            name: "version",
+            type: "string",
+          },
+          {
+            name: "chainId",
+            type: "uint256",
+          },
+        ],
+        Update: [
+          {
+            name: "userKeystoreAddress",
+            type: "bytes32",
+          },
+          {
+            name: "nonce",
+            type: "uint256",
+          },
+          {
+            name: "feePerGas",
+            type: "bytes",
+          },
+          {
+            name: "newUserData",
+            type: "bytes",
+          },
+          {
+            name: "newUserVkey",
+            type: "bytes",
+          },
+        ],
+      },
+    });
+  });
+
   test("Get Transaction Hash", () => {
     const txHash = updateTx.txHash();
     expect(txHash).toEqual("0xc2cc175cabd6f3f13e3a9646155d56cff7126d0a89653cdfbbc4fbaece6cd82e");

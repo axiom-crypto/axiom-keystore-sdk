@@ -22,9 +22,7 @@ export const TEST_ACCOUNTS: { pk: KeystoreAddress; addr: L1Address }[] = [
   },
 ];
 
-export const NODE_URL = "https://keystore-rpc-node.axiom.xyz";
 export const SIGNATURE_PROVER_URL = "https://keystore-rpc-signatureprover.axiom.xyz";
-export const SEQUENCER_URL = "https://keystore-rpc-sequencer.axiom.xyz";
 
 export const NON_EXISTING_ACCOUNT_ADDRESS =
   "0x1111111111111111111111111111111111111111111111111111111111111111";

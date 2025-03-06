@@ -18,7 +18,7 @@ import {
   formatEstimateL1DataFeeResponse,
   formatGasPriceResponse,
 } from "@/types/formatters";
-import { DEFAULTS } from "@/constants";
+import { DEFAULTS } from "@/config";
 import { createNodeClient } from "./nodeClient";
 
 export function createSequencerClient(config: SequencerClientConfig): SequencerClient {

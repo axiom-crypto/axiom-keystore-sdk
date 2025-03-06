@@ -1,5 +1,4 @@
-import { createNodeClient, NodeClient } from "../../src";
-import { NODE_URL } from "../testUtils";
+import { createNodeClient, NodeClient, NODE_URL } from "../../src";
 import { runNodeClientTests } from "./sharedClientTests";
 
 describe("Keystore Node Client", () => {

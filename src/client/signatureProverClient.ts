@@ -1,4 +1,3 @@
-import { DEFAULTS } from "@/constants";
 import {
   AuthenticateSponsoredTransactionResponse,
   AuthenticateTransactionResponse,
@@ -12,6 +11,7 @@ import {
   SignatureProverClientConfig,
   SponsoredAuthInputs,
 } from "@/types";
+import { DEFAULTS } from "@/config";
 import { Client, HTTPTransport, RequestManager } from "@open-rpc/client-js";
 import { keccak256 } from "viem";
 

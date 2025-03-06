@@ -3,8 +3,9 @@ import {
   createSequencerClient,
   createUpdateTransactionClient,
   SequencerClient,
+  SEQUENCER_URL,
 } from "../../src";
-import { SEQUENCER_URL, TEST_TX_REQ } from "../testUtils";
+import { TEST_TX_REQ } from "../testUtils";
 import { runNodeClientTests } from "./sharedClientTests";
 
 describe("Keystore Sequencer Client", () => {

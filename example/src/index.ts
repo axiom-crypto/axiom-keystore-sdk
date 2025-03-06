@@ -7,14 +7,12 @@ import {
   Bytes32,
   L1Address,
   initAccountFromAddress,
+  NODE_URL,
+  SEQUENCER_URL,
 } from "@axiom-crypto/keystore-sdk";
 import { generateRandomHex } from "@axiom-crypto/keystore-sdk/utils/random";
 import { MOfNEcdsaSignatureProver } from "@axiom-crypto/signature-prover-ecdsa";
 import { keccak256 } from "viem";
-
-// Axiom Keystore Rollup RPC endpoints
-const NODE_URL = "https://keystore-rpc-node.axiom.xyz";
-const SEQUENCER_URL = "https://keystore-rpc-sequencer.axiom.xyz";
 
 // Example codehash for the User account
 const EXAMPLE_USER_CODEHASH = "0x595b7552e60f6430c898abc2b292aa805e94834a576f57969406940f6d12d4d9";

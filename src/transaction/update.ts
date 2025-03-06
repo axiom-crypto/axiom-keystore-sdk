@@ -4,10 +4,19 @@ import { DOMAIN, UPDATE_TYPES } from "@/types/eip712";
 import { KeystoreAccount } from "@/types/keystoreAccount";
 import { ecdsaSign } from "@/utils/ecdsa";
 import { RLP } from "@ethereumjs/rlp";
-import { boolToHex, bytesToHex, encodePacked, hashTypedData, keccak256, numberToHex } from "viem";
+import {
+  boolToHex,
+  bytesToHex,
+  encodePacked,
+  hashTypedData,
+  HashTypedDataParameters,
+  keccak256,
+  numberToHex,
+} from "viem";
 
 export interface BaseTransactionAction {
   toBytes: () => Data;
+  toTypedData: () => HashTypedDataParameters;
   txHash: () => Hash;
   userMsgHash: () => Hash;
   sign: (pk: Bytes32) => Promise<Data>;
@@ -46,6 +55,7 @@ export function createUpdateTransactionClient(tx: UpdateTransactionData): Update
         vkey: tx.sponsorAcct.vkey,
       }).rlpEncode()
     : "0x";
+
   const toBytes = (): Data => {
     const rlpEncoded = RLP.encode([
       tx.nonce,
@@ -67,33 +77,25 @@ export function createUpdateTransactionClient(tx: UpdateTransactionData): Update
     );
   };
 
+  const toTypedData = (): HashTypedDataParameters => {
+    return {
+      domain: DOMAIN,
+      types: UPDATE_TYPES,
+      primaryType: "Update",
+      message: {
+        userKeystoreAddress: userAcct.address,
+        nonce: tx.nonce,
+        feePerGas,
+        newUserData: tx.newUserData,
+        newUserVkey: tx.newUserVkey,
+      },
+    };
+  };
+
   const txHash = (): Hash => keccak256(toBytes());
 
   const userMsgHash = (): Hash => {
-    console.log("hashTypedData", {
-      domain: DOMAIN,
-      types: UPDATE_TYPES,
-      primaryType: "Update",
-      message: {
-        userKeystoreAddress: userAcct.address,
-        nonce: tx.nonce,
-        feePerGas,
-        newUserData: tx.newUserData,
-        newUserVkey: tx.newUserVkey,
-      },
-    });
-    return hashTypedData({
-      domain: DOMAIN,
-      types: UPDATE_TYPES,
-      primaryType: "Update",
-      message: {
-        userKeystoreAddress: userAcct.address,
-        nonce: tx.nonce,
-        feePerGas,
-        newUserData: tx.newUserData,
-        newUserVkey: tx.newUserVkey,
-      },
-    });
+    return hashTypedData(toTypedData());
   };
 
   const sign = async (pk: Bytes32): Promise<Data> => {
@@ -113,6 +115,7 @@ export function createUpdateTransactionClient(tx: UpdateTransactionData): Update
     l1InitiatedNonce: tx.l1InitiatedNonce,
     isL1Initiated: tx.isL1Initiated,
     toBytes,
+    toTypedData,
     txHash,
     userMsgHash,
     sign,
