@@ -72,9 +72,7 @@ async function main() {
 
   // Create a client to handle the Update transaction type, which is used to update the user
   // keystore account's data and vkey.
-  const updateTx = createUpdateTransactionClient({
-    nonce: await userAcct.getNonce(),
-    feePerGas: await sequencerClient.gasPrice(),
+  const updateTx = await createUpdateTransactionClient({
     newUserData: keyData,
     newUserVkey: mOfNEcdsaClient.vkey,
     userAcct,

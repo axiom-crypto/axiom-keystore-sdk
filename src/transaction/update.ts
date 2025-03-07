@@ -1,7 +1,15 @@
 import { initAccount } from "@/account";
-import { Bytes32, Data, Hash, TransactionType } from "@/types";
+import { createNodeClient, createSequencerClient } from "@/client";
+import { NODE_URL, SEQUENCER_URL } from "@/constants";
+import {
+  Bytes32,
+  Data,
+  Hash,
+  TransactionType,
+  UpdateTransactionClient,
+  UpdateTransactionInputs,
+} from "@/types";
 import { DOMAIN, UPDATE_TYPES } from "@/types/eip712";
-import { KeystoreAccount } from "@/types/keystoreAccount";
 import { ecdsaSign } from "@/utils/ecdsa";
 import { RLP } from "@ethereumjs/rlp";
 import {
@@ -12,53 +20,60 @@ import {
   HashTypedDataParameters,
   keccak256,
   numberToHex,
+  pad,
 } from "viem";
 
-export interface BaseTransactionAction {
-  toBytes: () => Data;
-  toTypedData: () => HashTypedDataParameters;
-  txHash: () => Hash;
-  userMsgHash: () => Hash;
-  sign: (pk: Bytes32) => Promise<Data>;
-}
+export async function createUpdateTransactionClient(
+  tx: UpdateTransactionInputs,
+): Promise<UpdateTransactionClient> {
+  const nodeClient = createNodeClient({ url: tx.nodeClientUrl ?? NODE_URL });
+  const nonce =
+    tx.nonce ??
+    (await (async () => {
+      try {
+        return await tx.userAcct.getNonce();
+      } catch {
+        return await nodeClient.getTransactionCount({ address: tx.userAcct.address });
+      }
+    })());
 
-export interface UpdateTransactionData {
-  nonce: bigint;
-  feePerGas?: bigint;
-  newUserData: Data;
-  newUserVkey: Data;
-  userAcct: KeystoreAccount;
-  sponsorAcct?: KeystoreAccount;
-  userProof?: Data;
-  sponsorProof?: Data;
-  l1InitiatedNonce?: bigint;
-  isL1Initiated?: boolean;
-}
+  const feePerGasBigInt =
+    tx.feePerGas ??
+    (await (async () => {
+      const sequencerClient = createSequencerClient({
+        url: tx.sequencerClientUrl ?? SEQUENCER_URL,
+      });
+      return await sequencerClient.gasPrice();
+    })());
+  const feePerGas = numberToHex(feePerGasBigInt);
 
-export interface UpdateTransactionClient extends UpdateTransactionData, BaseTransactionAction {}
-
-export function createUpdateTransactionClient(tx: UpdateTransactionData): UpdateTransactionClient {
   const isL1Initiated = boolToHex(false, { size: 1 });
   const l1InitiatedNonce = tx.l1InitiatedNonce ?? "0x";
-  const feePerGas = numberToHex(tx.feePerGas ?? 0n);
+
   const userAcct = initAccount({
     address: tx.userAcct.address,
-    salt: tx.userAcct.salt,
+    salt: nonce > 0n ? pad("0x00", { size: 32 }) : tx.userAcct.salt,
     dataHash: tx.userAcct.dataHash,
     vkey: tx.userAcct.vkey,
   });
-  const sponsorAcctBytes = tx.sponsorAcct
-    ? initAccount({
-        address: tx.sponsorAcct.address,
-        salt: tx.sponsorAcct.salt,
-        dataHash: tx.sponsorAcct.dataHash,
-        vkey: tx.sponsorAcct.vkey,
-      }).rlpEncode()
-    : "0x";
+
+  const sponsorNonce =
+    tx.sponsorAcct === undefined
+      ? 0n
+      : await nodeClient.getTransactionCount({ address: tx.sponsorAcct.address });
+  const sponsorAcct =
+    tx.sponsorAcct &&
+    initAccount({
+      address: tx.sponsorAcct.address,
+      salt: sponsorNonce > 0n ? pad("0x00", { size: 32 }) : tx.sponsorAcct.salt,
+      dataHash: tx.sponsorAcct.dataHash,
+      vkey: tx.sponsorAcct.vkey,
+    });
+  const sponsorAcctBytes = sponsorAcct ? sponsorAcct.rlpEncode() : "0x";
 
   const toBytes = (): Data => {
     const rlpEncoded = RLP.encode([
-      tx.nonce,
+      nonce,
       feePerGas,
       tx.newUserData,
       tx.newUserVkey,
@@ -84,7 +99,7 @@ export function createUpdateTransactionClient(tx: UpdateTransactionData): Update
       primaryType: "Update",
       message: {
         userKeystoreAddress: userAcct.address,
-        nonce: tx.nonce,
+        nonce,
         feePerGas,
         newUserData: tx.newUserData,
         newUserVkey: tx.newUserVkey,
@@ -104,12 +119,12 @@ export function createUpdateTransactionClient(tx: UpdateTransactionData): Update
   };
 
   return {
-    nonce: tx.nonce,
-    feePerGas: tx.feePerGas,
+    nonce,
+    feePerGas: feePerGasBigInt,
     newUserData: tx.newUserData,
     newUserVkey: tx.newUserVkey,
     userAcct,
-    sponsorAcct: tx.sponsorAcct,
+    sponsorAcct,
     userProof: tx.userProof,
     sponsorProof: tx.sponsorProof,
     l1InitiatedNonce: tx.l1InitiatedNonce,
