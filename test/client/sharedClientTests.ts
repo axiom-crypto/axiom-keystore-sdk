@@ -100,7 +100,7 @@ export function runNodeClientTests(client: NodeClient) {
   });
 
   test("keystore_call", async () => {
-    const tx = createUpdateTransactionClient(TEST_TX_REQ);
+    const tx = await createUpdateTransactionClient(TEST_TX_REQ);
     await client.call({
       transaction: tx.toBytes(),
       block: BlockTag.Latest,

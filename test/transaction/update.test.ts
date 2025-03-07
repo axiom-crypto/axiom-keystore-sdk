@@ -16,7 +16,7 @@ import {
 describe("Update Transaction", () => {
   let updateTx: UpdateTransactionClient;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     const nodeClient = createNodeClient({
       url: "https://keystore-rpc-node.axiom.xyz",
     });
@@ -32,7 +32,7 @@ describe("Update Transaction", () => {
       vkey: M_OF_N_ECDSA_VKEY,
       nodeClient,
     });
-    updateTx = createUpdateTransactionClient({
+    updateTx = await createUpdateTransactionClient({
       nonce: 0n,
       newUserData: "0x1234",
       newUserVkey: "0x1234",

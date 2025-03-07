@@ -34,7 +34,7 @@ describe("Keystore Sequencer Client", () => {
     });
 
     test("keystore_estimateL1DataFee", async () => {
-      const tx = createUpdateTransactionClient(TEST_TX_REQ);
+      const tx = await createUpdateTransactionClient(TEST_TX_REQ);
       const l1FeeEstimate = await sequencerClient.estimateL1DataFee({
         txData: tx.toBytes(),
         block: BlockTag.Latest,
