@@ -7,8 +7,8 @@ import {
   UpdateTransactionClient,
 } from "../../src";
 import {
-  EXAMPLE_SPONSOR_ADDRESS,
-  EXAMPLE_SPONSOR_DATA_HASH,
+  AXIOM_SPONSOR_ADDRESS,
+  AXIOM_SPONSOR_DATA_HASH,
   M_OF_N_ECDSA_VKEY,
   TEST_ACCOUNTS,
 } from "../testUtils";
@@ -27,8 +27,8 @@ describe("Update Transaction", () => {
       nodeClient,
     });
     const sponsorAcct = initAccountFromAddress({
-      address: EXAMPLE_SPONSOR_ADDRESS,
-      dataHash: EXAMPLE_SPONSOR_DATA_HASH,
+      address: AXIOM_SPONSOR_ADDRESS,
+      dataHash: AXIOM_SPONSOR_DATA_HASH,
       vkey: M_OF_N_ECDSA_VKEY,
       nodeClient,
     });

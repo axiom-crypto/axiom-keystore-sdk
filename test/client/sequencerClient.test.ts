@@ -28,7 +28,7 @@ describe("Keystore Sequencer Client", () => {
     });
 
     test("keystore_estimateGas", async () => {
-      const tx = createUpdateTransactionClient(TEST_TX_REQ);
+      const tx = await createUpdateTransactionClient(TEST_TX_REQ);
       const gasEstimate = await sequencerClient.estimateGas({ txData: tx.toBytes() });
       expect(typeof gasEstimate).toBe("bigint");
     });

@@ -1,11 +1,6 @@
 import { createSignatureProverClient, Data, SignatureProverClient } from "../../src";
 import { ecdsaSign } from "../../src/utils/ecdsa";
-import {
-  TEST_ACCOUNTS,
-  CODE_HASH,
-  EXAMPLE_SPONSOR_DATA_HASH,
-  EXAMPLE_SPONSOR_EOA,
-} from "../testUtils";
+import { TEST_ACCOUNTS, CODE_HASH, AXIOM_SPONSOR_DATA_HASH, AXIOM_SPONSOR_EOA } from "../testUtils";
 import {
   EXAMPLE_SIGNATURE_PROVER_URL,
   EXAMPLE_SIGNATURE_PROVER_VKEY,
@@ -29,7 +24,7 @@ describe("Signature Prover Client", () => {
   test("Encode keyData", async () => {
     const keyData = signatureProverClient.keyDataEncoder({
       codehash: CODE_HASH,
-      signersList: [EXAMPLE_SPONSOR_EOA],
+      signersList: [AXIOM_SPONSOR_EOA],
     });
     expect(keyData).toBe(
       "0x00595b7552e60f6430c898abc2b292aa805e94834a576f57969406940f6d12d4d900000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000001000000000000000000000000d7548a3ed8c51fa30d26ff2d7db5c33d27fd48f2",
@@ -44,7 +39,7 @@ describe("Signature Prover Client", () => {
 
     const sigs: Data[] = [];
     for (let i = 0; i < TEST_ACCOUNTS.length; i++) {
-      const sig = await ecdsaSign(TEST_ACCOUNTS[i].pk, EXAMPLE_SPONSOR_DATA_HASH);
+      const sig = await ecdsaSign(TEST_ACCOUNTS[i].pk, AXIOM_SPONSOR_DATA_HASH);
       sigs.push(sig);
     }
     const authData2 = signatureProverClient.authDataEncoder({
@@ -59,7 +54,7 @@ describe("Signature Prover Client", () => {
     const authInputs = signatureProverClient.makeAuthInputs({
       codehash: CODE_HASH,
       signatures: ["0xecf85bc51a8b47c545dad1a47e868276d0a92b7cf2716033ce77d385a6b67c1b"],
-      signersList: [EXAMPLE_SPONSOR_EOA],
+      signersList: [AXIOM_SPONSOR_EOA],
     });
     const authInputsCmp = {
       keyData:
@@ -80,7 +75,7 @@ describe("Signature Prover Client", () => {
   test("Get dataHash", async () => {
     const dataHash = signatureProverClient.dataHash({
       codehash: CODE_HASH,
-      signersList: [EXAMPLE_SPONSOR_EOA],
+      signersList: [AXIOM_SPONSOR_EOA],
     });
     expect(dataHash).toBe("0xb334fe7dbb5bf8b32665547b035e2e1874239a948f2e035117944f10fbf7f1f0");
   });

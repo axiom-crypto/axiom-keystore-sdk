@@ -1,6 +1,5 @@
 export * from "./block";
 export * from "./client";
-export * from "./input";
 export * from "./keystoreAccount";
 export * from "./primitives";
 export * from "./response";

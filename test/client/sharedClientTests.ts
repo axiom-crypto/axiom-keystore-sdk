@@ -10,7 +10,7 @@ import {
 import {
   EMPTY_HEX,
   EXISTING_BLOCK_HASH,
-  EXAMPLE_SPONSOR_ADDRESS,
+  AXIOM_SPONSOR_ADDRESS,
   NON_EXISTENT_BLOCK_HASH,
   NON_EXISTENT_TX_HASH,
   NON_EXISTING_ACCOUNT_ADDRESS,
@@ -35,13 +35,13 @@ export function runNodeClientTests(client: NodeClient) {
 
   test("keystore_getBalance", async () => {
     const balance1 = await client.getBalance({
-      address: EXAMPLE_SPONSOR_ADDRESS,
+      address: AXIOM_SPONSOR_ADDRESS,
       block: BlockTag.Latest,
     });
     expect(balance1).toBeGreaterThan(0n);
 
     const balance2 = await client.getBalance({
-      address: EXAMPLE_SPONSOR_ADDRESS,
+      address: AXIOM_SPONSOR_ADDRESS,
     });
     expect(balance2).toBeGreaterThan(0n);
 
@@ -54,7 +54,7 @@ export function runNodeClientTests(client: NodeClient) {
 
   test("keystore_getStateAt", async () => {
     const res1 = await client.getStateAt({
-      address: EXAMPLE_SPONSOR_ADDRESS,
+      address: AXIOM_SPONSOR_ADDRESS,
       block: BlockTag.Latest,
     });
     expect(res1.dataHash).not.toBe(ZERO_BYTES32);
@@ -74,7 +74,7 @@ export function runNodeClientTests(client: NodeClient) {
 
   test("keystore_getTransactionCount", async () => {
     const nonce1 = await client.getTransactionCount({
-      address: EXAMPLE_SPONSOR_ADDRESS,
+      address: AXIOM_SPONSOR_ADDRESS,
       block: BlockTag.Latest,
     });
     expect(nonce1).toBeGreaterThan(0n);
@@ -87,7 +87,7 @@ export function runNodeClientTests(client: NodeClient) {
 
   test("keystore_getProof", async () => {
     const getProofResp1 = await client.getProof({
-      address: EXAMPLE_SPONSOR_ADDRESS,
+      address: AXIOM_SPONSOR_ADDRESS,
       block: BlockTag.Latest,
     });
     expect(getProofResp1.proof.isExclusionProof).toBe(false);

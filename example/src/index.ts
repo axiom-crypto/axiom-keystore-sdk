@@ -18,13 +18,12 @@ import { keccak256 } from "viem";
 const EXAMPLE_USER_CODEHASH = "0x595b7552e60f6430c898abc2b292aa805e94834a576f57969406940f6d12d4d9";
 
 // Example values for the Sponsor account
-const EXAMPLE_SPONSOR_CODEHASH =
-  "0xa1b20564cd6cc6410266a716c9654406a15e822d4dc89c4127288da925d5c225";
-const EXAMPLE_SPONSOR_DATA_HASH =
+const AXIOM_SPONSOR_CODEHASH = "0xa1b20564cd6cc6410266a716c9654406a15e822d4dc89c4127288da925d5c225";
+const AXIOM_SPONSOR_DATA_HASH =
   "0xecf85bc51a8b47c545dad1a47e868276d0a92b7cf2716033ce77d385a6b67c4b";
-const EXAMPLE_SPONSOR_KEYSTORE_ADDR =
+const AXIOM_SPONSOR_KEYSTORE_ADDR =
   "0xb5ce21832ca3bbf53de610c6dda13d6a735b0a8ea3422aeaab678a01e298269d";
-const EXAMPLE_SPONSOR_EOA = "0xD7548a3ED8c51FA30D26ff2D7Db5C33d27fd48f2";
+const AXIOM_SPONSOR_EOA = "0xD7548a3ED8c51FA30D26ff2D7Db5C33d27fd48f2";
 
 // Accounts from test seed phrase `test test test test test test test test test test test junk`
 const TEST_ACCOUNTS: { privateKey: Bytes32; address: L1Address }[] = [
@@ -64,8 +63,8 @@ async function main() {
 
   // Load a sponsor account from the sponsor's keystore address
   const sponsorAcct = initAccountFromAddress({
-    address: EXAMPLE_SPONSOR_KEYSTORE_ADDR,
-    dataHash: EXAMPLE_SPONSOR_DATA_HASH,
+    address: AXIOM_SPONSOR_KEYSTORE_ADDR,
+    dataHash: AXIOM_SPONSOR_DATA_HASH,
     vkey: mOfNEcdsaClient.vkey,
     nodeClient,
   });
@@ -88,26 +87,24 @@ async function main() {
     signersList: [account.address],
   });
   const sponsorAuthInputs = mOfNEcdsaClient.makeAuthInputs({
-    codehash: EXAMPLE_SPONSOR_CODEHASH,
+    codehash: AXIOM_SPONSOR_CODEHASH,
     signatures: [],
-    signersList: [EXAMPLE_SPONSOR_EOA],
+    signersList: [AXIOM_SPONSOR_EOA],
   });
   const authHash = await mOfNEcdsaClient.authenticateSponsoredTransaction({
     transaction: updateTx.toBytes(),
     sponsoredAuthInputs: {
-      proveSponsored: {
-        userAuthInputs,
-        sponsorAuthInputs,
-      },
+      userAuthInputs,
+      sponsorAuthInputs,
     },
   });
-  const authenticatedTx = await mOfNEcdsaClient.waitForAuthentication({ hash: authHash });
+  const authenticatedTx = await mOfNEcdsaClient.waitForSponsoredAuthentication({ hash: authHash });
 
   // Send the transaction to the sequencer
   const txHash = await sequencerClient.sendRawTransaction({ data: authenticatedTx });
   console.log("Transaction authenticated. Sending to sequencer:", txHash);
 
-  // Wait for the transaction to be finalized in L2 and included in L1
+  // Wait for the transaction to be finalized on L2 and included on L1
   const receipt = await sequencerClient.waitForTransactionInclusion({ hash: txHash });
   console.log("Transaction finalized in L2 and included in L1. Transaction receipt:", receipt);
 }

@@ -1,4 +1,4 @@
-import { Data } from "./primitives";
+import { Data } from "../primitives";
 
 export type AuthInputs = {
   keyData: Data;
@@ -24,7 +24,7 @@ export type SponsoredAuthInputs =
       };
     };
 
-export type AuthenticateSponsoredTransactionSponsoredAuthInputs = {
+export type SponsoredTransactionSponsoredAuthInputs = {
   userAuthInputs?: AuthInputs;
   sponsorAuthInputs?: AuthInputs;
   userProof?: Data;

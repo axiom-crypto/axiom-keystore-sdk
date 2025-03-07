@@ -2,11 +2,11 @@ import {
   Data,
   Hash,
   AuthInputs,
-  SponsoredAuthInputs,
   AuthenticateTransactionResponse,
   GetAuthenticationStatusResponse,
   AuthenticateSponsoredTransactionResponse,
   GetSponsoredAuthenticationStatusResponse,
+  SponsoredTransactionSponsoredAuthInputs,
 } from "@/types";
 
 export interface CustomSignatureProver<KD, AD, AI> {
@@ -21,6 +21,8 @@ export interface SignatureProverClient<KD, AD, AI> extends CustomSignatureProver
   dataHash: (fields: KD) => Data;
 
   waitForAuthentication: ({ hash }: { hash: Hash }) => Promise<Data>;
+
+  waitForSponsoredAuthentication: ({ hash }: { hash: Hash }) => Promise<Data>;
 
   authenticateTransaction: ({
     transaction,
@@ -41,7 +43,7 @@ export interface SignatureProverClient<KD, AD, AI> extends CustomSignatureProver
     sponsoredAuthInputs,
   }: {
     transaction: Data;
-    sponsoredAuthInputs: SponsoredAuthInputs;
+    sponsoredAuthInputs: SponsoredTransactionSponsoredAuthInputs;
   }) => Promise<AuthenticateSponsoredTransactionResponse>;
 
   getSponsoredAuthenticationStatus: ({

@@ -8,5 +8,13 @@
     "bracketSpacing": true,
     "arrowParens": "always",
     "proseWrap": "always",
-    "endOfLine": "lf"
+    "endOfLine": "lf",
+    "overrides": [
+        {
+            "files": "*.md",
+            "options": {
+                "proseWrap": "preserve"
+            }
+        }
+    ]
 }

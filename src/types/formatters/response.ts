@@ -44,40 +44,26 @@ import { formatL1BlockRef, formatL2BlockRef } from "./block";
 import { formatStateTransitions } from "./state";
 import { formatL2Transaction } from "./transaction";
 
-export function formatSyncStatusResponse(
-  rpcObj: SyncStatusResponseRpc,
-): SyncStatusResponse {
+export function formatSyncStatusResponse(rpcObj: SyncStatusResponseRpc): SyncStatusResponse {
   return {
-    preconfirmedL2: rpcObj.preconfirmedL2
-      ? formatL2BlockRef(rpcObj.preconfirmedL2)
-      : undefined,
+    preconfirmedL2: rpcObj.preconfirmedL2 ? formatL2BlockRef(rpcObj.preconfirmedL2) : undefined,
     committedL2: formatL2BlockRef(rpcObj.committedL2),
     finalizedL2: formatL2BlockRef(rpcObj.finalizedL2),
-    currentL1: rpcObj.currentL1
-      ? formatL1BlockRef(rpcObj.currentL1)
-      : undefined,
+    currentL1: rpcObj.currentL1 ? formatL1BlockRef(rpcObj.currentL1) : undefined,
     safeL1: rpcObj.safeL1 ? formatL1BlockRef(rpcObj.safeL1) : undefined,
-    finalizedL1: rpcObj.finalizedL1
-      ? formatL1BlockRef(rpcObj.finalizedL1)
-      : undefined,
+    finalizedL1: rpcObj.finalizedL1 ? formatL1BlockRef(rpcObj.finalizedL1) : undefined,
   };
 }
 
-export function formatBlockNumberResponse(
-  rpcObj: BlockNumberResponseRpc,
-): BlockNumberResponse {
+export function formatBlockNumberResponse(rpcObj: BlockNumberResponseRpc): BlockNumberResponse {
   return BigInt(rpcObj);
 }
 
-export function formatGetBalanceResponse(
-  rpcObj: GetBalanceResponseRpc,
-): GetBalanceResponse {
+export function formatGetBalanceResponse(rpcObj: GetBalanceResponseRpc): GetBalanceResponse {
   return BigInt(rpcObj);
 }
 
-export function formatGetStateAtResponse(
-  rpcObj: GetStateAtResponseRpc,
-): GetStateAtResponse {
+export function formatGetStateAtResponse(rpcObj: GetStateAtResponseRpc): GetStateAtResponse {
   return rpcObj;
 }
 
@@ -106,9 +92,7 @@ export function formatCallResponse(rpcObj: CallResponseRpc): CallResponse {
   };
 }
 
-export function formatEstimateGasResponse(
-  rpcObj: EstimateGasResponseRpc,
-): EstimateGasResponse {
+export function formatEstimateGasResponse(rpcObj: EstimateGasResponseRpc): EstimateGasResponse {
   return BigInt(rpcObj);
 }
 
@@ -167,9 +151,7 @@ export function formatGetTransactionReceiptResponse(
     transactionHash: rpcObj.transactionHash,
     blockHash: rpcObj.blockHash,
     blockNumber: BigInt(rpcObj.blockNumber),
-    transactionIndex: rpcObj.transactionIndex
-      ? BigInt(rpcObj.transactionIndex)
-      : undefined,
+    transactionIndex: rpcObj.transactionIndex ? BigInt(rpcObj.transactionIndex) : undefined,
     status: rpcObj.status,
     gas: rpcObj.gas ? BigInt(rpcObj.gas) : undefined,
     gasPrice: rpcObj.gasPrice ? BigInt(rpcObj.gasPrice) : undefined,
@@ -184,8 +166,6 @@ export function formatGetBlockNumberByStateRootResponse(
   return BigInt(rpcObj);
 }
 
-export function formatGasPriceResponse(
-  rpcObj: GasPriceResponseRpc,
-): GasPriceResponse {
+export function formatGasPriceResponse(rpcObj: GasPriceResponseRpc): GasPriceResponse {
   return BigInt(rpcObj);
 }

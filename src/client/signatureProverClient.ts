@@ -1,6 +1,7 @@
 import {
   AuthenticateSponsoredTransactionResponse,
   AuthenticateTransactionResponse,
+  AuthenticationStatus,
   AuthenticationStatusEnum,
   AuthInputs,
   Data,
@@ -10,6 +11,7 @@ import {
   SignatureProverClient,
   SignatureProverClientConfig,
   SponsoredAuthInputs,
+  SponsoredTransactionSponsoredAuthInputs,
 } from "@/types";
 import { DEFAULTS } from "@/config";
 import { Client, HTTPTransport, RequestManager } from "@open-rpc/client-js";
@@ -32,34 +34,27 @@ export function createSignatureProverClient<KD, AD, AI>(
   };
 
   const waitForAuthentication = async ({ hash }: { hash: Hash }): Promise<Data> => {
-    console.log("Waiting for authentication, this may take serveral minutes...");
-    let attempts = 0;
-    while (attempts < pollingRetries) {
-      try {
-        const status = await getSponsoredAuthenticationStatus({
-          requestHash: hash,
-        });
-        switch (status.status) {
-          case AuthenticationStatusEnum.Completed:
-            if (!status.authenticatedTransaction) {
-              throw new Error("No authenticated transaction found");
-            }
-            console.log("Sponsored authentication completed");
-            return status.authenticatedTransaction;
-          case AuthenticationStatusEnum.Failed:
-            throw new Error("Transaction authentication failed");
-          case AuthenticationStatusEnum.Pending:
-            attempts++;
-            await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
-            continue;
-          default:
-            throw new Error("Invalid authentication status");
-        }
-      } catch (error) {
-        throw new Error(`Error waiting for authentication: ${error}`);
-      }
-    }
-    throw new Error(`Timed out after ${(pollingRetries * pollingIntervalMs) / 1000} seconds`);
+    return await waitForAuthenticationGeneric(
+      {
+        hash,
+        pollingRetries,
+        pollingIntervalMs,
+        authStatusFn: getAuthenticationStatus,
+      },
+      false,
+    );
+  };
+
+  const waitForSponsoredAuthentication = async ({ hash }: { hash: Hash }): Promise<Data> => {
+    return await waitForAuthenticationGeneric(
+      {
+        hash,
+        pollingRetries,
+        pollingIntervalMs,
+        authStatusFn: getSponsoredAuthenticationStatus,
+      },
+      true,
+    );
   };
 
   const authenticateTransaction = async ({
@@ -91,11 +86,50 @@ export function createSignatureProverClient<KD, AD, AI>(
     sponsoredAuthInputs,
   }: {
     transaction: Data;
-    sponsoredAuthInputs: SponsoredAuthInputs;
+    sponsoredAuthInputs: SponsoredTransactionSponsoredAuthInputs;
   }): Promise<AuthenticateSponsoredTransactionResponse> => {
+    const { userAuthInputs, sponsorAuthInputs, userProof } = sponsoredAuthInputs;
+    let finalSponsoredAuthInputs: SponsoredAuthInputs;
+
+    // Case 1: proveSponsored - both user and sponsor auth inputs
+    if (userAuthInputs && sponsorAuthInputs && !userProof) {
+      finalSponsoredAuthInputs = {
+        proveSponsored: {
+          userAuthInputs,
+          sponsorAuthInputs,
+        },
+      };
+    }
+    // Case 2: proveOnlySponsored - user proof and sponsor auth inputs
+    else if (userProof && sponsorAuthInputs && !userAuthInputs) {
+      finalSponsoredAuthInputs = {
+        proveOnlySponsored: {
+          userProof,
+          sponsorAuthInputs,
+        },
+      };
+    }
+    // Case 3: sponsorAndProve - only user auth inputs
+    else if (userAuthInputs && !sponsorAuthInputs && !userProof) {
+      finalSponsoredAuthInputs = {
+        sponsorAndProve: {
+          userAuthInputs,
+        },
+      };
+    }
+    // Invalid combination
+    else {
+      throw new Error(
+        "Invalid combination of inputs. Must provide either: " +
+          "[1: proveSponsored] userAuthInputs and sponsorAuthInputs, or " +
+          "[2: proveOnlySponsored] userProof and sponsorAuthInputs, or " +
+          "[3: sponsorAndProve] only userAuthInputs",
+      );
+    }
+
     return await client.request({
       method: "keystore_authenticateSponsoredTransaction",
-      params: [transaction, sponsoredAuthInputs],
+      params: [transaction, finalSponsoredAuthInputs],
     });
   };
 
@@ -114,9 +148,54 @@ export function createSignatureProverClient<KD, AD, AI>(
     ...signatureProver,
     dataHash,
     waitForAuthentication,
+    waitForSponsoredAuthentication,
     authenticateTransaction,
     getAuthenticationStatus,
     authenticateSponsoredTransaction,
     getSponsoredAuthenticationStatus,
   };
+}
+
+async function waitForAuthenticationGeneric(
+  {
+    hash,
+    pollingRetries,
+    pollingIntervalMs,
+    authStatusFn,
+  }: {
+    hash: Hash;
+    pollingRetries: number;
+    pollingIntervalMs: number;
+    authStatusFn: ({ requestHash }: { requestHash: Hash }) => Promise<AuthenticationStatus>;
+  },
+  isSponsored: boolean,
+): Promise<Data> {
+  console.log("Waiting for authentication, this may take serveral minutes...");
+  let attempts = 0;
+  while (attempts < pollingRetries) {
+    try {
+      const status = await authStatusFn({
+        requestHash: hash,
+      });
+      switch (status.status) {
+        case AuthenticationStatusEnum.Completed:
+          if (!status.authenticatedTransaction) {
+            throw new Error("No authenticated transaction found");
+          }
+          console.log(`${isSponsored ? "Sponsored authentication" : "Authentication"} completed`);
+          return status.authenticatedTransaction;
+        case AuthenticationStatusEnum.Failed:
+          throw new Error("Transaction authentication failed");
+        case AuthenticationStatusEnum.Pending:
+          attempts++;
+          await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
+          continue;
+        default:
+          throw new Error("Invalid authentication status");
+      }
+    } catch (error) {
+      throw new Error(`Error waiting for authentication: ${error}`);
+    }
+  }
+  throw new Error(`Timed out after ${(pollingRetries * pollingIntervalMs) / 1000} seconds`);
 }

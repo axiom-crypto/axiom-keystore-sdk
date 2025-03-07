@@ -12,137 +12,135 @@ npm install @axiom-crypto/keystore-sdk
 
 ## Usage
 
+### Selecting a Signature Prover Client
+
+You can create your own authentication rule and signature prover infrastructure, or you can use one that's already built. The Keystore SDK can accept a custom authentication rule component that
+conforms to the `CustomSignatureProver` interface.
+
+To use a specific signature prover client (m-of-n ECDSA in this example), you can use:
+
+```typescript
+import { MOfNEcdsaSignatureProver } from "@axiom-crypto/signature-prover-ecdsa";
+const mOfNEcdsaClient = createSignatureProverClient(MOfNEcdsaSignatureProver);
+```
+
+#### Creating a Custom Signature Prover Client
+
+You can create a custom signature prover client by extending `CustomSignatureProver` with 3 generic types that correspond to the fields in your custom authentication rule for `keyData`, `authData`, and `AuthInputs`. You can see the [m-of-n ECDSA Signature Prover Keystore SDK component example here](https://github.com/axiom-crypto/signature-prover-ecdsa/).
+
 ### Keystore Account
 
-To create a new keystore account, follow these steps:
+To initialize a new keystore account, you'll need to pass in the keccak256 hashed keyData (`dataHash`) and verifying key (`vkey`) from your desired Signature Prover. In both cases, you can also pass in an optional `NodeClient` for additional functionality.
 
 ```typescript
-// Initialize a counterfactual keystore account
-const acct = KeystoreAccountBuilder.initCounterfactual(salt, dataHash, vkey);
+// Create a new NodeClient for querying the keystore rollup
+const nodeClient = createNodeClient({ url: NODE_URL });
+
+// Counterfactual account initialization
+const acct = initAccountCounterfactual({ salt, dataHash, vkey, nodeClient });
 ```
 
-// Initialize a keystore account with a known keystore address
-If you already have the `keystoreAddress`, you can create the account as follows:
+Alterntaively, you can also initialize a keystore account with a known keystore address (32 bytes). You'll pass in the address instead of salt, along with the dataHash and vkey as before.
 
 ```typescript
-const acct = KeystoreAccountBuilder.initWithKeystoreAddress(
-  keystoreAddress,
-  dataHash,
-  vkey,
-);
+// Initializing an account with a known address (you still need to pass in the `dataHash` and `vkey`)
+const acct = initAccountFromAddress({ address, dataHash, vkey, nodeClient });
 ```
 
-You can calculate the `dataHash` with this method:
+You can calculate the `dataHash` with the following signature prover client method:
 
 ```typescript
-const dataHash = calcDataHash(codeHash, 1n, [eoaAddress]);
+// Encoding the `keyData` for m-of-n ECDSA signature prover and then hashing it to get the `dataHash`
+const keyData = mOfNEcdsaClient.keyDataEncoder({
+  codehash: EXAMPLE_USER_CODEHASH,
+  m: BigInt(1),
+  signersList: [account.address],
+});
+const dataHash = keccak256(keyData);
 ```
 
 You can use `M_OF_N_ECDSA_VKEY` as the `vkey` and `SAMPLE_USER_CODEHASH` as the `codeHash`.
 
 ### Transaction Request
 
-A transaction request is defined as an `UpdateTransactionRequest` object. Currently, only the update transaction is supported.
+Currently, only the `Update` transaction is supported.
+
+#### Deposit
+
+Unsupported; coming soon.
+
+#### Withdraw
+
+Unsupported; coming soon.
+
+#### Update
+
+To create a client for the `Update` transaction type, you can use the `createUpdateTransactionClient` function. In addition to the user keystore account we created earlier, we'll be providing an optional Sponsor Account that will be sponsoring the `Update` transaction on the keystore rollup.
 
 ```typescript
-type UpdateTransactionRequest = {
-  nonce: bigint;
-  feePerGas: bigint;
-  newUserData: Data;
-  newUserVkey: Data;
-  userAcct: KeystoreAccount;
-  sponsorAcct?: KeystoreAccount;
-};
+const sponsorAcct = initAccountFromAddress({
+  address: AXIOM_SPONSOR_KEYSTORE_ADDR,
+  dataHash: AXIOM_SPONSOR_DATA_HASH,
+  vkey: mOfNEcdsaClient.vkey,
+  nodeClient,
+});
+const updateTx = await createUpdateTransactionClient({
+  newUserData: keyData,
+  newUserVkey: mOfNEcdsaClient.vkey,
+  userAcct,
+  sponsorAcct,
+});
 ```
 
-To make a sponsored transaction, you must provide the `sponsorAcct`. The `AXIOM_ACCOUNT` defined in the SDK can serve as the sponsor account.
-
-To create a transaction from a transaction request, use the `UpdateTransactionBuilder` as follows:
+We'll then go ahead and sign the transaction with our account's private key:
 
 ```typescript
-const tx = UpdateTransactionBuilder.fromTransactionRequest(txReq);
-
-// Transaction hash
-tx.txHash();
-
-// Transaction serialized as bytes
-tx.txBytes();
+const signedTx = await updateTx.sign(account.privateKey);
 ```
 
 ### Authenticating a Transaction
 
-To begin authenticating a transaction, start by creating the necessary authentication inputs:
+Once we've signed the transaction, we'll need to use the signature prover client to generate both the user and sponsor `AuthInputs` structs that can be passed into the signature prover client's `authenticateSponsoredTransaction` function.
 
 ```typescript
-// user authentication inputs if the transaction is not sponsored
-const authInputs: AuthInputs = {
-  keyData: encodeMOfNData(SAMPLE_USER_CODE_HASH, BigInt(userSig.length), [eoaAddr]);
-  aithData: [userSig],
-};
+// Make user and sponsor auth inputs for the m-of-n ECDSA signature prover
+const userAuthInputs = mOfNEcdsaClient.makeAuthInputs({
+  codehash: EXAMPLE_USER_CODEHASH,
+  signatures: [signedTx],
+  signersList: [account.address],
+});
+const sponsorAuthInputs = mOfNEcdsaClient.makeAuthInputs({
+  codehash: AXIOM_SPONSOR_CODEHASH,
+  signatures: [],
+  signersList: [AXIOM_SPONSOR_EOA],
+});
 
-// sponsor authentication inputs if the transaction is sponsored
-const sponsoredAuthInputs: SponsoredAuthInputs = {
-  proveSponsored: {
-    sponsorAuthInputs: AXIOM_ACCOUNT_AUTH_INPUTS,
-    userAuthInputs: makeMOfNEcdsaAuthInputs(
-      SAMPLE_USER_CODE_HASH,
-      [userSig],
-      [eoaAddr],
-    ),
-  },
-};
-```
-
-Next, submit the transaction bytes along with the authentication inputs to the signature prover:
-
-```typescript
-// instantiate the signature prover provider
-const signatureProverProvider = new KeystoreSignatureProverProvider(
-  SIGNATURE_PROVER_URL,
-);
-
-// authenticate a non-sponsored transaction
-const requestHash = await signatureProverProvider.authenticateTransaction(
-  userTx.txBytes(),
-  sponsorAuthInputs,
-);
-
-// authenticate a sponsored transaction
-const requestHash =
-  await signatureProverProvider.authenticateSponsoredTransaction(
-    sponsoredTx.txBytes(),
+// Send authentication data to the signature prover
+const authHash = await mOfNEcdsaClient.authenticateSponsoredTransaction({
+  transaction: updateTx.toBytes(),
+  sponsoredAuthInputs: {
+    userAuthInputs,
     sponsorAuthInputs,
-  );
-```
+  },
+});
 
-After you receive the request hash, check its status to monitor the progression of your authentication request:
-
-```typescript
-// check the authentication status of a non-sponsored transaction
-const status =
-  await signatureProverProvider.getAuthenticationStatus(requestHash);
-
-// check the authentication status of a sponsored transaction
-const status =
-  await signatureProverProvider.getSponsoredAuthenticationStatus(requestHash);
-```
-
-Finally, when the status indicates completion, you can retrieve and use the authenticated transaction:
-
-```typescript
-if (status.status == AuthenticationStatusEnum.Completed) {
-  authenticatedTx = status.authenticatedTransaction;
-}
+// Wait for authentication (may take several minutes)
+const authenticatedTx = await mOfNEcdsaClient.waitForSponsoredAuthentication({ hash: authHash });
 ```
 
 ### Send a Transaction
 
-You can send an authenticated transaction to the sequencer by creating a new `KeystoreSequencerProvider` instance and invoking its `sendRawTransaction` method:
+You can send an authenticated transaction to the sequencer by creating a SequencerClient and using the `sendRawTransaction` function with the authenticated transaction from the previous section. You can then call the `waitForTransactionInclusion` function to fulfill when the transaction has been finalized on L2 and included on L1.
 
 ```typescript
-const sequencerProvider = new KeystoreSequencerProvider(SEQUENCER_URL);
+// Create a SequencerClient
+const sequencerClient = createSequencerClient({ url: SEQUENCER_URL });
 
-const txHash = await sequencerProvider.sendRawTransaction(authenticatedTx);
+// Send the transaction to the sequencer
+const txHash = await sequencerClient.sendRawTransaction({ data: authenticatedTx });
+
+// Wait for the transaction to be finalized on L2 and included on L1
+const receipt = await sequencerClient.waitForTransactionInclusion({ hash: txHash });
 ```
 
 ### Query the Chain
@@ -150,27 +148,27 @@ const txHash = await sequencerProvider.sendRawTransaction(authenticatedTx);
 You can query the keystore rollup chain using the `KeystoreNodeProvider`. This provider enables you to retrieve various pieces of on-chain data, such as transaction details, receipts, blocks, and rollup state:
 
 ```typescript
-const nodeProvider = new KeystoreNodeProvider(NODE_URL);
+const nodeClient = createNodeClient({ url: NODE_URL });
 
 // get transaction by hash
-const tx = await nodeProvider.getTransactionByHash(txHash);
+const tx = await nodeClient.getTransactionByHash({ hash });
 
 // get transaction receipt by hash
-const receipt = await nodeProvider.getTransactionReceipt(txHash);
+const receipt = await nodeClient.getTransactionReceipt({ hash });
 
 // get the latest block with full transactions
-const block = await nodeProvider.getBlockByNumber(
-  BlockTag.Latest,
-  BlockTransactionsKind.Full,
-);
+const block = await nodeClient.getBlockByNumber({
+  block: BlockTag.Latest,
+  txKind: BlockTransactionsKind.Full,
+});
 
 // get account state
-const accountState = await nodeProvider.getStateAt(
-  keystoreAddress,
-  BlockTag.Latest,
-);
+const accountState = await nodeClient.getStateAt({
+  address: keystoreAddress,
+  block: BlockTag.Latest,
+});
 ```
 
 ## Examples
 
-For a complete demonstration, take a look at our [example](./example/src/index.ts).
+For a complete demonstration, take a look at our [node.js script example](./example/src/index.ts) or [React example](https://github.com/axiom-crypto/example-keystore-web).
