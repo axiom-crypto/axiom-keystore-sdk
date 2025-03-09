@@ -30,6 +30,7 @@ export interface SequencerClient extends NodeClient {
 
 export interface SequencerClientConfig {
   url: string;
+  nodeUrl?: string;
   pollingIntervalMs?: number;
   pollingRetries?: number;
 }

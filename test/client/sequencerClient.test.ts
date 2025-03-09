@@ -44,6 +44,6 @@ describe("Keystore Sequencer Client", () => {
   });
 
   describe("Node-inherited Sequencer Requests", () => {
-    runNodeClientTests(sequencerClient);
+    runNodeClientTests(() => createSequencerClient({ url: SEQUENCER_URL }));
   });
 });

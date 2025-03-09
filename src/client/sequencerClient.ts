@@ -20,10 +20,12 @@ import {
 } from "@/types/formatters";
 import { DEFAULTS } from "@/config";
 import { createNodeClient } from "./nodeClient";
+import { NODE_URL } from "../constants";
 
 export function createSequencerClient(config: SequencerClientConfig): SequencerClient {
   const {
     url,
+    nodeUrl,
     pollingIntervalMs = DEFAULTS.POLLING_INTERVAL_MS,
     pollingRetries = DEFAULTS.POLLING_RETRIES,
   } = config;
@@ -31,7 +33,7 @@ export function createSequencerClient(config: SequencerClientConfig): SequencerC
   const transport = new HTTPTransport(url);
   const client = new Client(new RequestManager([transport]));
 
-  const nodeClient = createNodeClient({ url });
+  const nodeClient = createNodeClient({ url: nodeUrl ?? NODE_URL });
 
   const sendRawTransaction = async ({
     data,
