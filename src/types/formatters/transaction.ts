@@ -15,7 +15,6 @@ import {
   UpdateTransactionRpc,
   WithdrawTransactionRpc,
 } from "../rpc/transaction";
-import { createUpdateTransactionClient } from "../../transaction";
 import { initFromRlpEncoded } from "../../account/init";
 
 export function formatTransactionOrHash(rpcObj: TransactionOrHashRpc): TransactionOrHash {
