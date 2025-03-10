@@ -125,6 +125,7 @@ export function runNodeClientTests(createClient: () => NodeClient) {
       const tx2 = (await client.getTransactionByHash({
         hash: SPONSORED_UPDATE_TX_HASH,
       })) as UpdateTransaction;
+      console.log(tx2);
       expect(tx2.hash).toBe(SPONSORED_UPDATE_TX_HASH);
       expect(tx2.sponsorAcct).toBeDefined();
       expect(tx2.sponsorProof).toBeDefined();

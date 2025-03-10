@@ -15,6 +15,8 @@ import {
   UpdateTransactionRpc,
   WithdrawTransactionRpc,
 } from "../rpc/transaction";
+import { createUpdateTransactionClient } from "../../transaction";
+import { initFromRlpEncoded } from "../../account/init";
 
 export function formatTransactionOrHash(rpcObj: TransactionOrHashRpc): TransactionOrHash {
   if (typeof rpcObj === "string") {
@@ -66,7 +68,10 @@ function formatUpdateTransaction(rpcObj: UpdateTransactionRpc): UpdateTransactio
     newUserVkey: rpcObj.newUserVkey,
     userAcct: rpcObj.userAcct,
     userProof: rpcObj.userProof,
-    sponsorAcct: rpcObj.sponsorAcctBytes == "0x" ? undefined : undefined, //KeystoreAccountBuilder.rlpDecode(rpcObj.sponsorAcctBytes),
+    sponsorAcct:
+      rpcObj.sponsorAcctBytes == "0x"
+        ? undefined
+        : initFromRlpEncoded({ rlpEncoded: rpcObj.sponsorAcctBytes }),
     sponsorProof: rpcObj.sponsorProof == "0x" ? undefined : rpcObj.sponsorProof,
   };
 }
