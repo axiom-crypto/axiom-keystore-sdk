@@ -106,7 +106,7 @@ async function main() {
 
   // Wait for the transaction to be finalized on L2 and included on L1
   const receipt = await sequencerClient.waitForTransactionInclusion({ hash: txHash });
-  console.log("Transaction finalized in L2 and included in L1. Transaction receipt:", receipt);
+  console.log("Transaction finalized on L2 and included on L1. Transaction receipt:", receipt);
 }
 
 main();

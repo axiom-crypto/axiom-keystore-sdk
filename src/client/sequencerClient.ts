@@ -30,7 +30,9 @@ export function createSequencerClient(config: SequencerClientConfig): SequencerC
     pollingRetries = DEFAULTS.POLLING_RETRIES,
   } = config;
 
-  const transport = new HTTPTransport(url);
+  const transport = new HTTPTransport(url, {
+    fetcher: globalThis.fetch,
+  });
   const client = new Client(new RequestManager([transport]));
 
   const nodeClient = createNodeClient({ url: nodeUrl ?? NODE_URL });

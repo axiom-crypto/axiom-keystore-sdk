@@ -26,7 +26,9 @@ export function createSignatureProverClient<KD, AD, AI>(
     pollingRetries = DEFAULTS.POLLING_RETRIES,
   } = signatureProver;
 
-  const transport = new HTTPTransport(url);
+  const transport = new HTTPTransport(url, {
+    fetcher: globalThis.fetch,
+  });
   const client = new Client(new RequestManager([transport]));
 
   const dataHash = (fields: KD) => {

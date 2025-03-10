@@ -38,7 +38,9 @@ import { Client, HTTPTransport, RequestManager } from "@open-rpc/client-js";
 export function createNodeClient(config: NodeClientConfig): NodeClient {
   const { url } = config;
 
-  const transport = new HTTPTransport(url);
+  const transport = new HTTPTransport(url, {
+    fetcher: globalThis.fetch,
+  });
   const client = new Client(new RequestManager([transport]));
 
   const syncStatus = async (): Promise<SyncStatusResponse> => {
