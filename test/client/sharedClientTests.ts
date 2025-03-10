@@ -125,7 +125,6 @@ export function runNodeClientTests(createClient: () => NodeClient) {
       const tx2 = (await client.getTransactionByHash({
         hash: SPONSORED_UPDATE_TX_HASH,
       })) as UpdateTransaction;
-      console.log(tx2);
       expect(tx2.hash).toBe(SPONSORED_UPDATE_TX_HASH);
       expect(tx2.sponsorAcct).toBeDefined();
       expect(tx2.sponsorProof).toBeDefined();
@@ -157,10 +156,9 @@ export function runNodeClientTests(createClient: () => NodeClient) {
 
     test("keystore_getBlockByNumber", async () => {
       const block1 = await client.getBlockByNumber({
-        block: 5n,
+        block: 2n,
         txKind: BlockTransactionsKind.Full,
       });
-      console.log(block1);
       expect(typeof block1.number).toBe("bigint");
       expect(block1.transactions).toBeDefined();
       expect(block1.transactions).not.toHaveLength(0);
