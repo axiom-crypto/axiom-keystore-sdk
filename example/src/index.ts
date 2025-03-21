@@ -9,9 +9,17 @@ import {
   initAccountFromAddress,
   NODE_URL,
   SEQUENCER_URL,
+  SignatureProverClient,
+  CustomSignatureProver,
+  MOfNEcdsaKeyDataFields,
+  MOfNEcdsaAuthDataFields,
+  MOfNEcdsaAuthInputs,
+  M_OF_N_ECDSA_VKEY,
+  keyDataEncoder,
+  authDataEncoder,
+  makeAuthInputs,
 } from "@axiom-crypto/keystore-sdk";
 import { generateRandomHex } from "@axiom-crypto/keystore-sdk/utils/random";
-import { MOfNEcdsaSignatureProver } from "@axiom-crypto/signature-prover-ecdsa";
 import { keccak256 } from "viem";
 
 // Example codehash for the User account
@@ -33,11 +41,27 @@ const TEST_ACCOUNTS: { privateKey: Bytes32; address: L1Address }[] = [
   },
 ];
 
+export const MOfNSignatureProver: CustomSignatureProver<
+  MOfNEcdsaKeyDataFields,
+  MOfNEcdsaAuthDataFields,
+  MOfNEcdsaAuthInputs
+> = {
+  url: "https://keystore-rpc-signatureprover.axiom.xyz",
+  vkey: M_OF_N_ECDSA_VKEY,
+  keyDataEncoder,
+  authDataEncoder,
+  makeAuthInputs,
+};
+
 async function main() {
   const account = TEST_ACCOUNTS[0];
 
-  // Create an m-of-n ECDSA signature prover client
-  const mOfNEcdsaClient = createSignatureProverClient(MOfNEcdsaSignatureProver);
+  // Create an m-of-n ECDSA signature prover client with default config
+  const mOfNEcdsaClient: SignatureProverClient<
+    MOfNEcdsaKeyDataFields,
+    MOfNEcdsaAuthDataFields,
+    MOfNEcdsaAuthInputs
+  > = createSignatureProverClient(MOfNSignatureProver);
 
   // Get the encoded keyData and dataHash for the 1-of-1 ECDSA signature prover, with signer
   // `0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266`
@@ -91,6 +115,7 @@ async function main() {
     signatures: [],
     signersList: [AXIOM_SPONSOR_EOA],
   });
+
   const authHash = await mOfNEcdsaClient.authenticateSponsoredTransaction({
     transaction: updateTx.toBytes(),
     sponsoredAuthInputs: {
