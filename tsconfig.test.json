@@ -17,10 +17,13 @@
     "sourceMap": true,
     "skipLibCheck": true,
     "outDir": "dist",
+    "paths": {
+      "@/*": ["src/*"]
+    },
     "types": ["node", "jest"]
   },
   "include": ["src/**/*.ts", "src/**/*.json", "test/**/*.ts", "test/**/*.json"],
-  "exclude": ["dist", "node_modules", "scripts", "src/scaffold/templates/*"],
+  "exclude": ["dist", "node_modules", "scripts"],
   "ts-node": {
     "esm": true
   }

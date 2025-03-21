@@ -1,5 +1,6 @@
 import { numberToHex } from "viem";
 import {
+  BlockTag,
   BlockTagOrNumber,
   BlockTransactionsKind,
   L1BlockRef,
@@ -8,18 +9,17 @@ import {
 import { BlockTagOrNumberRpc, L1BlockRefRpc, L2BlockRefRpc } from "../rpc";
 import { formatTransactionOrHash } from "./transaction";
 
-export function formatBlockTagOrNumber(
-  block: BlockTagOrNumber,
-): BlockTagOrNumberRpc {
+export function formatBlockTagOrNumber(block?: BlockTagOrNumber): BlockTagOrNumberRpc {
+  if (!block) {
+    return BlockTag.Latest;
+  }
   if (typeof block === "bigint") {
     return numberToHex(block);
   }
   return block;
 }
 
-export function formatBlockTransactionKind(
-  kind: BlockTransactionsKind,
-): boolean {
+export function formatBlockTransactionKind(kind: BlockTransactionsKind): boolean {
   switch (kind) {
     case BlockTransactionsKind.Hashes:
       return false;
