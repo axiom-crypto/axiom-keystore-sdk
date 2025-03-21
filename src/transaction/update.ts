@@ -48,7 +48,7 @@ export async function createUpdateTransactionClient(
   const feePerGas = numberToHex(feePerGasBigInt);
 
   const isL1Initiated = boolToHex(false, { size: 1 });
-  const l1InitiatedNonce = tx.l1InitiatedNonce ?? "0x";
+  const l1InitiatedNonce = tx.l1InitiatedNonce ? numberToHex(tx.l1InitiatedNonce) : "0x";
 
   const userAcct = initAccount({
     address: tx.userAcct.address,
