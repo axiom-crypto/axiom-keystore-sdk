@@ -1,16 +1,7 @@
 import { Quantity } from "../primitives";
-import {
-  AccountStateTransitionsRpc,
-  StateTransitionsRpc,
-  TransitionsRpc,
-} from "../rpc";
+import { AccountStateTransitionsRpc, StateTransitionsRpc, TransitionsRpc } from "../rpc";
 import { HexQuantity } from "../rpc/primitives";
-import {
-  AccountStateTransitions,
-  FromTo,
-  StateTransitions,
-  Transitions,
-} from "../state";
+import { AccountStateTransitions, FromTo, StateTransitions, Transitions } from "../state";
 
 function formatFromTo(rpcObj: FromTo<HexQuantity>): FromTo<Quantity> {
   return {
@@ -36,13 +27,9 @@ export function formatAccountStateTransitions(
   };
 }
 
-export function formatStateTransitions(
-  rpcObj: StateTransitionsRpc,
-): StateTransitions {
+export function formatStateTransitions(rpcObj: StateTransitionsRpc): StateTransitions {
   return {
     user: formatAccountStateTransitions(rpcObj.user),
-    sponsor: rpcObj.sponsor
-      ? formatAccountStateTransitions(rpcObj.sponsor)
-      : undefined,
+    sponsor: rpcObj.sponsor ? formatAccountStateTransitions(rpcObj.sponsor) : undefined,
   };
 }

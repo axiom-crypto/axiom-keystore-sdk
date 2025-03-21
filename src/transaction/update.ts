@@ -1,242 +1,138 @@
-import { RLP } from "@ethereumjs/rlp";
-import { KeystoreAccount, TransactionType } from "../types/transaction";
-import { UpdateTransactionRequest } from "../types/transactionRequest";
+import { initAccount } from "@/account";
+import { createNodeClient, createSequencerClient } from "@/client";
+import { NODE_URL, SEQUENCER_URL } from "@/constants";
 import {
-  keccak256,
-  hexToBytes,
-  encodePacked,
-  Hex,
+  Bytes32,
+  Data,
+  Hash,
+  TransactionType,
+  UpdateTransactionClient,
+  UpdateTransactionInputs,
+} from "@/types";
+import { DOMAIN, UPDATE_TYPES } from "@/types/eip712";
+import { ecdsaSign } from "@/utils/ecdsa";
+import { RLP } from "@ethereumjs/rlp";
+import {
   boolToHex,
-  numberToHex,
   bytesToHex,
-  hexToBigInt,
+  encodePacked,
   hashTypedData,
+  HashTypedDataParameters,
+  keccak256,
+  numberToHex,
+  pad,
 } from "viem";
-import { Bytes32, Data, Hash } from "../types/primitives";
-import { ecdsaSign } from "../utils/ecdsa";
-import { DOMAIN, UPDATE_TYPES } from "./descriptors";
-import { KeystoreAccountBuilder } from "../account";
 
-export class UpdateTransactionBuilder {
-  private readonly isL1Initiated: Hex;
-  private readonly nonce: bigint;
-  private readonly feePerGas: Hex;
-  private readonly l1InitiatedNonce: Hex;
-  private readonly newUserData: Hex;
-  private readonly newUserVkey: Hex;
-  private readonly userAcct: KeystoreAccount;
-  private readonly userProof: Hex;
-  private readonly sponsorAcctBytes: Hex;
-  private readonly sponsorProof: Hex;
+export async function createUpdateTransactionClient(
+  tx: UpdateTransactionInputs,
+): Promise<UpdateTransactionClient> {
+  const nodeClient = createNodeClient({ url: tx.nodeClientUrl ?? NODE_URL });
+  const nonce =
+    tx.nonce ??
+    (await (async () => {
+      try {
+        return await tx.userAcct.getNonce();
+      } catch {
+        return await nodeClient.getTransactionCount({ address: tx.userAcct.address });
+      }
+    })());
 
-  private _txBytes?: Hex;
-  private _txHash?: Hex;
+  const feePerGasBigInt =
+    tx.feePerGas ??
+    (await (async () => {
+      const sequencerClient = createSequencerClient({
+        url: tx.sequencerClientUrl ?? SEQUENCER_URL,
+      });
+      return await sequencerClient.gasPrice();
+    })());
+  const feePerGas = numberToHex(feePerGasBigInt);
 
-  constructor(
-    isL1Initiated: Hex,
-    nonce: bigint,
-    feePerGas: Hex,
-    l1InitiatedNonce: Hex,
-    newUserData: Hex,
-    newUserVkey: Hex,
-    userAcct: KeystoreAccount,
-    userProof: Hex,
-    sponsorAcctBytes: Hex,
-    sponsorProof: Hex,
-  ) {
-    this.isL1Initiated = isL1Initiated;
-    this.nonce = nonce;
-    this.feePerGas = feePerGas;
-    this.l1InitiatedNonce = l1InitiatedNonce;
-    this.newUserData = newUserData;
-    this.newUserVkey = newUserVkey;
-    this.userAcct = userAcct;
-    this.userProof = userProof;
-    this.sponsorAcctBytes = sponsorAcctBytes;
-    this.sponsorProof = sponsorProof;
-  }
+  const isL1Initiated = boolToHex(false, { size: 1 });
+  const l1InitiatedNonce = tx.l1InitiatedNonce ? numberToHex(tx.l1InitiatedNonce) : "0x";
 
-  /**
-   * Creates a new UpdateTransactionBuilder from an UpdateTransactionRequest.
-   *
-   * @param txReq - The transaction request object
-   * @returns UpdateTransactionBuilder with the provided transaction request
-   */
-  public static fromTransactionRequest(txReq: UpdateTransactionRequest) {
-    const isL1Initiated = boolToHex(false, { size: 1 });
-    const nonce = txReq.nonce;
-    const feePerGas = numberToHex(txReq.feePerGas);
-    const l1InitiatedNonce = "0x";
-    const newUserData = txReq.newUserData;
-    const newUserVkey = txReq.newUserVkey;
-    const userAcct = new KeystoreAccountBuilder(
-      txReq.userAcct.keystoreAddress,
-      txReq.userAcct.salt,
-      txReq.userAcct.dataHash,
-      txReq.userAcct.vkey,
-    );
-    const userProof = "0x";
-    const sponsorAcctBytes = txReq.sponsorAcct
-      ? new KeystoreAccountBuilder(
-          txReq.sponsorAcct.keystoreAddress,
-          txReq.sponsorAcct.salt,
-          txReq.sponsorAcct.dataHash,
-          txReq.sponsorAcct.vkey,
-        ).rlpEncode()
-      : "0x";
-    const sponsorProof = "0x";
+  const userAcct = initAccount({
+    address: tx.userAcct.address,
+    salt: nonce > 0n ? pad("0x00", { size: 32 }) : tx.userAcct.salt,
+    dataHash: tx.userAcct.dataHash,
+    vkey: tx.userAcct.vkey,
+  });
 
-    return new this(
-      isL1Initiated,
+  const sponsorNonce =
+    tx.sponsorAcct === undefined
+      ? 0n
+      : await nodeClient.getTransactionCount({ address: tx.sponsorAcct.address });
+  const sponsorAcct =
+    tx.sponsorAcct &&
+    initAccount({
+      address: tx.sponsorAcct.address,
+      salt: sponsorNonce > 0n ? pad("0x00", { size: 32 }) : tx.sponsorAcct.salt,
+      dataHash: tx.sponsorAcct.dataHash,
+      vkey: tx.sponsorAcct.vkey,
+    });
+  const sponsorAcctBytes = sponsorAcct ? sponsorAcct.rlpEncode() : "0x";
+
+  const toBytes = (): Data => {
+    const rlpEncoded = RLP.encode([
       nonce,
       feePerGas,
-      l1InitiatedNonce,
-      newUserData,
-      newUserVkey,
-      userAcct,
-      userProof,
+      tx.newUserData,
+      tx.newUserVkey,
+      userAcct.address,
+      userAcct.salt,
+      userAcct.dataHash,
+      userAcct.vkey,
+      tx.userProof,
       sponsorAcctBytes,
-      sponsorProof,
+      tx.sponsorProof,
+    ]);
+
+    return encodePacked(
+      ["bytes1", "bytes1", "bytes", "bytes"],
+      [TransactionType.Update, isL1Initiated, l1InitiatedNonce, bytesToHex(rlpEncoded)],
     );
-  }
+  };
 
-  /**
-   * Returns the transaction bytes for the update transaction.
-   *
-   * @returns The transaction bytes
-   */
-  public txBytes(): Data {
-    if (!this._txBytes) {
-      const rlpEncoded = RLP.encode([
-        this.nonce,
-        this.feePerGas,
-        this.newUserData,
-        this.newUserVkey,
-        this.userAcct.keystoreAddress,
-        this.userAcct.salt,
-        this.userAcct.dataHash,
-        this.userAcct.vkey,
-        this.userProof,
-        this.sponsorAcctBytes,
-        this.sponsorProof,
-      ]);
-
-      this._txBytes = encodePacked(
-        ["bytes1", "bytes1", "bytes", "bytes"],
-        [
-          TransactionType.Update,
-          this.isL1Initiated,
-          this.l1InitiatedNonce,
-          bytesToHex(rlpEncoded),
-        ],
-      );
-    }
-    return this._txBytes;
-  }
-
-  /**
-   * Returns the transaction hash for the update transaction.
-   *
-   * @returns The transaction hash
-   */
-  public txHash(): Hash {
-    if (!this._txHash) {
-      this._txHash = keccak256(this.txBytes());
-    }
-    return this._txHash;
-  }
-
-  /**
-   * Returns the user message hash for the update transaction.
-   *
-   * @returns The user message hash
-   */
-  public userMsgHash(): Hash {
-    return hashTypedData({
+  const toTypedData = (): HashTypedDataParameters => {
+    return {
       domain: DOMAIN,
       types: UPDATE_TYPES,
       primaryType: "Update",
       message: {
-        userKeystoreAddress: this.userAcct.keystoreAddress,
-        nonce: this.nonce,
-        feePerGas: this.feePerGas,
-        newUserData: this.newUserData,
-        newUserVkey: this.newUserVkey,
+        userKeystoreAddress: userAcct.address,
+        nonce,
+        feePerGas,
+        newUserData: tx.newUserData,
+        newUserVkey: tx.newUserVkey,
       },
-    });
-  }
+    };
+  };
 
-  /**
-   * Signs the user message hash for the update transaction.
-   *
-   * @param pk - The private key to sign with
-   * @returns The signature
-   */
-  public async sign(pk: Bytes32): Promise<Data> {
-    const hash = this.userMsgHash();
-    const signature = await ecdsaSign(pk, hash);
-    return signature;
-  }
+  const txHash = (): Hash => keccak256(toBytes());
 
-  /**
-   * Decodes the transaction bytes for an update transaction.
-   *
-   * @param hex - The transaction bytes
-   * @returns UpdateTransactionBuilder with the decoded transaction
-   */
-  public static decodeTxBytes(hex: Hex) {
-    const bytes = hexToBytes(hex);
+  const userMsgHash = (): Hash => {
+    return hashTypedData(toTypedData());
+  };
 
-    if (bytes.length < 2) {
-      throw new Error("Invalid length of transaction bytes");
-    }
+  const sign = async (pk: Bytes32): Promise<Data> => {
+    const hash = userMsgHash();
+    return await ecdsaSign(pk, hash);
+  };
 
-    const txType = bytes[0];
-    if (numberToHex(txType, { size: 1 }) !== TransactionType.Update) {
-      throw new Error("Invalid transaction type");
-    }
-
-    const isL1Initiated = bytes[1] != 0;
-    if (isL1Initiated) {
-      throw new Error("cannot decode L1 initiated transaction");
-    }
-
-    const rlpEncoded = bytes.slice(2);
-    const rlpDecoded = RLP.decode(rlpEncoded);
-
-    const nonce = rlpDecoded[0] as Uint8Array;
-    const feePerGas = rlpDecoded[1] as Uint8Array;
-    const newUserData = rlpDecoded[2] as Uint8Array;
-    const newUserVkey = rlpDecoded[3] as Uint8Array;
-    const userAcctKeystoreAddress = rlpDecoded[4] as Uint8Array;
-    const userAcctSalt = rlpDecoded[5] as Uint8Array;
-    const userAcctDataHash = rlpDecoded[6] as Uint8Array;
-    const userAcctVkey = rlpDecoded[7] as Uint8Array;
-    const userProof = rlpDecoded[8] as Uint8Array;
-    const sponsorAcctBytes = rlpDecoded[9] as Uint8Array;
-    const sponsorProof = rlpDecoded[10] as Uint8Array;
-
-    const userAcct = new KeystoreAccountBuilder(
-      bytesToHex(userAcctKeystoreAddress),
-      bytesToHex(userAcctSalt),
-      bytesToHex(userAcctDataHash),
-      bytesToHex(userAcctVkey),
-    );
-
-    const nonceHex = bytesToHex(nonce);
-    const nonceBigInt = nonceHex == "0x" ? 0n : hexToBigInt(nonceHex);
-
-    return new UpdateTransactionBuilder(
-      boolToHex(isL1Initiated, { size: 1 }),
-      nonceBigInt,
-      bytesToHex(feePerGas),
-      "0x",
-      bytesToHex(newUserData),
-      bytesToHex(newUserVkey),
-      userAcct,
-      bytesToHex(userProof),
-      bytesToHex(sponsorAcctBytes),
-      bytesToHex(sponsorProof),
-    );
-  }
+  return {
+    nonce,
+    feePerGas: feePerGasBigInt,
+    newUserData: tx.newUserData,
+    newUserVkey: tx.newUserVkey,
+    userAcct,
+    sponsorAcct,
+    userProof: tx.userProof,
+    sponsorProof: tx.sponsorProof,
+    l1InitiatedNonce: tx.l1InitiatedNonce,
+    isL1Initiated: tx.isL1Initiated,
+    toBytes,
+    toTypedData,
+    txHash,
+    userMsgHash,
+    sign,
+  };
 }

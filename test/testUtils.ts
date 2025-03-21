@@ -1,13 +1,13 @@
 import { KeystoreAddress, L1Address } from "../src/types/primitives";
-import { keccak256, pad } from "viem";
 import {
-  AXIOM_ACCOUNT,
+  initAccountCounterfactual,
+  initAccountFromAddress,
   UpdateTransactionRequest,
-  KeystoreAccountBuilder,
 } from "../src";
+import { keccak256, pad } from "viem";
 
-// Default accounts from Anvil
-export const ANVIL_ACCOUNTS: { pk: KeystoreAddress; addr: L1Address }[] = [
+// Accounts from test seed phrase `test test test test test test test test test test test junk`
+export const TEST_ACCOUNTS: { pk: KeystoreAddress; addr: L1Address }[] = [
   {
     pk: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
     addr: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
@@ -22,41 +22,54 @@ export const ANVIL_ACCOUNTS: { pk: KeystoreAddress; addr: L1Address }[] = [
   },
 ];
 
-export const NODE_URL = "https://keystore-rpc-node.axiom.xyz";
-export const SIGNATURE_PROVER_URL =
-  "https://keystore-rpc-signatureprover.axiom.xyz";
-export const SEQUENCER_URL = "https://keystore-rpc-sequencer.axiom.xyz";
+export const SIGNATURE_PROVER_URL = "https://keystore-rpc-signatureprover.axiom.xyz";
 
 export const NON_EXISTING_ACCOUNT_ADDRESS =
   "0x1111111111111111111111111111111111111111111111111111111111111111";
 
 export const NON_SPONSORED_UPDATE_TX_HASH =
-  "0xa99260e54e21d87d9be993408a07a0cd8bb6449be0a31a4823fdbff5a11b5873";
+  "0x12ae7a10dd8d3a3b4e94bc4848596bfc285d165ff662b47bad363535b409c7c5";
 export const SPONSORED_UPDATE_TX_HASH =
-  "0x50cb24d1fdfed99c6b3865309438572e0f9c9bbebcf76a0eb33be1ce94e4e1d9";
+  "0x20c20d0623c09c120eb4c7ee4fdd6a40db9fcde5e4c87e51979c24e9f5c4ffb5";
 export const NON_EXISTENT_TX_HASH =
   "0x1111111111111111111111111111111111111111111111111111111111111111";
 
 export const EXISTING_BLOCK_HASH =
-  "0x6f0234079365fb3527b65a8c4143d1b4de932750374fa9646cd6935d05efd534";
+  "0x795e07cea9c88434999c05bf65d13a03fd54ebd624d7a50c5267f8fd7cedd3ee";
 export const NON_EXISTENT_BLOCK_HASH =
   "0x1111111111111111111111111111111111111111111111111111111111111111";
 
 export const EMPTY_HEX = "0x";
 export const ZERO_BYTES32 = pad("0x", { size: 32 });
 
-export const CODE_HASH =
-  "0x595b7552e60f6430c898abc2b292aa805e94834a576f57969406940f6d12d4d9";
+export const CODE_HASH = "0x595b7552e60f6430c898abc2b292aa805e94834a576f57969406940f6d12d4d9";
+
+export const AXIOM_SPONSOR_CODEHASH =
+  "0xa1b20564cd6cc6410266a716c9654406a15e822d4dc89c4127288da925d5c225";
+export const AXIOM_SPONSOR_DATA_HASH =
+  "0xecf85bc51a8b47c545dad1a47e868276d0a92b7cf2716033ce77d385a6b67c4b";
+export const AXIOM_SPONSOR_ADDRESS =
+  "0xb5ce21832ca3bbf53de610c6dda13d6a735b0a8ea3422aeaab678a01e298269d";
+export const AXIOM_SPONSOR_EOA = "0xD7548a3ED8c51FA30D26ff2D7Db5C33d27fd48f2";
+
+export const M_OF_N_ECDSA_VKEY =
+  "0x01010000001001000100010100000100000000000000000000000000000000009171ded76cb8d446b69cb901fe413fe380886240549feb11014fec000a7eb1280750a550988ceaef9a37f6794af0d9bf472445bc9dfacf89b9f4a6130c2b0eb42ef05dfd54c6d765973c1b3e0c15885e1307bedc893a3474103a065e7a032d04078f64fde979db4eea6692dbde7d161c3e6c3ae99f2e7cf9c58229f8d1a5bb97056fb20596873754a862cbe247b25315399d7be7a8bfe72942564c469d6a95e141a2f3c0bb526ad5ded741e9c10d6920cd28a10f108b0d1f2b22688b67a32c4055f6d42ed1d1c3eb767c513d8aa832c470b29a9dc7afb33fdcfeda198b820f724d13a24c6d1123d95b1124cf08c4aaf9531dd819011b9a13b6151d5ab83225fe4517";
+
+export const SPONSOR_ACCOUNT = initAccountFromAddress({
+  address: AXIOM_SPONSOR_ADDRESS,
+  dataHash: AXIOM_SPONSOR_DATA_HASH,
+  vkey: M_OF_N_ECDSA_VKEY,
+});
 
 export const TEST_TX_REQ: UpdateTransactionRequest = {
   nonce: 0n,
   feePerGas: 100n,
   newUserData: "0x12345",
   newUserVkey: "0x12345",
-  userAcct: KeystoreAccountBuilder.initCounterfactual(
-    pad("0x2"),
-    keccak256("0x1234"),
-    "0x1234",
-  ),
-  sponsorAcct: AXIOM_ACCOUNT,
+  userAcct: initAccountCounterfactual({
+    salt: pad("0x02", { size: 32 }),
+    dataHash: keccak256("0x1234"),
+    vkey: "0x1234",
+  }),
+  sponsorAcct: SPONSOR_ACCOUNT,
 };

@@ -1,153 +1,137 @@
-import { generateRandomHex } from "@axiom-crypto/keystore-sdk/src/utils/random";
 import {
-  AXIOM_ACCOUNT,
-  AXIOM_ACCOUNT_AUTH_INPUTS,
+  createNodeClient,
+  createSignatureProverClient,
+  initAccountCounterfactual,
+  createUpdateTransactionClient,
+  createSequencerClient,
+  Bytes32,
+  L1Address,
+  initAccountFromAddress,
+  NODE_URL,
+  SEQUENCER_URL,
+  SignatureProverClient,
+  CustomSignatureProver,
+  MOfNEcdsaKeyDataFields,
+  MOfNEcdsaAuthDataFields,
+  MOfNEcdsaAuthInputs,
   M_OF_N_ECDSA_VKEY,
-  AuthenticationStatusEnum,
-  BlockTag,
-  KeystoreAccountBuilder,
-  KeystoreNodeProvider,
-  KeystoreSequencerProvider,
-  KeystoreSignatureProverProvider,
-  makeMOfNEcdsaAuthInputs,
-  SAMPLE_USER_CODE_HASH,
-  SponsoredAuthInputs,
-  TransactionStatus,
-  UpdateTransactionBuilder,
-  UpdateTransactionRequest,
-  Data,
-  calcMOfNDataHash,
-} from "@axiom-crypto/keystore-sdk/src";
-import { stringToHex } from "viem";
+  keyDataEncoder,
+  authDataEncoder,
+  makeAuthInputs,
+} from "@axiom-crypto/keystore-sdk";
+import { generateRandomHex } from "@axiom-crypto/keystore-sdk/utils/random";
+import { keccak256 } from "viem";
 
-const NODE_URL = "https://keystore-rpc-node.axiom.xyz";
-const SIGNATURE_PROVER_URL = "https://keystore-rpc-signatureprover.axiom.xyz";
-const SEQUENCER_URL = "https://keystore-rpc-sequencer.axiom.xyz";
+// Example codehash for the User account
+const EXAMPLE_USER_CODEHASH = "0x595b7552e60f6430c898abc2b292aa805e94834a576f57969406940f6d12d4d9";
 
-const RETRY_INTERVAL_SEC = 30;
-const MAX_RETRIES = 10;
+// Example values for the Sponsor account
+const AXIOM_SPONSOR_CODEHASH = "0xa1b20564cd6cc6410266a716c9654406a15e822d4dc89c4127288da925d5c225";
+const AXIOM_SPONSOR_DATA_HASH =
+  "0xecf85bc51a8b47c545dad1a47e868276d0a92b7cf2716033ce77d385a6b67c4b";
+const AXIOM_SPONSOR_KEYSTORE_ADDR =
+  "0xb5ce21832ca3bbf53de610c6dda13d6a735b0a8ea3422aeaab678a01e298269d";
+const AXIOM_SPONSOR_EOA = "0xD7548a3ED8c51FA30D26ff2D7Db5C33d27fd48f2";
+
+// Accounts from test seed phrase `test test test test test test test test test test test junk`
+const TEST_ACCOUNTS: { privateKey: Bytes32; address: L1Address }[] = [
+  {
+    privateKey: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+    address: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+  },
+];
+
+export const MOfNSignatureProver: CustomSignatureProver<
+  MOfNEcdsaKeyDataFields,
+  MOfNEcdsaAuthDataFields,
+  MOfNEcdsaAuthInputs
+> = {
+  url: "https://keystore-rpc-signatureprover.axiom.xyz",
+  vkey: M_OF_N_ECDSA_VKEY,
+  keyDataEncoder,
+  authDataEncoder,
+  makeAuthInputs,
+};
 
 async function main() {
-  // anvil keys
-  const privateKey =
-    "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
-  const eoaAddr = "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266";
+  const account = TEST_ACCOUNTS[0];
 
-  const salt = generateRandomHex(32);
-  const dataHash = calcMOfNDataHash(SAMPLE_USER_CODE_HASH, 1n, [eoaAddr]);
-  const userAcct = KeystoreAccountBuilder.initCounterfactual(
-    salt,
+  // Create an m-of-n ECDSA signature prover client with default config
+  const mOfNEcdsaClient: SignatureProverClient<
+    MOfNEcdsaKeyDataFields,
+    MOfNEcdsaAuthDataFields,
+    MOfNEcdsaAuthInputs
+  > = createSignatureProverClient(MOfNSignatureProver);
+
+  // Get the encoded keyData and dataHash for the 1-of-1 ECDSA signature prover, with signer
+  // `0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266`
+  const keyData = mOfNEcdsaClient.keyDataEncoder({
+    codehash: EXAMPLE_USER_CODEHASH,
+    m: BigInt(1),
+    signersList: [account.address],
+  });
+  const dataHash = keccak256(keyData);
+
+  // Create node and sequencer clients which we will later use to interact with the keystore rollup
+  const nodeClient = createNodeClient({ url: NODE_URL });
+  const sequencerClient = createSequencerClient({ url: SEQUENCER_URL });
+
+  // Initialize a new user keystore account from a random salt
+  const userAcct = initAccountCounterfactual({
+    salt: generateRandomHex(32),
     dataHash,
-    M_OF_N_ECDSA_VKEY,
-  );
-  console.log("User account:", userAcct);
+    vkey: mOfNEcdsaClient.vkey,
+    nodeClient,
+  });
+  console.log("User account initialized:", userAcct);
 
-  const nodeProvider = new KeystoreNodeProvider(NODE_URL);
-  const nonce = await nodeProvider.getTransactionCount(
-    userAcct.keystoreAddress,
-    BlockTag.Latest,
-  );
+  // Load a sponsor account from the sponsor's keystore address
+  const sponsorAcct = initAccountFromAddress({
+    address: AXIOM_SPONSOR_KEYSTORE_ADDR,
+    dataHash: AXIOM_SPONSOR_DATA_HASH,
+    vkey: mOfNEcdsaClient.vkey,
+    nodeClient,
+  });
 
-  const sequencerProvider = new KeystoreSequencerProvider(SEQUENCER_URL);
-  const feePerGas = await sequencerProvider.gasPrice();
-
-  const txReq: UpdateTransactionRequest = {
-    nonce,
-    feePerGas,
-    newUserData: stringToHex("newUserData"), // placeholder
-    newUserVkey: M_OF_N_ECDSA_VKEY,
+  // Create a client to handle the Update transaction type, which is used to update the user
+  // keystore account's data and vkey.
+  const updateTx = await createUpdateTransactionClient({
+    newUserData: keyData,
+    newUserVkey: mOfNEcdsaClient.vkey,
     userAcct,
-    sponsorAcct: AXIOM_ACCOUNT,
-  };
-  console.log("Transaction request:", txReq);
-  const updateTx = UpdateTransactionBuilder.fromTransactionRequest(txReq);
-  const userSig: Data = await updateTx.sign(privateKey);
+    sponsorAcct,
+  });
+  const signedTx = await updateTx.sign(account.privateKey);
 
-  const sponsorAuthInputs: SponsoredAuthInputs = {
-    proveSponsored: {
-      sponsorAuthInputs: AXIOM_ACCOUNT_AUTH_INPUTS,
-      userAuthInputs: makeMOfNEcdsaAuthInputs(
-        SAMPLE_USER_CODE_HASH,
-        [userSig],
-        [eoaAddr],
-      ),
-    },
-  };
-  console.log("Sending sponsor authentication request to signature prover");
+  // Create the user and sponsor AuthInputs to be used in authenticating a sponsored transaction
+  console.log("Authenticating sponsored transaction...");
+  const userAuthInputs = mOfNEcdsaClient.makeAuthInputs({
+    codehash: EXAMPLE_USER_CODEHASH,
+    signatures: [signedTx],
+    signersList: [account.address],
+  });
+  const sponsorAuthInputs = mOfNEcdsaClient.makeAuthInputs({
+    codehash: AXIOM_SPONSOR_CODEHASH,
+    signatures: [],
+    signersList: [AXIOM_SPONSOR_EOA],
+  });
 
-  const signatureProverProvider = new KeystoreSignatureProverProvider(
-    SIGNATURE_PROVER_URL,
-  );
-  const requestHash =
-    await signatureProverProvider.authenticateSponsoredTransaction(
-      updateTx.txBytes(),
+  const authHash = await mOfNEcdsaClient.authenticateSponsoredTransaction({
+    transaction: updateTx.toBytes(),
+    sponsoredAuthInputs: {
+      userAuthInputs,
       sponsorAuthInputs,
-    );
+    },
+  });
+  const authenticatedTx = await mOfNEcdsaClient.waitForSponsoredAuthentication({ hash: authHash });
 
-  console.log("Request hash:", requestHash);
-  console.log(
-    "Waiting for sponsor authentication to complete. This may take several minutes...",
-  );
+  // Send the transaction to the sequencer
+  const txHash = await sequencerClient.sendRawTransaction({ data: authenticatedTx });
+  console.log("Transaction authenticated. Sending to sequencer:", txHash);
 
-  // polls the request status until it's completed
-  const authenticatedTx = await (async () => {
-    while (true) {
-      const status =
-        await signatureProverProvider.getSponsoredAuthenticationStatus(
-          requestHash,
-        );
-      console.log("Sponsored authentication status:", status.status);
-      switch (status.status) {
-        case AuthenticationStatusEnum.Pending:
-          await new Promise((resolve) =>
-            setTimeout(resolve, RETRY_INTERVAL_SEC * 1000),
-          );
-          continue;
-        case AuthenticationStatusEnum.Failed:
-          throw new Error("Transaction authentication failed");
-        case AuthenticationStatusEnum.Completed:
-          if (!status.authenticatedTransaction) {
-            throw new Error("No authenticated transaction found");
-          }
-          console.log("Sponsor authentication completed");
-          return status.authenticatedTransaction;
-        default:
-          throw new Error("Invalid authentication status");
-      }
-    }
-  })();
-
-  console.log("Sending transaction to sequencer");
-  const txHash = await sequencerProvider.sendRawTransaction(authenticatedTx);
-  console.log("Transaction sent to sequencer", txHash);
-
-  let currentStatus = "";
-
-  // polls the transaction receipt until it's finalized
-  for (let i = 0; i < MAX_RETRIES; i++) {
-    try {
-      const receipt = await nodeProvider.getTransactionReceipt(txHash);
-      if (receipt.status !== currentStatus) {
-        currentStatus = receipt.status;
-        console.log("Transaction receipt:", receipt);
-      }
-      if (currentStatus === TransactionStatus.L2FinalizedL1Included) {
-        console.log("Success: transaction finalized!");
-        return;
-      }
-      console.log(
-        `Checking transaction status again in ${RETRY_INTERVAL_SEC} seconds`,
-      );
-    } catch {
-      console.log("Transaction not yet included in block");
-    }
-    await new Promise((resolve) =>
-      setTimeout(resolve, RETRY_INTERVAL_SEC * 1000),
-    );
-  }
-  console.log(
-    `Transaction not finalized in ${MAX_RETRIES * RETRY_INTERVAL_SEC} seconds`,
-  );
+  // Wait for the transaction to be finalized on L2 and included on L1
+  const receipt = await sequencerClient.waitForTransactionInclusion({ hash: txHash });
+  console.log("Transaction finalized on L2 and included on L1. Transaction receipt:", receipt);
 }
 
 main();

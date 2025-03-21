@@ -1,4 +1,4 @@
-import { KEYSTORE_CHAIN_ID } from "../constants";
+import { KEYSTORE_CHAIN_ID } from "@/constants";
 
 export const DOMAIN = {
   name: "AxiomKeystore",
