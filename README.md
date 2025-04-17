@@ -95,7 +95,7 @@ const updateTx = await createUpdateTransactionClient({
 We'll then go ahead and sign the transaction with our account's private key:
 
 ```typescript
-const signedTx = await updateTx.sign(account.privateKey);
+const txSignature = await updateTx.sign(account.privateKey);
 ```
 
 ### Authenticating a Transaction
@@ -106,7 +106,7 @@ Once we've signed the transaction, we'll need to use the signature prover client
 // Make user and sponsor auth inputs for the m-of-n ECDSA signature prover
 const userAuthInputs = mOfNEcdsaClient.makeAuthInputs({
   codehash: EXAMPLE_USER_CODEHASH,
-  signatures: [signedTx],
+  signatures: [txSignature],
   signersList: [account.address],
 });
 const sponsorAuthInputs = mOfNEcdsaClient.makeAuthInputs({
