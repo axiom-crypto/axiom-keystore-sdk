@@ -2,7 +2,7 @@ import { KeystoreAddress, L1Address } from "../src/types/primitives";
 import {
   initAccountCounterfactual,
   initAccountFromAddress,
-  UpdateTransactionRequest,
+  UpdateTransactionInputs,
 } from "../src";
 import { keccak256, pad } from "viem";
 
@@ -61,7 +61,7 @@ export const SPONSOR_ACCOUNT = initAccountFromAddress({
   vkey: M_OF_N_ECDSA_VKEY,
 });
 
-export const TEST_TX_REQ: UpdateTransactionRequest = {
+export const TEST_TX_REQ: UpdateTransactionInputs = {
   nonce: 0n,
   feePerGas: 100n,
   newUserData: "0x12345",
