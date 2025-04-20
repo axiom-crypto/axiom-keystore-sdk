@@ -22,3 +22,14 @@ export const UPDATE_TYPES = {
     { name: "newUserVkey", type: "bytes" },
   ],
 } as const;
+
+export const WITHDRAW_TYPES = {
+  EIP712Domain: EIP712_DOMAIN_TYPES,
+  Withdraw: [
+    { name: "userKeystoreAddress", type: "bytes32" },
+    { name: "nonce", type: "uint256" },
+    { name: "feePerGas", type: "bytes" },
+    { name: "to", type: "address" },
+    { name: "amt", type: "uint256" }
+  ]
+} as const;
