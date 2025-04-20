@@ -23,8 +23,11 @@ export type BaseTransaction = {
 
 export interface BaseTransactionAction {
   toBytes: () => Data;
-  toTypedData: () => HashTypedDataParameters;
   txHash: () => Hash;
+}
+
+export interface SignableTransactionAction {
+  toTypedData: () => HashTypedDataParameters;
   userMsgHash: () => Hash;
   sign: (pk: Bytes32) => Promise<Data>;
 }
