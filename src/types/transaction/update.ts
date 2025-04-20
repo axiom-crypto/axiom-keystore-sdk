@@ -1,6 +1,6 @@
 import { KeystoreAccount } from "../keystoreAccount";
 import { Data, Quantity } from "../primitives";
-import { BaseTransaction, BaseTransactionAction } from "./base";
+import { BaseTransaction, BaseTransactionAction, SignableTransactionAction } from "./base";
 
 /**
  * An update transaction (type = "0x02").
@@ -45,4 +45,4 @@ export interface UpdateTransactionInputs {
   sequencerClientUrl?: string;
 }
 
-export interface UpdateTransactionClient extends UpdateTransactionInputs, BaseTransactionAction {}
+export interface UpdateTransactionClient extends UpdateTransactionInputs, SignableTransactionAction, BaseTransactionAction { }

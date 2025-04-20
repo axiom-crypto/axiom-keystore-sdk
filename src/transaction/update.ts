@@ -45,9 +45,9 @@ export async function createUpdateTransactionClient(
       });
       return await sequencerClient.gasPrice();
     })());
-  const feePerGas = numberToHex(feePerGasBigInt);
+  const feePerGas = numberToHex(feePerGasBigInt, { size: 32 });
 
-  const isL1Initiated = boolToHex(false, { size: 1 });
+  const isL1Initiated = boolToHex(tx.isL1Initiated ?? false, { size: 1 });
   const l1InitiatedNonce = tx.l1InitiatedNonce ? numberToHex(tx.l1InitiatedNonce) : "0x";
 
   const userAcct = initAccount({
