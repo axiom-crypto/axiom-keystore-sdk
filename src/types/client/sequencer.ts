@@ -13,8 +13,6 @@ import {
 export interface SequencerClient extends NodeClient {
   sendRawTransaction: ({ data }: { data: Data }) => Promise<SendRawTransactionResponse>;
 
-  waitForTransactionInclusion: ({ hash }: { hash: Hash }) => Promise<GetTransactionReceiptResponse>;
-
   gasPrice: () => Promise<GasPriceResponse>;
 
   estimateGas: ({ txData }: { txData: Data }) => Promise<EstimateGasResponse>;
@@ -30,7 +28,6 @@ export interface SequencerClient extends NodeClient {
 
 export interface SequencerClientConfig {
   url: string;
-  nodeUrl?: string;
   pollingIntervalMs?: number;
   pollingRetries?: number;
 }

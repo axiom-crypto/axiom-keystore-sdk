@@ -16,6 +16,7 @@ import {
   BlockTagOrNumber,
   Data,
   BlockTransactionsKind,
+  TransactionStatus,
 } from "@/types";
 
 export interface NodeClient {
@@ -88,8 +89,24 @@ export interface NodeClient {
     hash: Hash;
     txKind: BlockTransactionsKind;
   }) => Promise<GetBlockByHashResponse>;
+
+  waitForTransactionReceipt: ({
+    hash
+  }: {
+    hash: Hash,
+  }) => Promise<GetTransactionReceiptResponse>;
+
+  waitForTransactionStatus: ({
+    hash,
+    status
+  }: {
+    hash: Hash,
+    status: TransactionStatus,
+  }) => Promise<GetTransactionReceiptResponse>;
 }
 
 export interface NodeClientConfig {
   url: string;
+  pollingIntervalMs?: number;
+  pollingRetries?: number;
 }

@@ -1,3 +1,4 @@
+import { DEFAULTS } from "@/config";
 import {
   BlockNumberResponse,
   BlockTagOrNumber,
@@ -18,6 +19,7 @@ import {
   NodeClient,
   NodeClientConfig,
   SyncStatusResponse,
+  TransactionStatus,
 } from "@/types";
 import {
   formatBlockNumberResponse,
@@ -36,7 +38,11 @@ import {
 import { Client, HTTPTransport, RequestManager } from "@open-rpc/client-js";
 
 export function createNodeClient(config: NodeClientConfig): NodeClient {
-  const { url } = config;
+  const {
+    url,
+    pollingIntervalMs = DEFAULTS.POLLING_INTERVAL_MS,
+    pollingRetries = DEFAULTS.POLLING_RETRIES,
+  } = config;
 
   const transport = new HTTPTransport(url, {
     fetcher: globalThis.fetch,
@@ -183,6 +189,50 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     return formatGetBlockByHashResponse(res);
   };
 
+  const waitForTransactionReceipt = async ({
+    hash
+  }: {
+    hash: Hash,
+  }): Promise<GetTransactionReceiptResponse> => {
+    let attempts = 0;
+    while (attempts < pollingRetries) {
+      try {
+        return await getTransactionReceipt({ hash });
+      } catch {
+        // If getTransactionReceipt fails (transaction not yet included), continue polling
+        attempts++;
+        await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
+      }
+    }
+    throw new Error(`Timed out after ${(pollingRetries * pollingIntervalMs) / 1000} seconds`);
+  }
+
+  const waitForTransactionStatus = async ({
+    hash,
+    status
+  }: {
+    hash: Hash,
+    status: TransactionStatus,
+  }): Promise<GetTransactionReceiptResponse> => {
+    let attempts = 0;
+    while (attempts < pollingRetries) {
+      try {
+        const receipt = await getTransactionReceipt({ hash });
+        if (receipt.status === status) {
+          return receipt;
+        } else {
+          attempts++;
+          await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
+        }
+      } catch {
+        // If getTransactionReceipt fails (transaction not yet included), continue polling
+        attempts++;
+        await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
+      }
+    }
+    throw new Error(`Timed out after ${(pollingRetries * pollingIntervalMs) / 1000} seconds`);
+  }
+
   return {
     syncStatus,
     blockNumber,
@@ -196,5 +246,7 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     getBlockNumberByStateRoot,
     getBlockByNumber,
     getBlockByHash,
+    waitForTransactionReceipt,
+    waitForTransactionStatus
   };
 }
