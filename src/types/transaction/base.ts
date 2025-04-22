@@ -1,6 +1,7 @@
-import { DepositTransaction, WithdrawTransaction, UpdateTransaction } from "./";
+import { DepositTransaction, WithdrawTransaction, UpdateTransaction, DepositTransactionClient, WithdrawTransactionClient, UpdateTransactionClient } from "./";
 import { Bytes32, Data, Hash, Quantity } from "../primitives";
 import { HashTypedDataParameters } from "viem";
+import { L1InitiatedTransactionSol } from "../sol";
 
 /**
  * Enum representing either a transaction hash (string) or a fully populated
@@ -22,8 +23,10 @@ export type BaseTransaction = {
 };
 
 export interface BaseTransactionAction {
+  txType: TransactionType;
   toBytes: () => Data;
   txHash: () => Hash;
+  l1InitiatedTransaction: () => L1InitiatedTransactionSol;
 }
 
 export interface SignableTransactionAction {

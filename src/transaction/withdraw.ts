@@ -1,7 +1,7 @@
 import { initAccount } from "@/account";
 import { createNodeClient, createSequencerClient } from "@/client";
 import { NODE_URL, SEQUENCER_URL } from "@/constants";
-import { Bytes32, Data, Hash, TransactionType, WithdrawTransactionClient, WithdrawTransactionInputs } from "@/types";
+import { Bytes32, Data, Hash, L1InitiatedTransactionSol, TransactionType, WithdrawTransactionClient, WithdrawTransactionInputs } from "@/types";
 import { DOMAIN, WITHDRAW_TYPES } from "@/types/eip712";
 import { ecdsaSign } from "@/utils/ecdsa";
 import { RLP } from "@ethereumjs/rlp";
@@ -39,23 +39,30 @@ export async function createWithdrawTransactionClient(tx: WithdrawTransactionInp
     vkey: tx.userAcct.vkey,
   });
 
-  const toBytes = (): Data => {
-    const rlpEncoded = RLP.encode([
-      nonce,
-      feePerGas,
-      tx.to,
-      tx.amt,
-      userAcct.address,
-      userAcct.salt,
-      userAcct.dataHash,
-      userAcct.vkey,
-      tx.userProof
-    ]);
+  const rlpEncodedPortion = bytesToHex(RLP.encode([
+    nonce,
+    feePerGas,
+    tx.to,
+    tx.amt,
+    userAcct.address,
+    userAcct.salt,
+    userAcct.dataHash,
+    userAcct.vkey,
+    tx.userProof
+  ]));
 
+  const toBytes = (): Data => {
     return encodePacked(
       ["bytes1", "bytes1", "bytes", "bytes"],
-      [TransactionType.Withdraw, isL1Initiated, l1InitiatedNonce, bytesToHex(rlpEncoded)],
+      [TransactionType.Withdraw, isL1Initiated, l1InitiatedNonce, rlpEncodedPortion],
     );
+  };
+
+  const l1InitiatedTransaction = (): L1InitiatedTransactionSol => {
+    return {
+      txType: TransactionType.Withdraw,
+      data: rlpEncodedPortion,
+    }
   };
 
   const toTypedData = (): HashTypedDataParameters => {
@@ -85,6 +92,7 @@ export async function createWithdrawTransactionClient(tx: WithdrawTransactionInp
   };
 
   return {
+    txType: TransactionType.Withdraw,
     nonce,
     feePerGas: feePerGasBigInt,
     to: tx.to,
@@ -96,6 +104,7 @@ export async function createWithdrawTransactionClient(tx: WithdrawTransactionInp
     nodeClientUrl: tx.nodeClientUrl,
     sequencerClientUrl: tx.sequencerClientUrl,
     toBytes,
+    l1InitiatedTransaction,
     toTypedData,
     txHash,
     userMsgHash,

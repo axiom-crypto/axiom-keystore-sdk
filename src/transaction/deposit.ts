@@ -1,4 +1,4 @@
-import { Data, DepositTransactionClient, DepositTransactionInputs, Hash, TransactionType } from "@/types";
+import { Data, DepositTransactionClient, DepositTransactionInputs, Hash, L1InitiatedTransactionSol, TransactionType } from "@/types";
 import { encodePacked, keccak256, numberToHex, pad } from "viem";
 
 export async function createDepositTransactionClient(tx: DepositTransactionInputs): Promise<DepositTransactionClient> {
@@ -17,11 +17,20 @@ export async function createDepositTransactionClient(tx: DepositTransactionInput
 
   const txHash = (): Hash => keccak256(toBytes());
 
+  const l1InitiatedTransaction = (): L1InitiatedTransactionSol => {
+    return {
+      txType: TransactionType.Deposit,
+      data: keystoreAddress,
+    }
+  };
+
   return {
+    txType: TransactionType.Deposit,
     l1InitiatedNonce: tx.l1InitiatedNonce,
     amt,
     keystoreAddress,
     toBytes,
-    txHash
+    txHash,
+    l1InitiatedTransaction,
   };
 }

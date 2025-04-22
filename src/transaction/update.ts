@@ -5,6 +5,7 @@ import {
   Bytes32,
   Data,
   Hash,
+  L1InitiatedTransactionSol,
   TransactionType,
   UpdateTransactionClient,
   UpdateTransactionInputs,
@@ -71,26 +72,33 @@ export async function createUpdateTransactionClient(
     });
   const sponsorAcctBytes = sponsorAcct ? sponsorAcct.rlpEncode() : "0x";
 
-  const toBytes = (): Data => {
-    const rlpEncoded = RLP.encode([
-      nonce,
-      feePerGas,
-      tx.newUserData,
-      tx.newUserVkey,
-      userAcct.address,
-      userAcct.salt,
-      userAcct.dataHash,
-      userAcct.vkey,
-      tx.userProof,
-      sponsorAcctBytes,
-      tx.sponsorProof,
-    ]);
+  const rlpEncodedPortion = bytesToHex(RLP.encode([
+    nonce,
+    feePerGas,
+    tx.newUserData,
+    tx.newUserVkey,
+    userAcct.address,
+    userAcct.salt,
+    userAcct.dataHash,
+    userAcct.vkey,
+    tx.userProof,
+    sponsorAcctBytes,
+    tx.sponsorProof,
+  ]));
 
+  const toBytes = (): Data => {
     return encodePacked(
       ["bytes1", "bytes1", "bytes", "bytes"],
-      [TransactionType.Update, isL1Initiated, l1InitiatedNonce, bytesToHex(rlpEncoded)],
+      [TransactionType.Update, isL1Initiated, l1InitiatedNonce, rlpEncodedPortion],
     );
   };
+
+  const l1InitiatedTransaction = (): L1InitiatedTransactionSol => {
+    return {
+      txType: TransactionType.Update,
+      data: rlpEncodedPortion,
+    };
+  }
 
   const toTypedData = (): HashTypedDataParameters => {
     return {
@@ -119,6 +127,7 @@ export async function createUpdateTransactionClient(
   };
 
   return {
+    txType: TransactionType.Update,
     nonce,
     feePerGas: feePerGasBigInt,
     newUserData: tx.newUserData,
@@ -130,8 +139,9 @@ export async function createUpdateTransactionClient(
     l1InitiatedNonce: tx.l1InitiatedNonce,
     isL1Initiated: tx.isL1Initiated,
     toBytes,
-    toTypedData,
     txHash,
+    l1InitiatedTransaction,
+    toTypedData,
     userMsgHash,
     sign,
   };
