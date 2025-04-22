@@ -1,7 +1,8 @@
-import { Account, Address, Chain, Client, PublicActions, PublicClient, Transport } from "viem";
+import { Account, Chain, Client, PublicActions, Transport } from "viem";
 import { abi } from "./abi/AxiomKeystoreRollup.json";
 import { TransactionType } from "@/types";
 import { BridgeAddressParameter } from "./common";
+import { readContract } from 'viem/actions';
 
 export type L1BatchCountParameters = BridgeAddressParameter;
 export type L1BatchCountReturnType = bigint;
@@ -18,12 +19,12 @@ async function l1BatchCount<
   chain extends Chain | undefined = Chain | undefined,
   account extends Account | undefined = Account | undefined,
 >(
-  client: Client<Transport, chain, account> & PublicActions,
+  client: Client<Transport, chain, account>,
   parameters: L1BatchCountParameters,
 ): Promise<L1BatchCountReturnType> {
   const { bridgeAddress } = parameters;
 
-  return (await client.readContract({
+  return (await readContract(client, {
     address: bridgeAddress,
     abi,
     functionName: "l1BatchCount",
@@ -34,11 +35,11 @@ async function l1InitiatedFee<
   chain extends Chain | undefined = Chain | undefined,
   account extends Account | undefined = Account | undefined,
 >(
-  client: Client<Transport, chain, account> & PublicActions,
+  client: Client<Transport, chain, account>,
   parameters: L1InitiatedFeeParameters,
 ): Promise<L1InitiatedFeeReturnType> {
   const { bridgeAddress, txType } = parameters;
-  return (await client.readContract({
+  return (await readContract(client, {
     address: bridgeAddress,
     abi,
     functionName: "l1InitiatedFee",
@@ -52,7 +53,7 @@ export function publicActionsL1() {
     chain extends Chain | undefined = Chain | undefined,
     account extends Account | undefined = Account | undefined,
   >(
-    client: Client<transport, chain, account> & PublicActions,
+    client: Client<transport, chain, account>,
   ): PublicActionsL1 => {
     return {
       l1BatchCount: (parameters) => l1BatchCount(client, parameters),

@@ -1,10 +1,9 @@
 import { BaseTransactionAction, DepositTransactionClient, Hash, TransactionType } from "@/types";
-import { Account, Address, Chain, Transport, WalletClient } from "viem";
+import { Account, Chain, Client, Transport, WalletClient } from "viem";
 import { PublicActionsL1 } from "./publicL1";
 import { abi } from "./abi/AxiomKeystoreRollup.json";
 import { BridgeAddressParameter } from "./common";
-
-export type Client = WalletClient<Transport, Chain, Account> & PublicActionsL1;
+import { writeContract } from 'viem/actions';
 
 export type InitiateL1TransactionParameters = BridgeAddressParameter & {
   txClient: BaseTransactionAction;
@@ -19,7 +18,7 @@ export type WalletActionsL1 = {
 };
 
 export async function initiateL1Transaction(
-  client: Client,
+  client: any,
   parameters: InitiateL1TransactionParameters,
 ): Promise<InitiateL1TransactionReturnType> {
   const { bridgeAddress, txClient } = parameters;
@@ -40,19 +39,23 @@ export async function initiateL1Transaction(
     }
   })();
 
-  return await client.writeContract({
-    chain: client.chain!,
-    account: client.account!,
+  return await writeContract(client, {
+    account: client.account,
+    chain: client.chain,
     address: bridgeAddress,
     abi,
-    functionName: "initiateL1Transaction",
+    functionName: 'initiateL1Transaction',
     args: [txClient.l1InitiatedTransaction()],
     value,
   });
 }
 
 export function walletActionsL1() {
-  return (client: Client): WalletActionsL1 => {
+  return <
+    transport extends Transport,
+    chain extends Chain | undefined = Chain | undefined,
+    account extends Account | undefined = Account | undefined,
+  >(client: Client<transport, chain, account> & PublicActionsL1): WalletActionsL1 => {
     return {
       initiateL1Transaction: (parameters) => initiateL1Transaction(client, parameters),
     };
