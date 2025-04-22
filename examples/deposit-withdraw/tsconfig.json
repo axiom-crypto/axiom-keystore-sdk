@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "target": "ES2020",
+    "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "node",
     "declaration": true,
@@ -9,7 +9,10 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "importHelpers": true,
-    "lib": ["es2020", "es6"],
+    "lib": [
+      "es2020",
+      "es6"
+    ],
     "preserveSymlinks": true,
     "preserveWatchOutput": true,
     "pretty": false,
@@ -17,9 +20,22 @@
     "sourceMap": true,
     "skipLibCheck": true,
     "outDir": "dist",
-    "types": ["node"]
+    "paths": {
+      "@axiom-crypto/keystore-sdk/*": [
+        "../../src/*"
+      ],
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "types": [
+      "node"
+    ],
+    "emitDeclarationOnly": false
   },
-  "include": ["src/**/*.ts", "src/**/*.json"],
+  "include": [
+    "./src"
+  ],
   "exclude": [
     "dist",
     "test",

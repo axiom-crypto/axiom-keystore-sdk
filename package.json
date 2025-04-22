@@ -9,8 +9,8 @@
     "evm",
     "axiom"
   ],
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "type": "module",
   "scripts": {
     "build": "rm -rf ./dist/* && tsc && tsc-alias && node scripts/postTsc.cjs",
@@ -49,7 +49,7 @@
     "@noble/secp256k1": "^2.2.3",
     "@open-rpc/client-js": "^1.8.1",
     "dotenv": "^16.4.7",
-    "viem": "^2.22.15"
+    "viem": "^2.27.3"
   },
   "publishConfig": {
     "directory": "dist"

@@ -21,6 +21,9 @@
     "skipLibCheck": true,
     "outDir": "dist",
     "paths": {
+      "@axiom-crypto/keystore-sdk/*": [
+        "../../src/*"
+      ],
       "@/*": [
         "src/*"
       ]
@@ -36,10 +39,9 @@
   "exclude": [
     "dist",
     "test",
-    "src-old",
-    "test-old",
     "node_modules",
     "scripts",
+    "src/scaffold/templates/*"
   ],
   "ts-node": {
     "esm": true

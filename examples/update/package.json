@@ -1,0 +1,27 @@
+{
+  "name": "keystore-sdk-update-example",
+  "baseUrl": ".",
+  "version": "0.1.1",
+  "author": "Intrinsic Technologies",
+  "license": "MIT",
+  "description": "Keystore Rollup SDK Example -- Update Transaction",
+  "keywords": [
+    "keystore",
+    "evm",
+    "axiom"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "rm -rf ./dist/* && tsc",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@axiom-crypto/keystore-sdk": "link:../.."
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}

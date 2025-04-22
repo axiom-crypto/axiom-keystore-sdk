@@ -18,6 +18,7 @@ import {
   keyDataEncoder,
   authDataEncoder,
   makeAuthInputs,
+  TransactionStatus,
 } from "@axiom-crypto/keystore-sdk";
 import { generateRandomHex } from "@axiom-crypto/keystore-sdk/utils/random";
 import { keccak256 } from "viem";
@@ -129,9 +130,11 @@ async function main() {
   const txHash = await sequencerClient.sendRawTransaction({ data: authenticatedTx });
   console.log("Transaction authenticated. Sending to sequencer:", txHash);
 
-  // Wait for the transaction to be finalized on L2 and included on L1
-  const receipt = await sequencerClient.waitForTransactionInclusion({ hash: txHash });
-  console.log("Transaction finalized on L2 and included on L1. Transaction receipt:", receipt);
+  // Wait for the transaction to be finalized on L2
+  const receipt = await sequencerClient.waitForTransactionFinalization({
+    hash: txHash,
+  });
+  console.log("Transaction finalized on L2. Transaction receipt:", receipt);
 }
 
 main();
