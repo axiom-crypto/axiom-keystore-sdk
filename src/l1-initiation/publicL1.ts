@@ -10,8 +10,8 @@ export type L1InitiatedFeeParameters = BridgeAddressParameter & { txType: Transa
 export type L1InitiatedFeeReturnType = bigint;
 
 export type PublicActionsL1 = {
-  l1BatchCount: (parameters: L1BatchCountParameters) => Promise<L1BatchCountReturnType>
-  l1InitiatedFee: (parameters: L1InitiatedFeeParameters) => Promise<L1InitiatedFeeReturnType>
+  l1BatchCount: (parameters: L1BatchCountParameters) => Promise<L1BatchCountReturnType>;
+  l1InitiatedFee: (parameters: L1InitiatedFeeParameters) => Promise<L1InitiatedFeeReturnType>;
 };
 
 async function l1BatchCount<
@@ -19,15 +19,15 @@ async function l1BatchCount<
   account extends Account | undefined = Account | undefined,
 >(
   client: Client<Transport, chain, account> & PublicActions,
-  parameters: L1BatchCountParameters
+  parameters: L1BatchCountParameters,
 ): Promise<L1BatchCountReturnType> {
   const { bridgeAddress } = parameters;
 
-  return await client.readContract({
+  return (await client.readContract({
     address: bridgeAddress,
     abi,
-    functionName: 'l1BatchCount',
-  }) as bigint;
+    functionName: "l1BatchCount",
+  })) as bigint;
 }
 
 async function l1InitiatedFee<
@@ -35,15 +35,15 @@ async function l1InitiatedFee<
   account extends Account | undefined = Account | undefined,
 >(
   client: Client<Transport, chain, account> & PublicActions,
-  parameters: L1InitiatedFeeParameters
+  parameters: L1InitiatedFeeParameters,
 ): Promise<L1InitiatedFeeReturnType> {
   const { bridgeAddress, txType } = parameters;
-  return await client.readContract({
+  return (await client.readContract({
     address: bridgeAddress,
     abi,
-    functionName: 'l1InitiatedFee',
+    functionName: "l1InitiatedFee",
     args: [txType],
-  }) as bigint;
+  })) as bigint;
 }
 
 export function publicActionsL1() {
@@ -58,5 +58,5 @@ export function publicActionsL1() {
       l1BatchCount: (parameters) => l1BatchCount(client, parameters),
       l1InitiatedFee: (parameters) => l1InitiatedFee(client, parameters),
     };
-  }
+  };
 }

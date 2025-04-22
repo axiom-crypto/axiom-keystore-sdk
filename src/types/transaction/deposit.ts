@@ -16,4 +16,4 @@ export interface DepositTransactionInputs {
   keystoreAddress: KeystoreAddress;
 }
 
-export interface DepositTransactionClient extends DepositTransactionInputs, BaseTransactionAction { }
+export interface DepositTransactionClient extends DepositTransactionInputs, BaseTransactionAction {}

@@ -30,6 +30,6 @@ export const WITHDRAW_TYPES = {
     { name: "nonce", type: "uint256" },
     { name: "feePerGas", type: "bytes" },
     { name: "to", type: "address" },
-    { name: "amt", type: "uint256" }
-  ]
+    { name: "amt", type: "uint256" },
+  ],
 } as const;

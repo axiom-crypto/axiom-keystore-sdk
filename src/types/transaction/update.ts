@@ -45,4 +45,7 @@ export interface UpdateTransactionInputs {
   sequencerClientUrl?: string;
 }
 
-export interface UpdateTransactionClient extends UpdateTransactionInputs, SignableTransactionAction, BaseTransactionAction { }
+export interface UpdateTransactionClient
+  extends UpdateTransactionInputs,
+    SignableTransactionAction,
+    BaseTransactionAction {}

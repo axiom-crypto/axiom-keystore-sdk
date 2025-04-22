@@ -72,19 +72,21 @@ export async function createUpdateTransactionClient(
     });
   const sponsorAcctBytes = sponsorAcct ? sponsorAcct.rlpEncode() : "0x";
 
-  const rlpEncodedPortion = bytesToHex(RLP.encode([
-    nonce,
-    feePerGas,
-    tx.newUserData,
-    tx.newUserVkey,
-    userAcct.address,
-    userAcct.salt,
-    userAcct.dataHash,
-    userAcct.vkey,
-    tx.userProof,
-    sponsorAcctBytes,
-    tx.sponsorProof,
-  ]));
+  const rlpEncodedPortion = bytesToHex(
+    RLP.encode([
+      nonce,
+      feePerGas,
+      tx.newUserData,
+      tx.newUserVkey,
+      userAcct.address,
+      userAcct.salt,
+      userAcct.dataHash,
+      userAcct.vkey,
+      tx.userProof,
+      sponsorAcctBytes,
+      tx.sponsorProof,
+    ]),
+  );
 
   const toBytes = (): Data => {
     return encodePacked(
@@ -98,7 +100,7 @@ export async function createUpdateTransactionClient(
       txType: TransactionType.Update,
       data: rlpEncodedPortion,
     };
-  }
+  };
 
   const toTypedData = (): HashTypedDataParameters => {
     return {

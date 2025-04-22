@@ -35,4 +35,7 @@ export interface WithdrawTransactionInputs {
   sequencerClientUrl?: string;
 }
 
-export interface WithdrawTransactionClient extends WithdrawTransactionInputs, SignableTransactionAction, BaseTransactionAction { }
+export interface WithdrawTransactionClient
+  extends WithdrawTransactionInputs,
+    SignableTransactionAction,
+    BaseTransactionAction {}

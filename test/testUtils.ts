@@ -1,9 +1,5 @@
 import { KeystoreAddress, L1Address } from "../src/types/primitives";
-import {
-  initAccountCounterfactual,
-  initAccountFromAddress,
-  UpdateTransactionInputs,
-} from "../src";
+import { initAccountCounterfactual, initAccountFromAddress, UpdateTransactionInputs } from "../src";
 import { keccak256, pad } from "viem";
 
 // Accounts from test seed phrase `test test test test test test test test test test test junk`

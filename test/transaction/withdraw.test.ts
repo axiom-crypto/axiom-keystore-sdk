@@ -1,5 +1,10 @@
 import { pad } from "viem";
-import { createNodeClient, createWithdrawTransactionClient, initAccountCounterfactual, WithdrawTransactionClient } from "../../src";
+import {
+  createNodeClient,
+  createWithdrawTransactionClient,
+  initAccountCounterfactual,
+  WithdrawTransactionClient,
+} from "../../src";
 import { TEST_ACCOUNTS } from "../testUtils";
 
 describe("Withdraw Transaction", () => {
@@ -18,7 +23,7 @@ describe("Withdraw Transaction", () => {
     withdrawTx = await createWithdrawTransactionClient({
       nonce: 0n,
       feePerGas: 10000000n,
-      to: '0xa5cc3c03994DB5b0d9A5eEdD10CabaB0813678AC',
+      to: "0xa5cc3c03994DB5b0d9A5eEdD10CabaB0813678AC",
       amt: 20000n,
       userAcct,
     });
@@ -27,7 +32,7 @@ describe("Withdraw Transaction", () => {
   test("Get Transaction Bytes", () => {
     const txBytes = withdrawTx.toBytes();
     expect(txBytes).toEqual(
-      "0x0100f8a380a0000000000000000000000000000000000000000000000000000000000098968094a5cc3c03994db5b0d9a5eedd10cabab0813678ac824e20a0dafd7a698501896eefef0a3893d88ca07bc07a09888ee54ab60a4b079baa2179a00000000000000000000000000000000000000000000000001234567890abababa00000000000000000000000000000000000000000000000000000001234567890841234abcd80"
+      "0x0100f8a380a0000000000000000000000000000000000000000000000000000000000098968094a5cc3c03994db5b0d9a5eedd10cabab0813678ac824e20a0dafd7a698501896eefef0a3893d88ca07bc07a09888ee54ab60a4b079baa2179a00000000000000000000000000000000000000000000000001234567890abababa00000000000000000000000000000000000000000000000000000001234567890841234abcd80",
     );
   });
 
@@ -90,15 +95,13 @@ describe("Withdraw Transaction", () => {
 
   test("Get Transaction Hash", () => {
     const txHash = withdrawTx.txHash();
-    expect(txHash).toEqual(
-      "0x2b2b9c969e63403d174e0ecec6fea2c77228c694a7d5680492f1f1958b9a9f81"
-    );
+    expect(txHash).toEqual("0x2b2b9c969e63403d174e0ecec6fea2c77228c694a7d5680492f1f1958b9a9f81");
   });
 
   test("Get User Message Hash", () => {
     const userMsgHash = withdrawTx.userMsgHash();
     expect(userMsgHash).toEqual(
-      "0x5a39e6dfaeac7043c97e0c510564c7ee61d4a45b46591fe66627cee1bcca49bf"
+      "0x5a39e6dfaeac7043c97e0c510564c7ee61d4a45b46591fe66627cee1bcca49bf",
     );
   });
 

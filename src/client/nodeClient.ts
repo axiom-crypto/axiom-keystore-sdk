@@ -190,9 +190,9 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
   };
 
   const waitForTransactionReceipt = async ({
-    hash
+    hash,
   }: {
-    hash: Hash,
+    hash: Hash;
   }): Promise<GetTransactionReceiptResponse> => {
     let attempts = 0;
     while (attempts < pollingRetries) {
@@ -205,14 +205,14 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
       }
     }
     throw new Error(`Timed out after ${(pollingRetries * pollingIntervalMs) / 1000} seconds`);
-  }
+  };
 
   const waitForTransactionStatus = async ({
     hash,
-    status
+    status,
   }: {
-    hash: Hash,
-    status: TransactionStatus,
+    hash: Hash;
+    status: TransactionStatus;
   }): Promise<GetTransactionReceiptResponse> => {
     let attempts = 0;
     while (attempts < pollingRetries) {
@@ -231,7 +231,7 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
       }
     }
     throw new Error(`Timed out after ${(pollingRetries * pollingIntervalMs) / 1000} seconds`);
-  }
+  };
 
   return {
     syncStatus,
@@ -247,6 +247,6 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     getBlockByNumber,
     getBlockByHash,
     waitForTransactionReceipt,
-    waitForTransactionStatus
+    waitForTransactionStatus,
   };
 }

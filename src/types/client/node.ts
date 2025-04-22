@@ -90,18 +90,14 @@ export interface NodeClient {
     txKind: BlockTransactionsKind;
   }) => Promise<GetBlockByHashResponse>;
 
-  waitForTransactionReceipt: ({
-    hash
-  }: {
-    hash: Hash,
-  }) => Promise<GetTransactionReceiptResponse>;
+  waitForTransactionReceipt: ({ hash }: { hash: Hash }) => Promise<GetTransactionReceiptResponse>;
 
   waitForTransactionStatus: ({
     hash,
-    status
+    status,
   }: {
-    hash: Hash,
-    status: TransactionStatus,
+    hash: Hash;
+    status: TransactionStatus;
   }) => Promise<GetTransactionReceiptResponse>;
 }
 

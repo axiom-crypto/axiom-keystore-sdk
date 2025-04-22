@@ -1,13 +1,32 @@
 import { initAccount } from "@/account";
 import { createNodeClient, createSequencerClient } from "@/client";
 import { NODE_URL, SEQUENCER_URL } from "@/constants";
-import { Bytes32, Data, Hash, L1InitiatedTransactionSol, TransactionType, WithdrawTransactionClient, WithdrawTransactionInputs } from "@/types";
+import {
+  Bytes32,
+  Data,
+  Hash,
+  L1InitiatedTransactionSol,
+  TransactionType,
+  WithdrawTransactionClient,
+  WithdrawTransactionInputs,
+} from "@/types";
 import { DOMAIN, WITHDRAW_TYPES } from "@/types/eip712";
 import { ecdsaSign } from "@/utils/ecdsa";
 import { RLP } from "@ethereumjs/rlp";
-import { boolToHex, bytesToHex, encodePacked, hashTypedData, HashTypedDataParameters, keccak256, numberToHex, pad } from "viem";
+import {
+  boolToHex,
+  bytesToHex,
+  encodePacked,
+  hashTypedData,
+  HashTypedDataParameters,
+  keccak256,
+  numberToHex,
+  pad,
+} from "viem";
 
-export async function createWithdrawTransactionClient(tx: WithdrawTransactionInputs): Promise<WithdrawTransactionClient> {
+export async function createWithdrawTransactionClient(
+  tx: WithdrawTransactionInputs,
+): Promise<WithdrawTransactionClient> {
   const nodeClient = createNodeClient({ url: tx.nodeClientUrl ?? NODE_URL });
   const nonce =
     tx.nonce ??
@@ -39,17 +58,19 @@ export async function createWithdrawTransactionClient(tx: WithdrawTransactionInp
     vkey: tx.userAcct.vkey,
   });
 
-  const rlpEncodedPortion = bytesToHex(RLP.encode([
-    nonce,
-    feePerGas,
-    tx.to,
-    tx.amt,
-    userAcct.address,
-    userAcct.salt,
-    userAcct.dataHash,
-    userAcct.vkey,
-    tx.userProof
-  ]));
+  const rlpEncodedPortion = bytesToHex(
+    RLP.encode([
+      nonce,
+      feePerGas,
+      tx.to,
+      tx.amt,
+      userAcct.address,
+      userAcct.salt,
+      userAcct.dataHash,
+      userAcct.vkey,
+      tx.userProof,
+    ]),
+  );
 
   const toBytes = (): Data => {
     return encodePacked(
@@ -62,7 +83,7 @@ export async function createWithdrawTransactionClient(tx: WithdrawTransactionInp
     return {
       txType: TransactionType.Withdraw,
       data: rlpEncodedPortion,
-    }
+    };
   };
 
   const toTypedData = (): HashTypedDataParameters => {
@@ -76,15 +97,15 @@ export async function createWithdrawTransactionClient(tx: WithdrawTransactionInp
         feePerGas,
         to: tx.to,
         amt: tx.amt,
-      }
-    }
+      },
+    };
   };
 
   const txHash = (): Hash => keccak256(toBytes());
 
   const userMsgHash = (): Hash => {
     return hashTypedData(toTypedData());
-  }
+  };
 
   const sign = async (pk: Bytes32): Promise<Data> => {
     const hash = userMsgHash();
