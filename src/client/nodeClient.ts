@@ -207,18 +207,16 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     throw new Error(`Timed out after ${(pollingRetries * pollingIntervalMs) / 1000} seconds`);
   };
 
-  const waitForTransactionStatus = async ({
+  const waitForTransactionFinalization = async ({
     hash,
-    status,
   }: {
     hash: Hash;
-    status: TransactionStatus;
   }): Promise<GetTransactionReceiptResponse> => {
     let attempts = 0;
     while (attempts < pollingRetries) {
       try {
         const receipt = await getTransactionReceipt({ hash });
-        if (receipt.status === status) {
+        if (receipt.status === TransactionStatus.L2FinalizedL1Finalized || receipt.status === TransactionStatus.L2FinalizedL1Included) {
           return receipt;
         } else {
           attempts++;
@@ -247,6 +245,6 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     getBlockByNumber,
     getBlockByHash,
     waitForTransactionReceipt,
-    waitForTransactionStatus,
+    waitForTransactionFinalization,
   };
 }

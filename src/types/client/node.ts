@@ -92,12 +92,10 @@ export interface NodeClient {
 
   waitForTransactionReceipt: ({ hash }: { hash: Hash }) => Promise<GetTransactionReceiptResponse>;
 
-  waitForTransactionStatus: ({
+  waitForTransactionFinalization: ({
     hash,
-    status,
   }: {
     hash: Hash;
-    status: TransactionStatus;
   }) => Promise<GetTransactionReceiptResponse>;
 }
 
