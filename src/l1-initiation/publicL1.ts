@@ -2,7 +2,7 @@ import { Account, Chain, Client, PublicActions, Transport } from "viem";
 import { abi } from "./abi/AxiomKeystoreRollup.json";
 import { TransactionType } from "@/types";
 import { BridgeAddressParameter } from "./common";
-import { readContract } from 'viem/actions';
+import { readContract } from "viem/actions";
 
 export type L1BatchCountParameters = BridgeAddressParameter;
 export type L1BatchCountReturnType = bigint;

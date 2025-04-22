@@ -12,4 +12,3 @@ You can run this example by running:
 pnpm install
 pnpm start
 ```
-

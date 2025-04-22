@@ -23,15 +23,15 @@ import {
 import { generateRandomHex } from "@axiom-crypto/keystore-sdk/utils/random";
 import { createWalletClient, Hex, http, keccak256, parseEther, publicActions } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import 'dotenv/config';
+import "dotenv/config";
 
 // Codehash for EOA
 const EOA_CODEHASH = "0x595b7552e60f6430c898abc2b292aa805e94834a576f57969406940f6d12d4d9";
 
 // Account from test seed phrase `test test test test test test test test test test test junk`
-const TEST_PRIVATE_KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
+const TEST_PRIVATE_KEY = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 
-const ANVIL_URL = 'http://localhost:8545';
+const ANVIL_URL = "http://localhost:8545";
 
 async function main() {
   const config = {
@@ -91,7 +91,7 @@ async function main() {
   console.log("User account initialized:", userAcct);
 
   // Create a deposit transaction
-  const depositTransaction = await createDepositTransactionClient({
+  const depositTx = await createDepositTransactionClient({
     keystoreAddress: userAcct.address,
     amt: parseEther("0.01"),
   });
@@ -99,7 +99,7 @@ async function main() {
   // Send the deposit transaction to L1
   const l1TxHash = await l1Client.initiateL1Transaction({
     bridgeAddress: config.bridgeAddress,
-    txClient: depositTransaction,
+    txClient: depositTx,
   });
   console.log("L1 transaction hash:", l1TxHash);
 

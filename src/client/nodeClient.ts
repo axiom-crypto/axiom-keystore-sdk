@@ -216,7 +216,10 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     while (attempts < pollingRetries) {
       try {
         const receipt = await getTransactionReceipt({ hash });
-        if (receipt.status === TransactionStatus.L2FinalizedL1Finalized || receipt.status === TransactionStatus.L2FinalizedL1Included) {
+        if (
+          receipt.status === TransactionStatus.L2FinalizedL1Finalized ||
+          receipt.status === TransactionStatus.L2FinalizedL1Included
+        ) {
           return receipt;
         } else {
           attempts++;

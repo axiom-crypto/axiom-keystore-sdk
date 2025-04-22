@@ -3,7 +3,7 @@ import { Account, Chain, Client, Transport, WalletClient } from "viem";
 import { PublicActionsL1 } from "./publicL1";
 import { abi } from "./abi/AxiomKeystoreRollup.json";
 import { BridgeAddressParameter } from "./common";
-import { writeContract } from 'viem/actions';
+import { writeContract } from "viem/actions";
 
 export type InitiateL1TransactionParameters = BridgeAddressParameter & {
   txClient: BaseTransactionAction;
@@ -44,7 +44,7 @@ export async function initiateL1Transaction(
     chain: client.chain,
     address: bridgeAddress,
     abi,
-    functionName: 'initiateL1Transaction',
+    functionName: "initiateL1Transaction",
     args: [txClient.l1InitiatedTransaction()],
     value,
   });
@@ -55,7 +55,9 @@ export function walletActionsL1() {
     transport extends Transport,
     chain extends Chain | undefined = Chain | undefined,
     account extends Account | undefined = Account | undefined,
-  >(client: Client<transport, chain, account> & PublicActionsL1): WalletActionsL1 => {
+  >(
+    client: Client<transport, chain, account> & PublicActionsL1,
+  ): WalletActionsL1 => {
     return {
       initiateL1Transaction: (parameters) => initiateL1Transaction(client, parameters),
     };
