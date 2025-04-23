@@ -1,9 +1,11 @@
 import { BaseTransactionAction, DepositTransactionClient, Hash, TransactionType } from "@/types";
 import { Account, Chain, Client, Transport } from "viem";
 import { PublicActionsL1 } from "./publicL1";
-import { abi } from "./abi/AxiomKeystoreRollup.json";
+import AxiomKeystoreRollupAbi from "./abi/AxiomKeystoreRollup.json";
 import { BridgeAddressParameter } from "./common";
 import { writeContract } from "viem/actions";
+
+const abi = AxiomKeystoreRollupAbi.abi;
 
 export type InitiateL1TransactionParameters = BridgeAddressParameter & {
   txClient: BaseTransactionAction;

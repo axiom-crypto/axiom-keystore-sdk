@@ -1,6 +1,8 @@
 import { Address, Log, parseEventLogs } from "viem";
-import { abi } from "./abi/AxiomKeystoreRollup.json";
+import AxiomKeystoreRollupAbi from "./abi/AxiomKeystoreRollup.json";
 import { Hash } from "@/types";
+
+const abi = AxiomKeystoreRollupAbi.abi;
 
 export type BridgeAddressParameter = {
   bridgeAddress: Address;

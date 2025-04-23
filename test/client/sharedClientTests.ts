@@ -140,7 +140,7 @@ export function runNodeClientTests(createClient: () => NodeClient) {
       const receipt: GetTransactionReceiptResponse = await client.getTransactionReceipt({
         hash: NON_SPONSORED_UPDATE_TX_HASH,
       });
-      expect(receipt.status).toBe(TransactionStatus.L2FinalizedL1Included);
+      expect(receipt.status).toBe(TransactionStatus.L2FinalizedL1Finalized);
 
       await expect(client.getTransactionReceipt({ hash: NON_EXISTENT_TX_HASH })).rejects.toThrow();
     });
