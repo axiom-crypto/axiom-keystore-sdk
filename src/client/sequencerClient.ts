@@ -4,12 +4,9 @@ import {
   EstimateGasResponse,
   EstimateL1DataFeeResponse,
   GasPriceResponse,
-  GetTransactionReceiptResponse,
-  Hash,
   SendRawTransactionResponse,
   SequencerClient,
   SequencerClientConfig,
-  TransactionStatus,
 } from "@/types";
 import { Client, HTTPTransport, RequestManager } from "@open-rpc/client-js";
 import {
@@ -20,7 +17,6 @@ import {
 } from "@/types/formatters";
 import { DEFAULTS } from "@/config";
 import { createNodeClient } from "./nodeClient";
-import { NODE_URL } from "../constants";
 
 export function createSequencerClient(config: SequencerClientConfig): SequencerClient {
   const {

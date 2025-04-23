@@ -3,9 +3,7 @@ import {
   EstimateGasResponse,
   EstimateL1DataFeeResponse,
   GasPriceResponse,
-  Hash,
   SendRawTransactionResponse,
-  GetTransactionReceiptResponse,
   BlockTagOrNumber,
   NodeClient,
 } from "@/types";

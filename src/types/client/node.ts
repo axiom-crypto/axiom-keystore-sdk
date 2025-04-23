@@ -16,7 +16,6 @@ import {
   BlockTagOrNumber,
   Data,
   BlockTransactionsKind,
-  TransactionStatus,
 } from "@/types";
 
 export interface NodeClient {

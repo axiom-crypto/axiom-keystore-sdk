@@ -1,4 +1,4 @@
-import { Account, Chain, Client, PublicActions, Transport } from "viem";
+import { Account, Chain, Client, Transport } from "viem";
 import { abi } from "./abi/AxiomKeystoreRollup.json";
 import { TransactionType } from "@/types";
 import { BridgeAddressParameter } from "./common";

@@ -18,7 +18,6 @@ import {
   keyDataEncoder,
   authDataEncoder,
   makeAuthInputs,
-  TransactionStatus,
 } from "@axiom-crypto/keystore-sdk";
 import { generateRandomHex } from "@axiom-crypto/keystore-sdk/utils/random";
 import { keccak256 } from "viem";

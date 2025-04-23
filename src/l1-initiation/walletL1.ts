@@ -1,5 +1,5 @@
 import { BaseTransactionAction, DepositTransactionClient, Hash, TransactionType } from "@/types";
-import { Account, Chain, Client, Transport, WalletClient } from "viem";
+import { Account, Chain, Client, Transport } from "viem";
 import { PublicActionsL1 } from "./publicL1";
 import { abi } from "./abi/AxiomKeystoreRollup.json";
 import { BridgeAddressParameter } from "./common";
@@ -17,8 +17,8 @@ export type WalletActionsL1 = {
   ) => Promise<InitiateL1TransactionReturnType>;
 };
 
-export async function initiateL1Transaction(
-  client: any,
+async function initiateL1Transaction(
+  client: any, // eslint-disable-line @typescript-eslint/no-explicit-any
   parameters: InitiateL1TransactionParameters,
 ): Promise<InitiateL1TransactionReturnType> {
   const { bridgeAddress, txClient } = parameters;
