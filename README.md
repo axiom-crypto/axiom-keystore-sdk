@@ -107,7 +107,7 @@ const updateTx = await createUpdateTransactionClient({
 });
 ```
 
-### Authenticating a Transaction
+### Authenticating an L2 Transaction
 
 First we obtain the transaction's signature using our account's private key:
 
