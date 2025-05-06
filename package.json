@@ -1,6 +1,6 @@
 {
   "name": "@axiom-crypto/keystore-sdk",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": "Intrinsic Technologies",
   "license": "MIT",
   "description": "Keystore Rollup SDK",
