@@ -22,7 +22,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import "dotenv/config";
 
 // Example codehash for the User account
-const EXAMPLE_USER_CODEHASH = "0x595b7552e60f6430c898abc2b292aa805e94834a576f57969406940f6d12d4d9";
+const EXAMPLE_USER_CODEHASH = "0x0b2f6abb18102fa8a316ceda8a3f73b5eab33bb790d5bd92ff3995a9364adf97";
 
 // Account from test seed phrase `test test test test test test test test test test test junk`
 const TEST_PRIVATE_KEY = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";

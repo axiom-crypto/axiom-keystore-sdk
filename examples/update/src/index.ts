@@ -19,7 +19,7 @@ import { Hex, keccak256 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 // Example codehash for the User account
-const EXAMPLE_USER_CODEHASH = "0x595b7552e60f6430c898abc2b292aa805e94834a576f57969406940f6d12d4d9";
+const EXAMPLE_USER_CODEHASH = "0x0b2f6abb18102fa8a316ceda8a3f73b5eab33bb790d5bd92ff3995a9364adf97";
 
 // Example values for the Sponsor account
 const AXIOM_SPONSOR_CODEHASH = "0xa1b20564cd6cc6410266a716c9654406a15e822d4dc89c4127288da925d5c225";
