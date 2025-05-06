@@ -7,10 +7,10 @@ import {
   Hash,
   L1InitiatedTransactionSol,
   TransactionType,
-  UpdateTransactionClient,
-  UpdateTransactionInputs,
+  WithdrawTransactionClient,
+  WithdrawTransactionInputs,
 } from "@/types";
-import { DOMAIN, UPDATE_TYPES } from "@/types/eip712";
+import { DOMAIN, WITHDRAW_TYPES } from "@/types/eip712";
 import { ecdsaSign } from "@/utils/ecdsa";
 import { RLP } from "@ethereumjs/rlp";
 import {
@@ -24,9 +24,9 @@ import {
   pad,
 } from "viem";
 
-export async function createUpdateTransactionClient(
-  tx: UpdateTransactionInputs,
-): Promise<UpdateTransactionClient> {
+export async function createWithdrawTransactionClient(
+  tx: WithdrawTransactionInputs,
+): Promise<WithdrawTransactionClient> {
   const nodeClient = createNodeClient({ url: tx.nodeClientUrl ?? NODE_URL });
   const nonce =
     tx.nonce ??
@@ -53,51 +53,35 @@ export async function createUpdateTransactionClient(
 
   const userAcct = initAccount({
     address: tx.userAcct.address,
-    salt: nonce > 0n ? pad("0x00", { size: 32 }) : tx.userAcct.salt,
+    salt: nonce > 0n ? pad("0x00", { size: 32 }) : tx.userAcct.salt, // FIXME
     dataHash: tx.userAcct.dataHash,
     vkey: tx.userAcct.vkey,
   });
-
-  const sponsorNonce =
-    tx.sponsorAcct === undefined
-      ? 0n
-      : await nodeClient.getTransactionCount({ address: tx.sponsorAcct.address });
-  const sponsorAcct =
-    tx.sponsorAcct &&
-    initAccount({
-      address: tx.sponsorAcct.address,
-      salt: sponsorNonce > 0n ? pad("0x00", { size: 32 }) : tx.sponsorAcct.salt,
-      dataHash: tx.sponsorAcct.dataHash,
-      vkey: tx.sponsorAcct.vkey,
-    });
-  const sponsorAcctBytes = sponsorAcct ? sponsorAcct.rlpEncode() : "0x";
 
   const rlpEncodedPortion = bytesToHex(
     RLP.encode([
       nonce,
       feePerGas,
-      tx.newUserData,
-      tx.newUserVkey,
+      tx.to,
+      tx.amt,
       userAcct.address,
       userAcct.salt,
       userAcct.dataHash,
       userAcct.vkey,
       tx.userProof,
-      sponsorAcctBytes,
-      tx.sponsorProof,
     ]),
   );
 
   const toBytes = (): Data => {
     return encodePacked(
       ["bytes1", "bytes1", "bytes", "bytes"],
-      [TransactionType.Update, isL1Initiated, l1InitiatedNonce, rlpEncodedPortion],
+      [TransactionType.Withdraw, isL1Initiated, l1InitiatedNonce, rlpEncodedPortion],
     );
   };
 
   const l1InitiatedTransaction = (): L1InitiatedTransactionSol => {
     return {
-      txType: TransactionType.Update,
+      txType: TransactionType.Withdraw,
       data: rlpEncodedPortion,
     };
   };
@@ -105,14 +89,14 @@ export async function createUpdateTransactionClient(
   const toTypedData = (): HashTypedDataParameters => {
     return {
       domain: DOMAIN,
-      types: UPDATE_TYPES,
-      primaryType: "Update",
+      types: WITHDRAW_TYPES,
+      primaryType: "Withdraw",
       message: {
         userKeystoreAddress: userAcct.address,
         nonce,
         feePerGas,
-        newUserData: tx.newUserData,
-        newUserVkey: tx.newUserVkey,
+        to: tx.to,
+        amt: tx.amt,
       },
     };
   };
@@ -129,21 +113,21 @@ export async function createUpdateTransactionClient(
   };
 
   return {
-    txType: TransactionType.Update,
+    txType: TransactionType.Withdraw,
     nonce,
     feePerGas: feePerGasBigInt,
-    newUserData: tx.newUserData,
-    newUserVkey: tx.newUserVkey,
+    to: tx.to,
+    amt: tx.amt,
     userAcct,
-    sponsorAcct,
     userProof: tx.userProof,
-    sponsorProof: tx.sponsorProof,
-    l1InitiatedNonce: tx.l1InitiatedNonce,
     isL1Initiated: tx.isL1Initiated,
+    l1InitiatedNonce: tx.l1InitiatedNonce,
+    nodeClientUrl: tx.nodeClientUrl,
+    sequencerClientUrl: tx.sequencerClientUrl,
     toBytes,
-    txHash,
     l1InitiatedTransaction,
     toTypedData,
+    txHash,
     userMsgHash,
     sign,
   };

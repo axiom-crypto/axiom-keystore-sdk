@@ -88,8 +88,18 @@ export interface NodeClient {
     hash: Hash;
     txKind: BlockTransactionsKind;
   }) => Promise<GetBlockByHashResponse>;
+
+  waitForTransactionReceipt: ({ hash }: { hash: Hash }) => Promise<GetTransactionReceiptResponse>;
+
+  waitForTransactionFinalization: ({
+    hash,
+  }: {
+    hash: Hash;
+  }) => Promise<GetTransactionReceiptResponse>;
 }
 
 export interface NodeClientConfig {
   url: string;
+  pollingIntervalMs?: number;
+  pollingRetries?: number;
 }

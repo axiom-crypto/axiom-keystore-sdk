@@ -1,9 +1,10 @@
 {
-  "name": "keystore-sdk-example",
-  "version": "0.1.0",
+  "name": "keystore-sdk-deposit-withdraw-example",
+  "baseUrl": ".",
+  "version": "0.1.1",
   "author": "Intrinsic Technologies",
   "license": "MIT",
-  "description": "Keystore Rollup SDK Example",
+  "description": "Keystore Rollup SDK Example -- Deposit and Withdraw Transactions",
   "keywords": [
     "keystore",
     "evm",
@@ -17,7 +18,8 @@
     "start": "tsx src/index.ts"
   },
   "dependencies": {
-    "@axiom-crypto/keystore-sdk": "0.2.0-alpha.4"
+    "@axiom-crypto/keystore-sdk": "link:../..",
+    "dotenv": "^16.4.7"
   },
   "devDependencies": {
     "tsx": "^4.19.2",

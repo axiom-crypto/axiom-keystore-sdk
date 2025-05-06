@@ -20,13 +20,17 @@ conforms to the `CustomSignatureProver` interface.
 To use a specific signature prover client (m-of-n ECDSA in this example), you can use:
 
 ```typescript
-import { MOfNEcdsaSignatureProver } from "@axiom-crypto/signature-prover-ecdsa";
-const mOfNEcdsaClient = createSignatureProverClient(MOfNEcdsaSignatureProver);
+import { MOfNEcdsaSignatureProver, M_OF_N_ECDSA_SIG_PROVER_URL } from "@axiom-crypto/keystore-sdk";
+
+const mOfNEcdsaClient = createSignatureProverClient({
+  url: M_OF_N_ECDSA_SIG_PROVER_URL,
+  ...MOfNEcdsaSignatureProver,
+});
 ```
 
 #### Creating a Custom Signature Prover Client
 
-You can create a custom signature prover client by extending `CustomSignatureProver` with 3 generic types that correspond to the fields in your custom authentication rule for `keyData`, `authData`, and `AuthInputs`. You can see the [m-of-n ECDSA Signature Prover Keystore SDK component example here](https://github.com/axiom-crypto/signature-prover-ecdsa/).
+You can create a custom signature prover client by extending `CustomSignatureProver` with 3 generic types that correspond to the fields in your custom authentication rule for `keyData`, `authData`, and `AuthInputs`. You can see the [m-of-n ECDSA Signature Prover Keystore SDK component here](./src/signature-provers/ecdsa.ts).
 
 ### Keystore Account
 
@@ -61,17 +65,32 @@ const dataHash = keccak256(keyData);
 
 You can use `M_OF_N_ECDSA_VKEY` as the `vkey` and `SAMPLE_USER_CODEHASH` as the `codeHash`.
 
-### Transaction Request
+### Transactions
 
-Currently, only the `Update` transaction is supported.
+The SDK supports all transaction types of the keystore rollup, including `Deposit`, `Withdraw`, and `Update`.
 
 #### Deposit
 
-Unsupported; coming soon.
+To create a client for the `Deposit` transaction type, you can use the `createDepositTransactionClient` function. You'll need to provide the recipient `keystoreAddress` and the deposit `amt`.
+
+```typescript
+const depositTx = await createDepositTransactionClient({
+  keystoreAddress: userAcct.address,
+  amt: parseEther("0.01"),
+});
+```
 
 #### Withdraw
 
-Unsupported; coming soon.
+To create a client for the `Withdraw` transaction type, you can use the `createWithdrawTransactionClient` function. You'll need to provide the withdrawal `amt`, the recipient address `to` on L1, the `userAcct` (the keystore account initiating the withdrawal).
+
+```typescript
+const withtrawTx = await createWithdrawTransactionClient({
+  amt: parseEther("0.005"),
+  to: account.address,
+  userAcct,
+});
+```
 
 #### Update
 
@@ -92,13 +111,13 @@ const updateTx = await createUpdateTransactionClient({
 });
 ```
 
-We'll then go ahead and sign the transaction with our account's private key:
+### Authenticating an L2 Transaction
+
+First we obtain the transaction's signature using our account's private key:
 
 ```typescript
-const signedTx = await updateTx.sign(account.privateKey);
+const txSignature = await updateTx.sign(account.privateKey);
 ```
-
-### Authenticating a Transaction
 
 Once we've signed the transaction, we'll need to use the signature prover client to generate both the user and sponsor `AuthInputs` structs that can be passed into the signature prover client's `authenticateSponsoredTransaction` function.
 
@@ -106,7 +125,7 @@ Once we've signed the transaction, we'll need to use the signature prover client
 // Make user and sponsor auth inputs for the m-of-n ECDSA signature prover
 const userAuthInputs = mOfNEcdsaClient.makeAuthInputs({
   codehash: EXAMPLE_USER_CODEHASH,
-  signatures: [signedTx],
+  signatures: [txSignature],
   signersList: [account.address],
 });
 const sponsorAuthInputs = mOfNEcdsaClient.makeAuthInputs({
@@ -128,9 +147,9 @@ const authHash = await mOfNEcdsaClient.authenticateSponsoredTransaction({
 const authenticatedTx = await mOfNEcdsaClient.waitForSponsoredAuthentication({ hash: authHash });
 ```
 
-### Send a Transaction
+### Send an L2 Transaction
 
-You can send an authenticated transaction to the sequencer by creating a SequencerClient and using the `sendRawTransaction` function with the authenticated transaction from the previous section. You can then call the `waitForTransactionInclusion` function to fulfill when the transaction has been finalized on L2 and included on L1.
+You can send an authenticated transaction to the sequencer by creating a SequencerClient and using the `sendRawTransaction` function with the authenticated transaction from the previous section. You can then call the `waitForTransactionReceipt` function to fulfill when the transaction receipt is ready.
 
 ```typescript
 // Create a SequencerClient
@@ -139,8 +158,46 @@ const sequencerClient = createSequencerClient({ url: SEQUENCER_URL });
 // Send the transaction to the sequencer
 const txHash = await sequencerClient.sendRawTransaction({ data: authenticatedTx });
 
-// Wait for the transaction to be finalized on L2 and included on L1
-const receipt = await sequencerClient.waitForTransactionInclusion({ hash: txHash });
+// Wait for the transaction receipt
+const receipt = await sequencerClient.waitForTransactionReceipt({ hash: txHash });
+```
+
+### Send an L1-Initiated Tranaction
+
+To perform actions such as depositing funds into your keystore account on the L2 rollup, you need to initiate a transaction from L1. This involves using an L1 `WalletClient` extended with specific L1 bridge interaction actions provided by the SDK.
+
+```typescript
+import { publicActionsL1, walletActionsL1 } from "@axiom-crypto/keystore-sdk";
+
+import { createWalletClient, publicActions } from "viem";
+
+const l1Client = createWalletClient({
+  account,
+  transport: http(config.l1RpcUrl),
+})
+  .extend(publicActions)
+  .extend(publicActionsL1())
+  .extend(walletActionsL1());
+```
+
+Next, prepare the L1 transaction data using a specific transaction client (e.g., `createDepositTransactionClient`). Then, send this transaction to the L1 bridge contract using the `initiateL1Transaction` method on your extended L1 client.
+
+Once the L1 transaction is confirmed, retrieve its receipt. From this L1 receipt, you can extract the corresponding L2 transaction hash using `getL2TransactionHashes`. Finally, use a `SequencerClient` (or `NodeClient`) to wait for the L2 transaction to be processed and get its receipt.
+
+```typescript
+// Send the deposit transaction to L1
+const l1TxHash = await l1Client.initiateL1Transaction({
+  bridgeAddress: config.bridgeAddress,
+  txClient: depositTx,
+});
+console.log("L1 transaction hash:", l1TxHash);
+
+// Fetch deposit transaction hash
+const l1TxReceipt = await sequencerClient.waitForTransactionReceipt({ hash: l1TxHash });
+const [l2TxHash] = getL2TransactionHashes(l1TxReceipt);
+
+// Fetch deposit transaction receipt
+const l2TxReceipt = await l2Client.waitForTransactionReceipt({ hash: l2TxHash });
 ```
 
 ### Query the Chain
@@ -171,4 +228,4 @@ const accountState = await nodeClient.getStateAt({
 
 ## Examples
 
-For a complete demonstration, take a look at our [node.js script example](./example/src/index.ts) or [React example](https://github.com/axiom-crypto/example-keystore-web).
+For a complete demonstration, take a look at our [node.js script examples](./examples/) or [React example](https://github.com/axiom-crypto/example-keystore-web).
