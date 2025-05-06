@@ -21,8 +21,8 @@ import { createWalletClient, Hex, http, keccak256, parseEther, publicActions } f
 import { privateKeyToAccount } from "viem/accounts";
 import "dotenv/config";
 
-// Codehash for EOA
-const EOA_CODEHASH = "0x595b7552e60f6430c898abc2b292aa805e94834a576f57969406940f6d12d4d9";
+// Example codehash for the User account
+const EXAMPLE_USER_CODEHASH = "0x595b7552e60f6430c898abc2b292aa805e94834a576f57969406940f6d12d4d9";
 
 // Account from test seed phrase `test test test test test test test test test test test junk`
 const TEST_PRIVATE_KEY = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
@@ -36,7 +36,7 @@ async function main() {
     l2RpcUrl: process.env.L2_RPC_URL ?? SEQUENCER_URL,
     sigProverUrl: process.env.SIG_PROVER_URL ?? M_OF_N_ECDSA_SIG_PROVER_URL,
     bridgeAddress: process.env.BRIDGE_ADDRESS ?? BRIDGE_ADDRESS,
-    codehash: (process.env.CODE_HASH ?? EOA_CODEHASH) as Hex,
+    userCodehash: (process.env.USER_CODEHASH ?? EXAMPLE_USER_CODEHASH) as Hex,
   };
 
   const account = privateKeyToAccount(config.privateKey);
@@ -60,7 +60,7 @@ async function main() {
 
   // Get the encoded keyData and dataHash for the 1-of-1 ECDSA signature prover, with signer
   const keyData = mOfNEcdsaClient.keyDataEncoder({
-    codehash: config.codehash,
+    codehash: config.userCodehash,
     m: BigInt(1),
     signersList: [account.address],
   });
@@ -108,7 +108,7 @@ async function main() {
   // Create the user AuthInputs to be used in authenticating a withdraw transaction
   console.log("Authenticating withdraw transaction...");
   const userAuthInputs = mOfNEcdsaClient.makeAuthInputs({
-    codehash: config.codehash,
+    codehash: config.userCodehash,
     signatures: [txSignature],
     signersList: [account.address],
   });
