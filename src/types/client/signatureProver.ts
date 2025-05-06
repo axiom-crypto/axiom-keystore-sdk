@@ -10,14 +10,19 @@ import {
 } from "@/types";
 
 export interface CustomSignatureProver<KD, AD, AI> {
-  url: string;
   vkey: Data;
   keyDataEncoder: (fields: KD) => Data;
   authDataEncoder: (fields: AD) => Data;
   makeAuthInputs: (fields: AI) => AuthInputs;
 }
 
-export interface SignatureProverClient<KD, AD, AI> extends CustomSignatureProver<KD, AD, AI> {
+export interface SignatureProverClientConfig<KD, AD, AI> extends CustomSignatureProver<KD, AD, AI> {
+  pollingIntervalMs?: number;
+  pollingRetries?: number;
+  url: string;
+}
+
+export interface SignatureProverClient<KD, AD, AI> extends SignatureProverClientConfig<KD, AD, AI> {
   dataHash: (fields: KD) => Data;
 
   waitForAuthentication: ({ hash }: { hash: Hash }) => Promise<Data>;
@@ -51,9 +56,4 @@ export interface SignatureProverClient<KD, AD, AI> extends CustomSignatureProver
   }: {
     requestHash: Hash;
   }) => Promise<GetSponsoredAuthenticationStatusResponse>;
-}
-
-export interface SignatureProverClientConfig<KD, AD, AI> extends CustomSignatureProver<KD, AD, AI> {
-  pollingIntervalMs?: number;
-  pollingRetries?: number;
 }

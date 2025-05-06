@@ -10,14 +10,11 @@ import {
   NODE_URL,
   SEQUENCER_URL,
   SignatureProverClient,
-  CustomSignatureProver,
   MOfNEcdsaKeyDataFields,
   MOfNEcdsaAuthDataFields,
   MOfNEcdsaAuthInputs,
-  M_OF_N_ECDSA_VKEY,
-  keyDataEncoder,
-  authDataEncoder,
-  makeAuthInputs,
+  MOfNSignatureProver,
+  M_OF_N_ECDSA_SIG_PROVER_URL,
 } from "@axiom-crypto/keystore-sdk";
 import { generateRandomHex } from "@axiom-crypto/keystore-sdk/utils/random";
 import { keccak256 } from "viem";
@@ -41,18 +38,6 @@ const TEST_ACCOUNTS: { privateKey: Bytes32; address: L1Address }[] = [
   },
 ];
 
-export const MOfNSignatureProver: CustomSignatureProver<
-  MOfNEcdsaKeyDataFields,
-  MOfNEcdsaAuthDataFields,
-  MOfNEcdsaAuthInputs
-> = {
-  url: "https://keystore-rpc-signatureprover.axiom.xyz",
-  vkey: M_OF_N_ECDSA_VKEY,
-  keyDataEncoder,
-  authDataEncoder,
-  makeAuthInputs,
-};
-
 async function main() {
   const account = TEST_ACCOUNTS[0];
 
@@ -61,7 +46,7 @@ async function main() {
     MOfNEcdsaKeyDataFields,
     MOfNEcdsaAuthDataFields,
     MOfNEcdsaAuthInputs
-  > = createSignatureProverClient(MOfNSignatureProver);
+  > = createSignatureProverClient({ url: M_OF_N_ECDSA_SIG_PROVER_URL, ...MOfNSignatureProver });
 
   // Get the encoded keyData and dataHash for the 1-of-1 ECDSA signature prover, with signer
   // `0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266`

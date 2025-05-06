@@ -3,14 +3,9 @@ import {
   initAccountCounterfactual,
   createSequencerClient,
   SignatureProverClient,
-  CustomSignatureProver,
   MOfNEcdsaKeyDataFields,
   MOfNEcdsaAuthDataFields,
   MOfNEcdsaAuthInputs,
-  M_OF_N_ECDSA_VKEY,
-  keyDataEncoder,
-  authDataEncoder,
-  makeAuthInputs,
   createDepositTransactionClient,
   publicActionsL1,
   walletActionsL1,
@@ -19,6 +14,7 @@ import {
   SEQUENCER_URL,
   M_OF_N_ECDSA_SIG_PROVER_URL,
   BRIDGE_ADDRESS,
+  MOfNSignatureProver,
 } from "@axiom-crypto/keystore-sdk";
 import { generateRandomHex } from "@axiom-crypto/keystore-sdk/utils/random";
 import { createWalletClient, Hex, http, keccak256, parseEther, publicActions } from "viem";
@@ -55,24 +51,12 @@ async function main() {
 
   const l2Client = createSequencerClient({ url: config.l2RpcUrl });
 
-  const MOfNSignatureProver: CustomSignatureProver<
-    MOfNEcdsaKeyDataFields,
-    MOfNEcdsaAuthDataFields,
-    MOfNEcdsaAuthInputs
-  > = {
-    url: config.sigProverUrl,
-    vkey: M_OF_N_ECDSA_VKEY,
-    keyDataEncoder,
-    authDataEncoder,
-    makeAuthInputs,
-  };
-
   // Create an m-of-n ECDSA signature prover client with default config
   const mOfNEcdsaClient: SignatureProverClient<
     MOfNEcdsaKeyDataFields,
     MOfNEcdsaAuthDataFields,
     MOfNEcdsaAuthInputs
-  > = createSignatureProverClient(MOfNSignatureProver);
+  > = createSignatureProverClient({ url: config.sigProverUrl, ...MOfNSignatureProver });
 
   // Get the encoded keyData and dataHash for the 1-of-1 ECDSA signature prover, with signer
   const keyData = mOfNEcdsaClient.keyDataEncoder({

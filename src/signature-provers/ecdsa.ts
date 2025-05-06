@@ -1,4 +1,4 @@
-import { AuthInputs, Data, L1Address } from "@/types";
+import { AuthInputs, CustomSignatureProver, Data, L1Address } from "@/types";
 import { concat, encodeAbiParameters, encodePacked } from "viem";
 
 export const M_OF_N_ECDSA_SIG_PROVER_URL = "https://keystore-rpc-signatureprover.axiom.xyz";
@@ -82,4 +82,15 @@ export const makeAuthInputs = (inputs: MOfNEcdsaAuthInputs): AuthInputs => {
     keyData,
     authData,
   };
+};
+
+export const MOfNSignatureProver: CustomSignatureProver<
+  MOfNEcdsaKeyDataFields,
+  MOfNEcdsaAuthDataFields,
+  MOfNEcdsaAuthInputs
+> = {
+  vkey: M_OF_N_ECDSA_VKEY,
+  keyDataEncoder,
+  authDataEncoder,
+  makeAuthInputs,
 };

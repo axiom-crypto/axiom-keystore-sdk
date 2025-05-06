@@ -20,13 +20,17 @@ conforms to the `CustomSignatureProver` interface.
 To use a specific signature prover client (m-of-n ECDSA in this example), you can use:
 
 ```typescript
-import { MOfNEcdsaSignatureProver } from "@axiom-crypto/signature-prover-ecdsa";
-const mOfNEcdsaClient = createSignatureProverClient(MOfNEcdsaSignatureProver);
+import { MOfNEcdsaSignatureProver, M_OF_N_ECDSA_SIG_PROVER_URL } from "@axiom-crypto/keystore-sdk";
+
+const mOfNEcdsaClient = createSignatureProverClient({
+  url: M_OF_N_ECDSA_SIG_PROVER_URL,
+  ...MOfNEcdsaSignatureProver,
+});
 ```
 
 #### Creating a Custom Signature Prover Client
 
-You can create a custom signature prover client by extending `CustomSignatureProver` with 3 generic types that correspond to the fields in your custom authentication rule for `keyData`, `authData`, and `AuthInputs`. You can see the [m-of-n ECDSA Signature Prover Keystore SDK component example here](https://github.com/axiom-crypto/signature-prover-ecdsa/).
+You can create a custom signature prover client by extending `CustomSignatureProver` with 3 generic types that correspond to the fields in your custom authentication rule for `keyData`, `authData`, and `AuthInputs`. You can see the [m-of-n ECDSA Signature Prover Keystore SDK component here](./src/signature-provers/ecdsa.ts).
 
 ### Keystore Account
 

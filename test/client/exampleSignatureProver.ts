@@ -25,7 +25,6 @@ export const ExampleSignatureProver: CustomSignatureProver<
   ExampleSignatureProverAuthDataFields,
   ExampleSignatureProverAuthInputs
 > = {
-  url: EXAMPLE_SIGNATURE_PROVER_URL,
   vkey: EXAMPLE_SIGNATURE_PROVER_VKEY,
   keyDataEncoder: (fields: ExampleSignatureProverKeyDataFields): Data => {
     const encoded = encodeAbiParameters(
