@@ -1,11 +1,9 @@
 import {
-  createNodeClient,
   createSignatureProverClient,
   initAccountCounterfactual,
   createUpdateTransactionClient,
   createSequencerClient,
   initAccountFromAddress,
-  NODE_URL,
   SEQUENCER_URL,
   SignatureProverClient,
   MOfNEcdsaKeyDataFields,
@@ -17,6 +15,7 @@ import {
 import { generateRandomHex } from "@axiom-crypto/keystore-sdk/utils/random";
 import { Hex, keccak256 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import "dotenv/config";
 
 // Example codehash for the User account
 const EXAMPLE_USER_CODEHASH = "0x0b2f6abb18102fa8a316ceda8a3f73b5eab33bb790d5bd92ff3995a9364adf97";
@@ -39,6 +38,7 @@ async function main() {
     sigProverUrl: process.env.SIG_PROVER_URL ?? M_OF_N_ECDSA_SIG_PROVER_URL,
     userCodehash: (process.env.USER_CODEHASH ?? EXAMPLE_USER_CODEHASH) as Hex,
   };
+  console.log("Using config:", config);
 
   const account = privateKeyToAccount(config.privateKey);
 

@@ -38,6 +38,7 @@ async function main() {
     bridgeAddress: process.env.BRIDGE_ADDRESS ?? BRIDGE_ADDRESS,
     userCodehash: (process.env.USER_CODEHASH ?? EXAMPLE_USER_CODEHASH) as Hex,
   };
+  console.log("Using config:", config);
 
   const account = privateKeyToAccount(config.privateKey);
 
