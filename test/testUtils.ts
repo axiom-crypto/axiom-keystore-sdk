@@ -1,9 +1,5 @@
 import { KeystoreAddress, L1Address } from "../src/types/primitives";
-import {
-  initAccountCounterfactual,
-  initAccountFromAddress,
-  UpdateTransactionRequest,
-} from "../src";
+import { initAccountCounterfactual, initAccountFromAddress, UpdateTransactionInputs } from "../src";
 import { keccak256, pad } from "viem";
 
 // Accounts from test seed phrase `test test test test test test test test test test test junk`
@@ -28,14 +24,14 @@ export const NON_EXISTING_ACCOUNT_ADDRESS =
   "0x1111111111111111111111111111111111111111111111111111111111111111";
 
 export const NON_SPONSORED_UPDATE_TX_HASH =
-  "0x12ae7a10dd8d3a3b4e94bc4848596bfc285d165ff662b47bad363535b409c7c5";
+  "0xb7c0bbac792b51ec1e9dfe05af741a46d9e9842ddcc353a961fbf433ef68732c";
 export const SPONSORED_UPDATE_TX_HASH =
-  "0x20c20d0623c09c120eb4c7ee4fdd6a40db9fcde5e4c87e51979c24e9f5c4ffb5";
+  "0xd10c59bb11c270316e3dbe894520686742eaca7b6b81f42b86b0c7fc6b535171";
 export const NON_EXISTENT_TX_HASH =
   "0x1111111111111111111111111111111111111111111111111111111111111111";
 
 export const EXISTING_BLOCK_HASH =
-  "0x795e07cea9c88434999c05bf65d13a03fd54ebd624d7a50c5267f8fd7cedd3ee";
+  "0x455a64fda36028ec13b9e056fa2d94db65e13c6d6d0f109d81c1e650cf34308a";
 export const NON_EXISTENT_BLOCK_HASH =
   "0x1111111111111111111111111111111111111111111111111111111111111111";
 
@@ -61,7 +57,7 @@ export const SPONSOR_ACCOUNT = initAccountFromAddress({
   vkey: M_OF_N_ECDSA_VKEY,
 });
 
-export const TEST_TX_REQ: UpdateTransactionRequest = {
+export const TEST_TX_REQ: UpdateTransactionInputs = {
   nonce: 0n,
   feePerGas: 100n,
   newUserData: "0x12345",

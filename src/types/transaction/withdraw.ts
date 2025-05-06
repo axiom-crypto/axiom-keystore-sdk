@@ -1,6 +1,6 @@
 import { KeystoreAccount } from "../keystoreAccount";
 import { L1Address, Data, Quantity } from "../primitives";
-import { BaseTransaction } from "./base";
+import { BaseTransaction, BaseTransactionAction, SignableTransactionAction } from "./base";
 
 /**
  * A withdraw transaction (type = "0x01").
@@ -21,3 +21,21 @@ export type WithdrawTransaction = BaseTransaction & {
   userAcct: KeystoreAccount;
   userProof: Data;
 };
+
+export interface WithdrawTransactionInputs {
+  nonce?: bigint;
+  feePerGas?: bigint;
+  to: L1Address;
+  amt: bigint;
+  userAcct: KeystoreAccount;
+  userProof?: Data;
+  isL1Initiated?: boolean;
+  l1InitiatedNonce?: bigint;
+  nodeClientUrl?: string;
+  sequencerClientUrl?: string;
+}
+
+export interface WithdrawTransactionClient
+  extends WithdrawTransactionInputs,
+    SignableTransactionAction,
+    BaseTransactionAction {}

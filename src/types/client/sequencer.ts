@@ -3,17 +3,13 @@ import {
   EstimateGasResponse,
   EstimateL1DataFeeResponse,
   GasPriceResponse,
-  Hash,
   SendRawTransactionResponse,
-  GetTransactionReceiptResponse,
   BlockTagOrNumber,
   NodeClient,
 } from "@/types";
 
 export interface SequencerClient extends NodeClient {
   sendRawTransaction: ({ data }: { data: Data }) => Promise<SendRawTransactionResponse>;
-
-  waitForTransactionInclusion: ({ hash }: { hash: Hash }) => Promise<GetTransactionReceiptResponse>;
 
   gasPrice: () => Promise<GasPriceResponse>;
 
@@ -30,7 +26,6 @@ export interface SequencerClient extends NodeClient {
 
 export interface SequencerClientConfig {
   url: string;
-  nodeUrl?: string;
   pollingIntervalMs?: number;
   pollingRetries?: number;
 }

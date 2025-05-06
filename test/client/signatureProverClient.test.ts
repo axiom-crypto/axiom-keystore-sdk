@@ -18,7 +18,10 @@ describe("Signature Prover Client", () => {
   >;
 
   beforeEach(() => {
-    signatureProverClient = createSignatureProverClient(ExampleSignatureProver);
+    signatureProverClient = createSignatureProverClient({
+      url: EXAMPLE_SIGNATURE_PROVER_URL,
+      ...ExampleSignatureProver,
+    });
   });
 
   test("Encode keyData", async () => {

@@ -1,6 +1,7 @@
 import { DepositTransaction, WithdrawTransaction, UpdateTransaction } from "./";
 import { Bytes32, Data, Hash, Quantity } from "../primitives";
 import { HashTypedDataParameters } from "viem";
+import { L1InitiatedTransactionSol } from "../sol";
 
 /**
  * Enum representing either a transaction hash (string) or a fully populated
@@ -22,9 +23,14 @@ export type BaseTransaction = {
 };
 
 export interface BaseTransactionAction {
+  txType: TransactionType;
   toBytes: () => Data;
-  toTypedData: () => HashTypedDataParameters;
   txHash: () => Hash;
+  l1InitiatedTransaction: () => L1InitiatedTransactionSol;
+}
+
+export interface SignableTransactionAction {
+  toTypedData: () => HashTypedDataParameters;
   userMsgHash: () => Hash;
   sign: (pk: Bytes32) => Promise<Data>;
 }

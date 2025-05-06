@@ -4,12 +4,9 @@ import {
   EstimateGasResponse,
   EstimateL1DataFeeResponse,
   GasPriceResponse,
-  GetTransactionReceiptResponse,
-  Hash,
   SendRawTransactionResponse,
   SequencerClient,
   SequencerClientConfig,
-  TransactionStatus,
 } from "@/types";
 import { Client, HTTPTransport, RequestManager } from "@open-rpc/client-js";
 import {
@@ -20,12 +17,10 @@ import {
 } from "@/types/formatters";
 import { DEFAULTS } from "@/config";
 import { createNodeClient } from "./nodeClient";
-import { NODE_URL } from "../constants";
 
 export function createSequencerClient(config: SequencerClientConfig): SequencerClient {
   const {
     url,
-    nodeUrl,
     pollingIntervalMs = DEFAULTS.POLLING_INTERVAL_MS,
     pollingRetries = DEFAULTS.POLLING_RETRIES,
   } = config;
@@ -35,7 +30,7 @@ export function createSequencerClient(config: SequencerClientConfig): SequencerC
   });
   const client = new Client(new RequestManager([transport]));
 
-  const nodeClient = createNodeClient({ url: nodeUrl ?? NODE_URL });
+  const nodeClient = createNodeClient({ url, pollingIntervalMs, pollingRetries });
 
   const sendRawTransaction = async ({
     data,
@@ -43,36 +38,6 @@ export function createSequencerClient(config: SequencerClientConfig): SequencerC
     data: Data;
   }): Promise<SendRawTransactionResponse> =>
     await client.request({ method: "keystore_sendRawTransaction", params: [data] });
-
-  const waitForTransactionInclusion = async ({
-    hash,
-  }: {
-    hash: Hash;
-  }): Promise<GetTransactionReceiptResponse> => {
-    console.log("Waiting for transaction inclusion, this may take serveral minutes...");
-    let attempts = 0;
-    while (attempts < pollingRetries) {
-      try {
-        const receipt = await nodeClient.getTransactionReceipt({ hash });
-        switch (receipt.status) {
-          case TransactionStatus.L2FinalizedL1Included:
-            console.log("Success: transaction finalized on L2 and included on L1.");
-            return receipt;
-          case TransactionStatus.Failed:
-            throw new Error("Transaction failed");
-          default:
-            attempts++;
-            await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
-            continue;
-        }
-      } catch {
-        // If getTransactionReceipt fails (transaction not yet included), continue polling
-        attempts++;
-        await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
-      }
-    }
-    throw new Error(`Timed out after ${(pollingRetries * pollingIntervalMs) / 1000} seconds`);
-  };
 
   const gasPrice = async (): Promise<GasPriceResponse> => {
     const res = await client.request({ method: "keystore_gasPrice", params: [] });
@@ -101,7 +66,6 @@ export function createSequencerClient(config: SequencerClientConfig): SequencerC
   return {
     ...nodeClient,
     sendRawTransaction,
-    waitForTransactionInclusion,
     gasPrice,
     estimateGas,
     estimateL1DataFee,
