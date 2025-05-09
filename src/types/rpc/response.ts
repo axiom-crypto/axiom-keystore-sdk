@@ -72,7 +72,7 @@ export type GetTransactionReceiptResponseRpc = {
   amount?: HexQuantity;
 };
 
-export type GetBlockNumberByStateRootResponseRpc = HexQuantity;
+export type GetBlockNumberByOutputRootResponseRpc = HexQuantity;
 
 export type GasPriceResponseRpc = HexQuantity;
 

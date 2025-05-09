@@ -7,7 +7,7 @@ import {
   GetBalanceResponse,
   GetBlockByHashResponse,
   GetBlockByNumberResponse,
-  GetBlockNumberByStateRootResponse,
+  GetBlockNumberByOutputRootResponse,
   GetBlockTransactionCountByHashResponse,
   GetBlockTransactionCountByNumberResponse,
   GetStateAtResponse,
@@ -28,7 +28,7 @@ import {
   GetBalanceResponseRpc,
   GetBlockByHashResponseRpc,
   GetBlockByNumberResponseRpc,
-  GetBlockNumberByStateRootResponseRpc,
+  GetBlockNumberByOutputRootResponseRpc,
   GetBlockTransactionCountByHashResponseRpc,
   GetBlockTransactionCountByNumberResponseRpc,
   GetStateAtResponseRpc,
@@ -161,8 +161,8 @@ export function formatGetTransactionReceiptResponse(
 }
 
 export function formatGetBlockNumberByStateRootResponse(
-  rpcObj: GetBlockNumberByStateRootResponseRpc,
-): GetBlockNumberByStateRootResponse {
+  rpcObj: GetBlockNumberByOutputRootResponseRpc,
+): GetBlockNumberByOutputRootResponse {
   return BigInt(rpcObj);
 }
 
