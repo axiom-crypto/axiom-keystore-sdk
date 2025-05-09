@@ -8,7 +8,7 @@ import {
   GetBalanceResponse,
   GetBlockByHashResponse,
   GetBlockByNumberResponse,
-  GetBlockNumberByStateRootResponse,
+  GetBlockNumberByOutputRootResponse,
   GetProofResponse,
   GetStateAtResponse,
   GetTransactionByHashResponse,
@@ -149,14 +149,14 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     return formatGetTransactionReceiptResponse(res);
   };
 
-  const getBlockNumberByStateRoot = async ({
-    stateRoot,
+  const getBlockNumberByOutputRoot = async ({
+    outputRoot,
   }: {
-    stateRoot: Hash;
-  }): Promise<GetBlockNumberByStateRootResponse> => {
+    outputRoot: Hash;
+  }): Promise<GetBlockNumberByOutputRootResponse> => {
     const res = await client.request({
-      method: "keystore_getBlockNumberByStateRoot",
-      params: [stateRoot],
+      method: "keystore_getBlockNumberByOutputRoot",
+      params: [outputRoot],
     });
     return formatGetBlockNumberByStateRootResponse(res);
   };
@@ -244,7 +244,7 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     call,
     getTransactionByHash,
     getTransactionReceipt,
-    getBlockNumberByStateRoot,
+    getBlockNumberByOutputRoot,
     getBlockByNumber,
     getBlockByHash,
     waitForTransactionReceipt,
