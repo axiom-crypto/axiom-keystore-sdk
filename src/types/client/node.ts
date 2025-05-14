@@ -19,6 +19,7 @@ import {
   BatchTagOrIndex,
   GetBatchByIndexResponse,
   GetWithdrawalProofResponse,
+  FinalizeWithdrawalArgs,
 } from "@/types";
 
 export interface NodeClient {
@@ -109,6 +110,12 @@ export interface NodeClient {
   }: {
     hash: Hash;
   }) => Promise<GetTransactionReceiptResponse>;
+
+  buildFinalizeWithdrawalArgs: ({
+    transactionHash,
+  }: {
+    transactionHash: Hash;
+  }) => Promise<FinalizeWithdrawalArgs>;
 }
 
 export interface NodeClientConfig {
