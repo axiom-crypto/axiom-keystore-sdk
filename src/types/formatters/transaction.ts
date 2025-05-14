@@ -16,6 +16,7 @@ import {
   WithdrawTransactionRpc,
 } from "../rpc/transaction";
 import { initFromRlpEncoded } from "../../account/init";
+import { formatKeystoreAccount } from "./account";
 
 export function formatTransactionOrHash(rpcObj: TransactionOrHashRpc): TransactionOrHash {
   if (typeof rpcObj === "string") {
@@ -51,7 +52,7 @@ export function formatWithdrawTransaction(rpcObj: WithdrawTransactionRpc): Withd
     l1InitiatedNonce: rpcObj.l1InitiatedNonce == "0x" ? undefined : BigInt(rpcObj.l1InitiatedNonce),
     to: rpcObj.to,
     amt: BigInt(rpcObj.amt),
-    userAcct: rpcObj.userAcct,
+    userAcct: formatKeystoreAccount(rpcObj.userAcct),
     userProof: rpcObj.userProof,
   };
 }
@@ -65,7 +66,7 @@ function formatUpdateTransaction(rpcObj: UpdateTransactionRpc): UpdateTransactio
     l1InitiatedNonce: rpcObj.l1InitiatedNonce == "0x" ? undefined : BigInt(rpcObj.l1InitiatedNonce),
     newUserData: rpcObj.newUserData,
     newUserVkey: rpcObj.newUserVkey,
-    userAcct: rpcObj.userAcct,
+    userAcct: formatKeystoreAccount(rpcObj.userAcct),
     userProof: rpcObj.userProof,
     sponsorAcct:
       rpcObj.sponsorAcctBytes == "0x"
