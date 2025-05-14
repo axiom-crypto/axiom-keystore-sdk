@@ -296,7 +296,9 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
           return createWithdrawTransactionClient({ ...tx });
         case TransactionType.Deposit:
         case TransactionType.Update:
-          throw new Error("Cannot build finalize withdrawal args for deposit or update transactions");
+          throw new Error(
+            "Cannot build finalize withdrawal args for deposit or update transactions",
+          );
       }
     })();
 
