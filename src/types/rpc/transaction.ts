@@ -1,6 +1,6 @@
-import { KeystoreAccount } from "../keystoreAccount";
 import { Data, Hash, KeystoreAddress, L1Address } from "../primitives";
 import { TransactionType } from "../transaction";
+import { KeystoreAccountRpc } from "./account";
 import { HexQuantity } from "./primitives";
 
 export type TransactionOrHashRpc = Hash | L2TransactionRpc;
@@ -25,7 +25,7 @@ export type WithdrawTransactionRpc = BaseTransactionRpc & {
   l1InitiatedNonce: Data;
   to: L1Address;
   amt: HexQuantity;
-  userAcct: KeystoreAccount;
+  userAcct: KeystoreAccountRpc;
   userProof: Data;
 };
 
@@ -36,7 +36,7 @@ export type UpdateTransactionRpc = BaseTransactionRpc & {
   l1InitiatedNonce: Data;
   newUserData: Data;
   newUserVkey: Data;
-  userAcct: KeystoreAccount;
+  userAcct: KeystoreAccountRpc;
   userProof: Data;
   sponsorAcctBytes: Data;
   sponsorProof: Data;
