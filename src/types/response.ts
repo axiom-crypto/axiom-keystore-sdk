@@ -2,6 +2,7 @@ import { L1BlockRef, L2BlockRef } from "./block";
 import { AccountState, ImtProof, StateTransitions } from "./state";
 import { L1Address, Hash, Data, Quantity } from "./primitives";
 import { L2Transaction, TransactionStatus } from "./transaction";
+import { BatchRef } from "./batch";
 
 /**
  * Sync status response with L2 and L1 references.
@@ -39,8 +40,8 @@ export type GetProofResponse = {
  * GetWithdrawalProofResponse includes the L1 target address, amount, and the IMT proof.
  */
 export type GetWithdrawalProofResponse = {
-  to: L1Address;
-  amt: Quantity;
+  to?: L1Address;
+  amt?: Quantity;
   proof: ImtProof;
 };
 
@@ -123,3 +124,5 @@ export type AuthenticateSponsoredTransactionResponse = Hash;
  * Sponsor authentication status can be null or a status object.
  */
 export type GetSponsoredAuthenticationStatusResponse = AuthenticationStatus;
+
+export type GetBatchByIndexResponse = BatchRef;

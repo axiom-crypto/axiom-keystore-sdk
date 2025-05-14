@@ -1,11 +1,14 @@
 import { DEFAULTS } from "@/config";
 import {
+  BatchTag,
+  BatchTagOrIndex,
   BlockNumberResponse,
   BlockTagOrNumber,
   BlockTransactionsKind,
   CallResponse,
   Data,
   GetBalanceResponse,
+  GetBatchByIndexResponse,
   GetBlockByHashResponse,
   GetBlockByNumberResponse,
   GetBlockNumberByOutputRootResponse,
@@ -14,6 +17,7 @@ import {
   GetTransactionByHashResponse,
   GetTransactionCountResponse,
   GetTransactionReceiptResponse,
+  GetWithdrawalProofResponse,
   Hash,
   KeystoreAddress,
   NodeClient,
@@ -27,14 +31,17 @@ import {
   formatBlockTransactionKind,
   formatCallResponse,
   formatGetBalanceResponse,
+  formatGetBatchByIndexResponse,
   formatGetBlockByHashResponse,
   formatGetBlockByNumberResponse,
   formatGetBlockNumberByStateRootResponse,
   formatGetTransactionByHashResponse,
   formatGetTransactionCountResponse,
   formatGetTransactionReceiptResponse,
+  formatGetWithdrawalProofResponse,
   formatSyncStatusResponse,
 } from "@/types/formatters";
+import { formatBatchTagOrIndex } from "@/types/formatters/batch";
 import { Client, HTTPTransport, RequestManager } from "@open-rpc/client-js";
 
 export function createNodeClient(config: NodeClientConfig): NodeClient {
@@ -110,6 +117,20 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
       method: "keystore_getProof",
       params: [address, formatBlockTagOrNumber(block)],
     });
+
+  const getWithdrawalProof = async ({
+    withdrawalHash,
+    block,
+  }: {
+    withdrawalHash: Hash;
+    block?: BlockTagOrNumber;
+  }): Promise<GetWithdrawalProofResponse> => {
+    const res = await client.request({
+      method: "keystore_getWithdrawalProof",
+      params: [withdrawalHash, formatBlockTagOrNumber(block)],
+    });
+    return formatGetWithdrawalProofResponse(res);
+  };
 
   const call = async ({
     transaction,
@@ -189,6 +210,18 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     return formatGetBlockByHashResponse(res);
   };
 
+  const getBatchByIndex = async ({
+    batch,
+  }: {
+    batch?: BatchTagOrIndex;
+  }): Promise<GetBatchByIndexResponse> => {
+    const res = await client.request({
+      method: "keystore_getBatchByIndex",
+      params: [formatBatchTagOrIndex(batch)],
+    });
+    return formatGetBatchByIndexResponse(res);
+  };
+
   const waitForTransactionReceipt = async ({
     hash,
   }: {
@@ -241,12 +274,14 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     getStateAt,
     getTransactionCount,
     getProof,
+    getWithdrawalProof,
     call,
     getTransactionByHash,
     getTransactionReceipt,
     getBlockNumberByOutputRoot,
     getBlockByNumber,
     getBlockByHash,
+    getBatchByIndex,
     waitForTransactionReceipt,
     waitForTransactionFinalization,
   };
