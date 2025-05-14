@@ -5,6 +5,7 @@ import {
   EstimateL1DataFeeResponse,
   GasPriceResponse,
   GetBalanceResponse,
+  GetBatchByIndexResponse,
   GetBlockByHashResponse,
   GetBlockByNumberResponse,
   GetBlockNumberByOutputRootResponse,
@@ -26,6 +27,7 @@ import {
   EstimateL1DataFeeResponseRpc,
   GasPriceResponseRpc,
   GetBalanceResponseRpc,
+  GetBatchByIndexResponseRpc,
   GetBlockByHashResponseRpc,
   GetBlockByNumberResponseRpc,
   GetBlockNumberByOutputRootResponseRpc,
@@ -40,6 +42,7 @@ import {
   GetWithdrawalProofResponseRpc,
   SyncStatusResponseRpc,
 } from "../rpc";
+import { formatBatchRef } from "./batch";
 import { formatL1BlockRef, formatL2BlockRef } from "./block";
 import { formatStateTransitions } from "./state";
 import { formatL2Transaction } from "./transaction";
@@ -72,7 +75,7 @@ export function formatGetWithdrawalProofResponse(
 ): GetWithdrawalProofResponse {
   return {
     to: rpcObj.to,
-    amt: BigInt(rpcObj.amt),
+    amt: rpcObj.amt ? BigInt(rpcObj.amt) : undefined,
     proof: rpcObj.proof,
   };
 }
@@ -168,4 +171,10 @@ export function formatGetBlockNumberByStateRootResponse(
 
 export function formatGasPriceResponse(rpcObj: GasPriceResponseRpc): GasPriceResponse {
   return BigInt(rpcObj);
+}
+
+export function formatGetBatchByIndexResponse(
+  rpcObj: GetBatchByIndexResponseRpc,
+): GetBatchByIndexResponse {
+  return formatBatchRef(rpcObj);
 }

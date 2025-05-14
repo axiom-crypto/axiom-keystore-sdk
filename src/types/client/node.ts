@@ -16,6 +16,9 @@ import {
   BlockTagOrNumber,
   Data,
   BlockTransactionsKind,
+  BatchTagOrIndex,
+  GetBatchByIndexResponse,
+  GetWithdrawalProofResponse,
 } from "@/types";
 
 export interface NodeClient {
@@ -55,6 +58,14 @@ export interface NodeClient {
     block?: BlockTagOrNumber;
   }) => Promise<GetProofResponse>;
 
+  getWithdrawalProof: ({
+    withdrawalHash,
+    block,
+  }: {
+    withdrawalHash: Hash;
+    block?: BlockTagOrNumber;
+  }) => Promise<GetWithdrawalProofResponse>;
+
   call: ({
     transaction,
     block,
@@ -88,6 +99,8 @@ export interface NodeClient {
     hash: Hash;
     txKind: BlockTransactionsKind;
   }) => Promise<GetBlockByHashResponse>;
+
+  getBatchByIndex: ({ batch }: { batch?: BatchTagOrIndex }) => Promise<GetBatchByIndexResponse>;
 
   waitForTransactionReceipt: ({ hash }: { hash: Hash }) => Promise<GetTransactionReceiptResponse>;
 

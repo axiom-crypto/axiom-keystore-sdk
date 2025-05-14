@@ -2,6 +2,7 @@ import { Hash, L1Address } from "../primitives";
 import { AuthenticationStatus } from "../response";
 import { AccountState, ImtProof } from "../state";
 import { TransactionStatus } from "../transaction";
+import { BatchRefRpc } from "./batch";
 import { L1BlockRefRpc, L2BlockRefRpc } from "./block";
 import { HexQuantity } from "./primitives";
 import { StateTransitionsRpc } from "./state";
@@ -30,8 +31,8 @@ export type GetProofResponseRpc = {
 };
 
 export type GetWithdrawalProofResponseRpc = {
-  to: L1Address;
-  amt: HexQuantity;
+  to?: L1Address;
+  amt?: HexQuantity;
   proof: ImtProof;
 };
 
@@ -85,3 +86,5 @@ export type GetAuthenticationStatusResponseRpc = AuthenticationStatus;
 export type AuthenticateSponsoredTransactionResponseRpc = Hash;
 
 export type GetSponsoredAuthenticationStatusResponseRpc = AuthenticationStatus;
+
+export type GetBatchByIndexResponseRpc = BatchRefRpc;
