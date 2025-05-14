@@ -11,6 +11,9 @@ importers:
       '@axiom-crypto/keystore-sdk':
         specifier: link:../..
         version: link:../..
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.5.0
     devDependencies:
       tsx:
         specifier: ^4.19.2
@@ -171,6 +174,10 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  dotenv@16.5.0:
+    resolution: {integrity: sha512-m/C+AwOAr9/W1UOIZUo232ejMNnJAJtYQjUbHoNTBNTJSvqzzDh7vnrei3o3r3m9blf6ZoDkvcw0VmozNRFJxg==}
+    engines: {node: '>=12'}
+
   esbuild@0.25.2:
     resolution: {integrity: sha512-16854zccKPnC+toMywC+uKNeYSv+/eXkevRAfwRD/G9Cleq66m8XFIrigkbvauLLlCfDL45Q2cWegSg53gGBnQ==}
     engines: {node: '>=18'}
@@ -273,6 +280,8 @@ snapshots:
 
   '@esbuild/win32-x64@0.25.2':
     optional: true
+
+  dotenv@16.5.0: {}
 
   esbuild@0.25.2:
     optionalDependencies:
