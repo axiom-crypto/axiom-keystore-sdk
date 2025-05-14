@@ -1,6 +1,11 @@
 import { KeystoreAccount } from "../keystoreAccount";
 import { L1Address, Data, Quantity } from "../primitives";
-import { BaseTransaction, BaseTransactionAction, SignableTransactionAction } from "./base";
+import {
+  BaseTransaction,
+  BaseTransactionAction,
+  SignableTransactionAction,
+  WithdrawTransactionAction,
+} from "./base";
 
 /**
  * A withdraw transaction (type = "0x01").
@@ -38,4 +43,5 @@ export interface WithdrawTransactionInputs {
 export interface WithdrawTransactionClient
   extends WithdrawTransactionInputs,
     SignableTransactionAction,
-    BaseTransactionAction {}
+    BaseTransactionAction,
+    WithdrawTransactionAction {}

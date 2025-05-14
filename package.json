@@ -49,7 +49,7 @@
     "@noble/secp256k1": "^2.2.3",
     "@open-rpc/client-js": "^1.8.1",
     "dotenv": "^16.4.7",
-    "viem": "^2.27.3"
+    "viem": "^2.29.2"
   },
   "publishConfig": {
     "directory": "dist"

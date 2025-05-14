@@ -1,4 +1,10 @@
-import { BaseTransactionAction, DepositTransactionClient, Hash, TransactionType } from "@/types";
+import {
+  BaseTransactionAction,
+  DepositTransactionClient,
+  FinalizeWithdrawalArgs,
+  Hash,
+  TransactionType,
+} from "@/types";
 import { Account, Chain, Client, Transport } from "viem";
 import { PublicActionsL1 } from "./publicL1";
 import AxiomKeystoreRollupAbi from "./abi/AxiomKeystoreRollup.json";
@@ -13,10 +19,18 @@ export type InitiateL1TransactionParameters = BridgeAddressParameter & {
 
 export type InitiateL1TransactionReturnType = Hash;
 
+export type FinalizeWithdrawalParameters = BridgeAddressParameter & FinalizeWithdrawalArgs;
+
+export type FinalizeWithdrawalReturnType = Hash;
+
 export type WalletActionsL1 = {
   initiateL1Transaction: (
     parameters: InitiateL1TransactionParameters,
   ) => Promise<InitiateL1TransactionReturnType>;
+
+  finalizeWithdrawal: (
+    parameters: FinalizeWithdrawalParameters,
+  ) => Promise<FinalizeWithdrawalReturnType>;
 };
 
 async function initiateL1Transaction(
@@ -52,6 +66,23 @@ async function initiateL1Transaction(
   });
 }
 
+async function finalizeWithdrawal(
+  client: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  parameters: FinalizeWithdrawalParameters,
+): Promise<FinalizeWithdrawalReturnType> {
+  const { bridgeAddress, batchIndex, outputRootPreimage, withdrawalArgs, proof, isLeft } =
+    parameters;
+
+  return await writeContract(client, {
+    account: client.account,
+    chain: client.chain,
+    address: bridgeAddress,
+    abi,
+    functionName: "finalizeWithdrawal",
+    args: [batchIndex, outputRootPreimage, withdrawalArgs, proof, isLeft],
+  });
+}
+
 export function walletActionsL1() {
   return <
     transport extends Transport,
@@ -62,6 +93,7 @@ export function walletActionsL1() {
   ): WalletActionsL1 => {
     return {
       initiateL1Transaction: (parameters) => initiateL1Transaction(client, parameters),
+      finalizeWithdrawal: (parameters) => finalizeWithdrawal(client, parameters),
     };
   };
 }
