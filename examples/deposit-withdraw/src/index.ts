@@ -82,29 +82,29 @@ async function main() {
   });
 
   // Send the deposit transaction to L1
-  const l1TxHash = await l1Client.initiateL1Transaction({
+  const depositL1TxHash = await l1Client.initiateL1Transaction({
     bridgeAddress: config.bridgeAddress,
     txClient: depositTx,
   });
-  console.log("L1 transaction hash:", l1TxHash);
+  console.log("L1 transaction hash:", depositL1TxHash);
 
   // Fetch deposit transaction hash and receipt
-  const l1TxReceipt = await l1Client.waitForTransactionReceipt({ hash: l1TxHash });
-  const [l2TxHash] = getL2TransactionHashes(l1TxReceipt);
-  console.log("Deposit transaction hash:", l2TxHash);
+  const l1TxReceipt = await l1Client.waitForTransactionReceipt({ hash: depositL1TxHash });
+  const [depositL2TxHash] = getL2TransactionHashes(l1TxReceipt);
+  console.log("Deposit transaction hash:", depositL2TxHash);
 
-  const l2TxReceipt = await l2Client.waitForTransactionReceipt({ hash: l2TxHash });
+  const l2TxReceipt = await l2Client.waitForTransactionReceipt({ hash: depositL2TxHash });
   console.log("Deposit transaction receipt:", l2TxReceipt);
 
   // Create a withdraw transaction
-  const withtrawTx = await createWithdrawTransactionClient({
+  const withdrawTx = await createWithdrawTransactionClient({
     amt: parseEther("0.005"),
     to: account.address,
     userAcct,
     nodeClientUrl: config.l2RpcUrl,
     sequencerClientUrl: config.l2RpcUrl,
   });
-  const txSignature = await withtrawTx.sign(config.privateKey);
+  const txSignature = await withdrawTx.sign(config.privateKey);
 
   // Create the user AuthInputs to be used in authenticating a withdraw transaction
   console.log("Authenticating withdraw transaction...");
@@ -115,7 +115,7 @@ async function main() {
   });
 
   const authHash = await mOfNEcdsaClient.authenticateTransaction({
-    transaction: withtrawTx.toBytes(),
+    transaction: withdrawTx.toBytes(),
     authInputs: userAuthInputs,
   });
   const authenticatedTx = await mOfNEcdsaClient.waitForAuthentication({ hash: authHash });
@@ -127,6 +127,17 @@ async function main() {
   // Wait for the transaction receipt
   const withdrawTxReceipt = await l2Client.waitForTransactionReceipt({ hash: withdrawTxHash });
   console.log("Withdraw transaction receipt:", withdrawTxReceipt);
+
+  // Finalize the withdrawal on the L1 bridge
+  await l2Client.waitForTransactionFinalization({ hash: withdrawTxHash });
+  const finalizationArgs = await l2Client.buildFinalizeWithdrawalArgs({
+    transactionHash: withdrawTxHash,
+  });
+  const finalizeWithdrawalL1TxHash = await l1Client.finalizeWithdrawal({
+    bridgeAddress: config.bridgeAddress,
+    ...finalizationArgs,
+  });
+  console.log("Withdrawal finalized on L1. L1 transaction hash:", finalizeWithdrawalL1TxHash);
 }
 
 main();

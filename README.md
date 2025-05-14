@@ -85,7 +85,7 @@ const depositTx = await createDepositTransactionClient({
 To create a client for the `Withdraw` transaction type, you can use the `createWithdrawTransactionClient` function. You'll need to provide the withdrawal `amt`, the recipient address `to` on L1, the `userAcct` (the keystore account initiating the withdrawal).
 
 ```typescript
-const withtrawTx = await createWithdrawTransactionClient({
+const withdrawTx = await createWithdrawTransactionClient({
   amt: parseEther("0.005"),
   to: account.address,
   userAcct,
@@ -198,6 +198,25 @@ const [l2TxHash] = getL2TransactionHashes(l1TxReceipt);
 
 // Fetch deposit transaction receipt
 const l2TxReceipt = await l2Client.waitForTransactionReceipt({ hash: l2TxHash });
+```
+
+### Finalize Withdrawal
+
+To finalize a withdrawal on the keystore rollup—meaning withdrawing funds from the keystore rollup (L2) to Ethereum (L1), you first need to send a withdrawal transaction on L2 and wait for it to be finalized. After that, you build the finalization arguments and call the `finalizeWithdrawal` method on the L1 client.
+
+To finalize a withdrawal transaction:
+
+```typescript
+await l2Client.waitForTransactionFinalization({ hash: withdrawTxHash });
+
+const finalizationArgs = await l2Client.buildFinalizeWithdrawalArgs({
+  transactionHash: withdrawTxHash,
+});
+
+const l1TxHash = await l1Client.finalizeWithdrawal({
+  bridgeAddress,
+  ...finalizationArgs,
+});
 ```
 
 ### Query the Chain
