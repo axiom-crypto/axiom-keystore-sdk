@@ -1,4 +1,5 @@
 import { DEFAULTS } from "@/config";
+import { createWithdrawTransactionClient } from "@/transaction";
 import {
   BatchTag,
   BatchTagOrIndex,
@@ -7,6 +8,7 @@ import {
   BlockTransactionsKind,
   CallResponse,
   Data,
+  FinalizeWithdrawalArgs,
   GetBalanceResponse,
   GetBatchByIndexResponse,
   GetBlockByHashResponse,
@@ -24,6 +26,7 @@ import {
   NodeClientConfig,
   SyncStatusResponse,
   TransactionStatus,
+  TransactionType,
 } from "@/types";
 import {
   formatBlockNumberResponse,
@@ -267,6 +270,62 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     throw new Error(`Timed out after ${(pollingRetries * pollingIntervalMs) / 1000} seconds`);
   };
 
+  const buildFinalizeWithdrawalArgs = async ({
+    transactionHash,
+  }: {
+    transactionHash: Hash;
+  }): Promise<FinalizeWithdrawalArgs> => {
+    const receipt = await getTransactionReceipt({ hash: transactionHash });
+    if (
+      receipt.status != TransactionStatus.L2FinalizedL1Finalized &&
+      receipt.status != TransactionStatus.L2FinalizedL1Included
+    ) {
+      throw new Error("Transaction not finalized. Cannot build finalize withdrawal args");
+    }
+
+    const batch = await getBatchByIndex({ batch: BatchTag.Finalized });
+    const block = await getBlockByNumber({
+      block: batch.lastBlockNumber,
+      txKind: BlockTransactionsKind.Hashes,
+    });
+
+    const txClient = await (async () => {
+      const tx = await getTransactionByHash({ hash: transactionHash });
+      switch (tx.type) {
+        case TransactionType.Withdraw:
+          return createWithdrawTransactionClient({ ...tx });
+        case TransactionType.Deposit:
+        case TransactionType.Update:
+          throw new Error("Cannot build finalize withdrawal args for deposit or update transactions");
+      }
+    })();
+
+    const withdrawalProof = await getWithdrawalProof({
+      withdrawalHash: txClient.withdrawalHash(),
+      block: block.number,
+    });
+
+    return {
+      batchIndex: batch.batchIndex,
+      outputRootPreimage: {
+        stateRoot: block.stateRoot,
+        withdrawalsRoot: block.withdrawalsRoot,
+        lastValidBlockhash: block.hash,
+      },
+      withdrawalArgs: {
+        imtKey: withdrawalProof.proof.leaf.key,
+        nextDummyByte: withdrawalProof.proof.leaf.nextKeyPrefix,
+        nextImtKey: withdrawalProof.proof.leaf.nextKey,
+        withdrawalAmount: withdrawalProof.amt!,
+        to: withdrawalProof.to!,
+      },
+      proof: withdrawalProof.proof.siblings.map((sib) => sib.hash),
+      isLeft: withdrawalProof.proof.siblings.reduce((acc, sibling, index) => {
+        return acc | (BigInt(sibling.isLeft ? 1 : 0) << BigInt(index));
+      }, BigInt(0)),
+    };
+  };
+
   return {
     syncStatus,
     blockNumber,
@@ -284,5 +343,6 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     getBatchByIndex,
     waitForTransactionReceipt,
     waitForTransactionFinalization,
+    buildFinalizeWithdrawalArgs,
   };
 }

@@ -112,6 +112,10 @@ export async function createWithdrawTransactionClient(
     return await ecdsaSign(pk, hash);
   };
 
+  const withdrawalHash = (): Hash => {
+    return keccak256(encodePacked(["bytes32", "uint256"], [userAcct.address, nonce]));
+  };
+
   return {
     txType: TransactionType.Withdraw,
     nonce,
@@ -130,5 +134,6 @@ export async function createWithdrawTransactionClient(
     txHash,
     userMsgHash,
     sign,
+    withdrawalHash,
   };
 }

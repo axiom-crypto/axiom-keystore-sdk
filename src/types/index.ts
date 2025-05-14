@@ -7,3 +7,4 @@ export * from "./state";
 export * from "./transaction";
 export * from "./sol";
 export * from "./batch";
+export * from "./finalizeWithdrawal";
