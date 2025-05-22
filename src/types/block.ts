@@ -48,3 +48,9 @@ export type L2BlockRef = {
   source?: Byte;
   transactions?: TransactionOrHash[];
 };
+
+export interface BlockAction {
+  outputRoot: () => Hash;
+}
+
+export interface L2BlockClient extends L2BlockRef, BlockAction {}

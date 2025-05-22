@@ -1,6 +1,7 @@
 import {
   BlockTag,
   BlockTransactionsKind,
+  createL2BlockClient,
   createUpdateTransactionClient,
   GetTransactionReceiptResponse,
   NodeClient,
@@ -145,12 +146,15 @@ export function runNodeClientTests(createClient: () => NodeClient) {
       await expect(client.getTransactionReceipt({ hash: NON_EXISTENT_TX_HASH })).rejects.toThrow();
     });
 
-    test("keystore_getBlockNumberByStateRoot", async () => {
+    test("keystore_getBlockNumberByOutputRoot", async () => {
       const block = await client.getBlockByNumber({
         block: BlockTag.Latest,
         txKind: BlockTransactionsKind.Hashes,
       });
-      const blockNumber = await client.getBlockNumberByStateRoot({ stateRoot: block.stateRoot });
+      const blockClient = createL2BlockClient(block);
+      const blockNumber = await client.getBlockNumberByOutputRoot({
+        outputRoot: blockClient.outputRoot(),
+      });
       expect(blockNumber).toBe(block.number);
     });
 

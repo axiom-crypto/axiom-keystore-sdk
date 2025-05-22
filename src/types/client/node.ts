@@ -4,7 +4,7 @@ import {
   GetBalanceResponse,
   GetBlockByHashResponse,
   GetBlockByNumberResponse,
-  GetBlockNumberByStateRootResponse,
+  GetBlockNumberByOutputRootResponse,
   GetProofResponse,
   GetStateAtResponse,
   GetTransactionByHashResponse,
@@ -67,11 +67,11 @@ export interface NodeClient {
 
   getTransactionReceipt: ({ hash }: { hash: Hash }) => Promise<GetTransactionReceiptResponse>;
 
-  getBlockNumberByStateRoot: ({
-    stateRoot,
+  getBlockNumberByOutputRoot: ({
+    outputRoot,
   }: {
-    stateRoot: Hash;
-  }) => Promise<GetBlockNumberByStateRootResponse>;
+    outputRoot: Hash;
+  }) => Promise<GetBlockNumberByOutputRootResponse>;
 
   getBlockByNumber: ({
     block,
