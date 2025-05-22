@@ -29,6 +29,10 @@ export interface BaseTransactionAction {
   l1InitiatedTransaction: () => L1InitiatedTransactionSol;
 }
 
+export interface WithdrawTransactionAction {
+  withdrawalHash: () => Hash;
+}
+
 export interface SignableTransactionAction {
   toTypedData: () => HashTypedDataParameters;
   userMsgHash: () => Hash;

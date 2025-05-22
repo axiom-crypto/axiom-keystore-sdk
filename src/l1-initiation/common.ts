@@ -18,5 +18,5 @@ export function getL2TransactionHashes({ logs }: GetL2TransactionHashesParameter
     eventName: "L1TransactionInitiated",
     logs,
   }) as any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
-  return decodedEvents.map((event) => event.args.l2TxHash);
+  return decodedEvents.map((event) => event.args.txHash);
 }
