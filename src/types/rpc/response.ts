@@ -41,7 +41,7 @@ export type GetTransactionCountResponseRpc = HexQuantity;
 export type CallResponseRpc = {
   success: boolean;
   stateTransitions?: StateTransitionsRpc;
-  withdrawalTransitions?: WithdrawalTransitionsRpc;
+  withdrawalTransitions: WithdrawalTransitionsRpc;
 };
 
 export type EstimateGasResponseRpc = HexQuantity;

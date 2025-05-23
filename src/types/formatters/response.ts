@@ -92,9 +92,7 @@ export function formatCallResponse(rpcObj: CallResponseRpc): CallResponse {
     stateTransitions: rpcObj.stateTransitions
       ? formatStateTransitions(rpcObj.stateTransitions)
       : undefined,
-    withdrawalTransitions: rpcObj.withdrawalTransitions
-      ? formatWithdrawalTransitions(rpcObj.withdrawalTransitions)
-      : undefined,
+    withdrawalTransitions: formatWithdrawalTransitions(rpcObj.withdrawalTransitions),
   };
 }
 

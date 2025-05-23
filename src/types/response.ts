@@ -54,7 +54,7 @@ export type GetTransactionCountResponse = Quantity;
 export type CallResponse = {
   success: boolean;
   stateTransitions?: StateTransitions;
-  withdrawalTransitions?: WithdrawalTransitions;
+  withdrawalTransitions: WithdrawalTransitions;
 };
 
 export type EstimateGasResponse = Quantity;
