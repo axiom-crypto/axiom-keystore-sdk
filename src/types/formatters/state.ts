@@ -1,7 +1,22 @@
-import { Quantity } from "../primitives";
-import { AccountStateTransitionsRpc, StateTransitionsRpc, TransitionsRpc } from "../rpc";
+import { Quantity, L1Address, Hash } from "../primitives";
+import {
+  AccountStateTransitionsRpc,
+  StateTransitionsRpc,
+  TransitionsRpc,
+  WithdrawalTransitionsRpc,
+  WithdrawalTransitionRpc,
+  WithdrawalToRpc,
+} from "../rpc";
 import { HexQuantity } from "../rpc/primitives";
-import { AccountStateTransitions, FromTo, StateTransitions, Transitions } from "../state";
+import {
+  AccountStateTransitions,
+  FromTo,
+  StateTransitions,
+  Transitions,
+  WithdrawalTransitions,
+  WithdrawalTransition,
+  WithdrawalTo,
+} from "../state";
 
 function formatFromTo(rpcObj: FromTo<HexQuantity>): FromTo<Quantity> {
   return {
@@ -32,4 +47,25 @@ export function formatStateTransitions(rpcObj: StateTransitionsRpc): StateTransi
     user: formatAccountStateTransitions(rpcObj.user),
     sponsor: rpcObj.sponsor ? formatAccountStateTransitions(rpcObj.sponsor) : undefined,
   };
+}
+
+export function formatWithdrawalTo(rpcObj: WithdrawalToRpc): WithdrawalTo {
+  return {
+    address: rpcObj.address as L1Address,
+    amount: BigInt(rpcObj.amount),
+  };
+}
+
+export function formatWithdrawalTransition(rpcObj: WithdrawalTransitionRpc): WithdrawalTransition {
+  return {
+    hash: rpcObj.hash as Hash,
+    from: rpcObj.from,
+    to: formatWithdrawalTo(rpcObj.to),
+  };
+}
+
+export function formatWithdrawalTransitions(
+  rpcObj: WithdrawalTransitionsRpc,
+): WithdrawalTransitions {
+  return rpcObj.map(formatWithdrawalTransition);
 }
