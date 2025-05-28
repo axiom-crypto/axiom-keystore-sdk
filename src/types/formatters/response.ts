@@ -44,7 +44,7 @@ import {
 } from "../rpc";
 import { formatBatchRef } from "./batch";
 import { formatL1BlockRef, formatL2BlockRef } from "./block";
-import { formatStateTransitions } from "./state";
+import { formatStateTransitions, formatWithdrawalTransitions } from "./state";
 import { formatL2Transaction } from "./transaction";
 
 export function formatSyncStatusResponse(rpcObj: SyncStatusResponseRpc): SyncStatusResponse {
@@ -92,6 +92,7 @@ export function formatCallResponse(rpcObj: CallResponseRpc): CallResponse {
     stateTransitions: rpcObj.stateTransitions
       ? formatStateTransitions(rpcObj.stateTransitions)
       : undefined,
+    withdrawalTransitions: formatWithdrawalTransitions(rpcObj.withdrawalTransitions),
   };
 }
 

@@ -1,4 +1,4 @@
-import { Byte, Hash, KeystoreAddress, Data, Quantity } from "./primitives";
+import { Byte, Hash, KeystoreAddress, Data, Quantity, L1Address } from "./primitives";
 
 /**
  * An Individual Merkle Tree sibling proof element.
@@ -72,3 +72,25 @@ export type StateTransitions = {
   user: AccountStateTransitions;
   sponsor?: AccountStateTransitions;
 };
+
+/**
+ * Represents a withdrawal transition destination with address and amount.
+ */
+export type WithdrawalTo = {
+  address: L1Address;
+  amount: Quantity;
+};
+
+/**
+ * Represents a single withdrawal transition.
+ */
+export type WithdrawalTransition = {
+  hash: Hash;
+  from: null;
+  to: WithdrawalTo;
+};
+
+/**
+ * Array of withdrawal transitions.
+ */
+export type WithdrawalTransitions = WithdrawalTransition[];
