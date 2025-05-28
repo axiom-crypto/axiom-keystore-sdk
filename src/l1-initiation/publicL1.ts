@@ -1,4 +1,3 @@
-import { Account, Chain, Client, Transport } from "viem";
 import AxiomKeystoreRollupAbi from "./abi/AxiomKeystoreRollup.json";
 import { TransactionType } from "@/types";
 import { BridgeAddressParameter } from "./common";
@@ -17,11 +16,8 @@ export type PublicActionsL1 = {
   l1InitiatedFee: (parameters: L1InitiatedFeeParameters) => Promise<L1InitiatedFeeReturnType>;
 };
 
-async function l1BatchCount<
-  chain extends Chain | undefined = Chain | undefined,
-  account extends Account | undefined = Account | undefined,
->(
-  client: Client<Transport, chain, account>,
+async function l1BatchCount(
+  client: any, // eslint-disable-line @typescript-eslint/no-explicit-any
   parameters: L1BatchCountParameters,
 ): Promise<L1BatchCountReturnType> {
   const { bridgeAddress } = parameters;
@@ -33,11 +29,8 @@ async function l1BatchCount<
   })) as bigint;
 }
 
-async function l1InitiatedFee<
-  chain extends Chain | undefined = Chain | undefined,
-  account extends Account | undefined = Account | undefined,
->(
-  client: Client<Transport, chain, account>,
+async function l1InitiatedFee(
+  client: any, // eslint-disable-line @typescript-eslint/no-explicit-any
   parameters: L1InitiatedFeeParameters,
 ): Promise<L1InitiatedFeeReturnType> {
   const { bridgeAddress, txType } = parameters;
@@ -50,12 +43,8 @@ async function l1InitiatedFee<
 }
 
 export function publicActionsL1() {
-  return <
-    transport extends Transport,
-    chain extends Chain | undefined = Chain | undefined,
-    account extends Account | undefined = Account | undefined,
-  >(
-    client: Client<transport, chain, account>,
+  return (
+    client: any, // eslint-disable-line @typescript-eslint/no-explicit-any
   ): PublicActionsL1 => {
     return {
       l1BatchCount: (parameters) => l1BatchCount(client, parameters),

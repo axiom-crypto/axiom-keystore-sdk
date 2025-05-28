@@ -5,8 +5,6 @@ import {
   Hash,
   TransactionType,
 } from "@/types";
-import { Account, Chain, Client, Transport } from "viem";
-import { PublicActionsL1 } from "./publicL1";
 import AxiomKeystoreRollupAbi from "./abi/AxiomKeystoreRollup.json";
 import { BridgeAddressParameter } from "./common";
 import { writeContract } from "viem/actions";
@@ -84,12 +82,8 @@ async function finalizeWithdrawal(
 }
 
 export function walletActionsL1() {
-  return <
-    transport extends Transport,
-    chain extends Chain | undefined = Chain | undefined,
-    account extends Account | undefined = Account | undefined,
-  >(
-    client: Client<transport, chain, account> & PublicActionsL1,
+  return (
+    client: any, // eslint-disable-line @typescript-eslint/no-explicit-any
   ): WalletActionsL1 => {
     return {
       initiateL1Transaction: (parameters) => initiateL1Transaction(client, parameters),
