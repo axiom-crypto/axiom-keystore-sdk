@@ -93,6 +93,8 @@ async function main() {
   const [depositL2TxHash] = getL2TransactionHashes(l1TxReceipt);
   console.log("Deposit transaction hash:", depositL2TxHash);
 
+  console.log("Waiting for deposit transaction receipt on Keystore (L2)");
+
   const l2TxReceipt = await l2Client.waitForTransactionReceipt({ hash: depositL2TxHash });
   console.log("Deposit transaction receipt:", l2TxReceipt);
 
