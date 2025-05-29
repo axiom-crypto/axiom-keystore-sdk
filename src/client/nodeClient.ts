@@ -13,6 +13,7 @@ import {
   GetBatchByIndexResponse,
   GetBlockByHashResponse,
   GetBlockByNumberResponse,
+  GetBlockNumberByStateRootResponse,
   GetBlockNumberByOutputRootResponse,
   GetProofResponse,
   GetStateAtResponse,
@@ -38,6 +39,7 @@ import {
   formatGetBlockByHashResponse,
   formatGetBlockByNumberResponse,
   formatGetBlockNumberByStateRootResponse,
+  formatGetBlockNumberByOutputRootResponse,
   formatGetTransactionByHashResponse,
   formatGetTransactionCountResponse,
   formatGetTransactionReceiptResponse,
@@ -173,6 +175,18 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     return formatGetTransactionReceiptResponse(res);
   };
 
+  const getBlockNumberByStateRoot = async ({
+    stateRoot,
+  }: {
+    stateRoot: Hash;
+  }): Promise<GetBlockNumberByStateRootResponse> => {
+    const res = await client.request({
+      method: "keystore_getBlockNumberByStateRoot",
+      params: [stateRoot],
+    });
+    return formatGetBlockNumberByStateRootResponse(res);
+  };
+
   const getBlockNumberByOutputRoot = async ({
     outputRoot,
   }: {
@@ -182,7 +196,7 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
       method: "keystore_getBlockNumberByOutputRoot",
       params: [outputRoot],
     });
-    return formatGetBlockNumberByStateRootResponse(res);
+    return formatGetBlockNumberByOutputRootResponse(res);
   };
 
   const getBlockByNumber = async ({
@@ -339,6 +353,7 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     call,
     getTransactionByHash,
     getTransactionReceipt,
+    getBlockNumberByStateRoot,
     getBlockNumberByOutputRoot,
     getBlockByNumber,
     getBlockByHash,
