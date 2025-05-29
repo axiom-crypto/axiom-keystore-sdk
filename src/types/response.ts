@@ -88,7 +88,7 @@ export type GetTransactionReceiptResponse = {
   l1DataFee?: Quantity;
   amount?: Quantity;
 };
-
+export type GetBlockNumberByStateRootResponse = Quantity;
 export type GetBlockNumberByOutputRootResponse = Quantity;
 export type GasPriceResponse = Quantity;
 export type SendRawTransactionResponse = Hash;

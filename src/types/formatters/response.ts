@@ -8,6 +8,7 @@ import {
   GetBatchByIndexResponse,
   GetBlockByHashResponse,
   GetBlockByNumberResponse,
+  GetBlockNumberByStateRootResponse,
   GetBlockNumberByOutputRootResponse,
   GetBlockTransactionCountByHashResponse,
   GetBlockTransactionCountByNumberResponse,
@@ -30,6 +31,7 @@ import {
   GetBatchByIndexResponseRpc,
   GetBlockByHashResponseRpc,
   GetBlockByNumberResponseRpc,
+  GetBlockNumberByStateRootResponseRpc,
   GetBlockNumberByOutputRootResponseRpc,
   GetBlockTransactionCountByHashResponseRpc,
   GetBlockTransactionCountByNumberResponseRpc,
@@ -164,6 +166,12 @@ export function formatGetTransactionReceiptResponse(
 }
 
 export function formatGetBlockNumberByStateRootResponse(
+  rpcObj: GetBlockNumberByStateRootResponseRpc,
+): GetBlockNumberByStateRootResponse {
+  return BigInt(rpcObj);
+}
+
+export function formatGetBlockNumberByOutputRootResponse(
   rpcObj: GetBlockNumberByOutputRootResponseRpc,
 ): GetBlockNumberByOutputRootResponse {
   return BigInt(rpcObj);
