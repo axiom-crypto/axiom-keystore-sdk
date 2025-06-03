@@ -34,8 +34,3 @@ export type WithdrawalTransitionRpc = {
   from: null;
   to: WithdrawalToRpc;
 };
-
-/**
- * RPC version of WithdrawalTransitions array.
- */
-export type WithdrawalTransitionsRpc = WithdrawalTransitionRpc[];

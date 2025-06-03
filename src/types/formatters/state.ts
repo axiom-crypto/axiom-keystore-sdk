@@ -3,7 +3,6 @@ import {
   AccountStateTransitionsRpc,
   StateTransitionsRpc,
   TransitionsRpc,
-  WithdrawalTransitionsRpc,
   WithdrawalTransitionRpc,
   WithdrawalToRpc,
 } from "../rpc";
@@ -13,7 +12,6 @@ import {
   FromTo,
   StateTransitions,
   Transitions,
-  WithdrawalTransitions,
   WithdrawalTransition,
   WithdrawalTo,
 } from "../state";
@@ -62,10 +60,4 @@ export function formatWithdrawalTransition(rpcObj: WithdrawalTransitionRpc): Wit
     from: rpcObj.from,
     to: formatWithdrawalTo(rpcObj.to),
   };
-}
-
-export function formatWithdrawalTransitions(
-  rpcObj: WithdrawalTransitionsRpc,
-): WithdrawalTransitions {
-  return rpcObj.map(formatWithdrawalTransition);
 }

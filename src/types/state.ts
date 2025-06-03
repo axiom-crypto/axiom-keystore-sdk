@@ -89,8 +89,3 @@ export type WithdrawalTransition = {
   from: null;
   to: WithdrawalTo;
 };
-
-/**
- * Array of withdrawal transitions.
- */
-export type WithdrawalTransitions = WithdrawalTransition[];

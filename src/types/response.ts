@@ -1,5 +1,5 @@
 import { L1BlockRef, L2BlockRef } from "./block";
-import { AccountState, ImtProof, StateTransitions, WithdrawalTransitions } from "./state";
+import { AccountState, ImtProof, StateTransitions, WithdrawalTransition } from "./state";
 import { L1Address, Hash, Data, Quantity } from "./primitives";
 import { L2Transaction, TransactionStatus } from "./transaction";
 import { BatchRef } from "./batch";
@@ -54,7 +54,7 @@ export type GetTransactionCountResponse = Quantity;
 export type CallResponse = {
   success: boolean;
   stateTransitions?: StateTransitions;
-  withdrawalTransitions: WithdrawalTransitions;
+  withdrawalTransition?: WithdrawalTransition;
 };
 
 export type EstimateGasResponse = Quantity;
