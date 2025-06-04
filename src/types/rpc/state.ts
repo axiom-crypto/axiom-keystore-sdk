@@ -17,3 +17,20 @@ export type StateTransitionsRpc = {
   user: AccountStateTransitionsRpc;
   sponsor?: AccountStateTransitionsRpc;
 };
+
+/**
+ * RPC version of WithdrawalTo with hex quantity for amount.
+ */
+export type WithdrawalToRpc = {
+  address: string;
+  amount: HexQuantity;
+};
+
+/**
+ * RPC version of WithdrawalTransition.
+ */
+export type WithdrawalTransitionRpc = {
+  hash: string;
+  from: null;
+  to: WithdrawalToRpc;
+};

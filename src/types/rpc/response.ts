@@ -5,7 +5,7 @@ import { TransactionStatus } from "../transaction";
 import { BatchRefRpc } from "./batch";
 import { L1BlockRefRpc, L2BlockRefRpc } from "./block";
 import { HexQuantity } from "./primitives";
-import { StateTransitionsRpc } from "./state";
+import { StateTransitionsRpc, WithdrawalTransitionRpc } from "./state";
 import { L2TransactionRpc } from "./transaction";
 
 export type SyncStatusResponseRpc = {
@@ -41,6 +41,7 @@ export type GetTransactionCountResponseRpc = HexQuantity;
 export type CallResponseRpc = {
   success: boolean;
   stateTransitions?: StateTransitionsRpc;
+  withdrawalTransition?: WithdrawalTransitionRpc;
 };
 
 export type EstimateGasResponseRpc = HexQuantity;
