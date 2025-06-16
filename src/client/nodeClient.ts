@@ -1,5 +1,5 @@
 import { DEFAULTS } from "@/config";
-import { createWithdrawTransactionClient } from "@/transaction";
+import { createWithdrawTransactionRequestClient } from "@/transaction";
 import {
   BatchTag,
   BatchTagOrIndex,
@@ -303,11 +303,11 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
       txKind: BlockTransactionsKind.Hashes,
     });
 
-    const txClient = await (async () => {
+    const txRequestClient = await (async () => {
       const tx = await getTransactionByHash({ hash: transactionHash });
       switch (tx.type) {
         case TransactionType.Withdraw:
-          return createWithdrawTransactionClient({ ...tx });
+          return createWithdrawTransactionRequestClient({ ...tx });
         case TransactionType.Deposit:
         case TransactionType.Update:
           throw new Error(
@@ -317,7 +317,7 @@ export function createNodeClient(config: NodeClientConfig): NodeClient {
     })();
 
     const withdrawalProof = await getWithdrawalProof({
-      withdrawalHash: txClient.withdrawalHash(),
+      withdrawalHash: txRequestClient.withdrawalHash(),
       block: block.number,
     });
 

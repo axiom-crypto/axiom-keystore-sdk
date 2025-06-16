@@ -1,14 +1,14 @@
 import { pad } from "viem";
 import {
   createNodeClient,
-  createWithdrawTransactionClient,
+  createWithdrawTransactionRequestClient,
   initAccountCounterfactual,
-  WithdrawTransactionClient,
+  WithdrawTransactionRequestClient,
 } from "../../src";
 import { TEST_ACCOUNTS } from "../testUtils";
 
 describe("Withdraw Transaction", () => {
-  let withdrawTx: WithdrawTransactionClient;
+  let withdrawTx: WithdrawTransactionRequestClient;
 
   beforeEach(async () => {
     const nodeClient = createNodeClient({
@@ -20,7 +20,7 @@ describe("Withdraw Transaction", () => {
       vkey: "0x1234abcd",
       nodeClient,
     });
-    withdrawTx = await createWithdrawTransactionClient({
+    withdrawTx = await createWithdrawTransactionRequestClient({
       nonce: 0n,
       feePerGas: 10000000n,
       to: "0xa5cc3c03994DB5b0d9A5eEdD10CabaB0813678AC",
@@ -30,7 +30,7 @@ describe("Withdraw Transaction", () => {
   });
 
   test("Get Transaction Bytes", () => {
-    const txBytes = withdrawTx.toBytes();
+    const txBytes = withdrawTx.rawSequencerTransaction();
     expect(txBytes).toEqual(
       "0x0100f8a380a0000000000000000000000000000000000000000000000000000000000098968094a5cc3c03994db5b0d9a5eedd10cabab0813678ac824e20a0dafd7a698501896eefef0a3893d88ca07bc07a09888ee54ab60a4b079baa2179a00000000000000000000000000000000000000000000000001234567890abababa00000000000000000000000000000000000000000000000000000001234567890841234abcd80",
     );
@@ -91,11 +91,6 @@ describe("Withdraw Transaction", () => {
         ],
       },
     });
-  });
-
-  test("Get Transaction Hash", () => {
-    const txHash = withdrawTx.txHash();
-    expect(txHash).toEqual("0x2b2b9c969e63403d174e0ecec6fea2c77228c694a7d5680492f1f1958b9a9f81");
   });
 
   test("Get User Message Hash", () => {

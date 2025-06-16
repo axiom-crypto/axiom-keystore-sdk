@@ -1,7 +1,7 @@
 import {
   BlockTag,
   createSequencerClient,
-  createUpdateTransactionClient,
+  createUpdateTransactionRequestClient,
   SequencerClient,
   SEQUENCER_URL,
 } from "../../src";
@@ -28,15 +28,17 @@ describe("Keystore Sequencer Client", () => {
     });
 
     test("keystore_estimateGas", async () => {
-      const tx = await createUpdateTransactionClient(TEST_TX_REQ);
-      const gasEstimate = await sequencerClient.estimateGas({ txData: tx.toBytes() });
+      const tx = await createUpdateTransactionRequestClient(TEST_TX_REQ);
+      const gasEstimate = await sequencerClient.estimateGas({
+        txData: tx.rawSequencerTransaction(),
+      });
       expect(typeof gasEstimate).toBe("bigint");
     });
 
     test("keystore_estimateL1DataFee", async () => {
-      const tx = await createUpdateTransactionClient(TEST_TX_REQ);
+      const tx = await createUpdateTransactionRequestClient(TEST_TX_REQ);
       const l1FeeEstimate = await sequencerClient.estimateL1DataFee({
-        txData: tx.toBytes(),
+        txData: tx.rawSequencerTransaction(),
         block: BlockTag.Latest,
       });
       expect(typeof l1FeeEstimate).toBe("bigint");

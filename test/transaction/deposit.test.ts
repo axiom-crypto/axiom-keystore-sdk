@@ -1,13 +1,13 @@
 import { pad } from "viem";
 import {
-  createDepositTransactionClient,
+  createDepositTransactionRequestClient,
   createNodeClient,
-  DepositTransactionClient,
+  DepositTransactionRequestClient,
   initAccountCounterfactual,
 } from "../../src";
 
 describe("Deposit Transaction", () => {
-  let depositTx: DepositTransactionClient;
+  let depositTx: DepositTransactionRequestClient;
 
   beforeEach(async () => {
     const nodeClient = createNodeClient({
@@ -19,22 +19,16 @@ describe("Deposit Transaction", () => {
       vkey: "0x1234abcd",
       nodeClient,
     });
-    depositTx = await createDepositTransactionClient({
+    depositTx = await createDepositTransactionRequestClient({
       keystoreAddress: userAcct.address,
       amt: 20000n,
-      l1InitiatedNonce: 0n,
     });
   });
 
-  test("Get Transaction Bytes", () => {
-    const txBytes = depositTx.toBytes();
-    expect(txBytes).toEqual(
-      "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004e20dafd7a698501896eefef0a3893d88ca07bc07a09888ee54ab60a4b079baa2179",
+  test("Get Transaction Request Bytes", () => {
+    const txRequest = depositTx.l1InitiatedTransaction();
+    expect(txRequest.data).toEqual(
+      "0xdafd7a698501896eefef0a3893d88ca07bc07a09888ee54ab60a4b079baa2179",
     );
-  });
-
-  test("Get Transaction Hash", () => {
-    const txHash = depositTx.txHash();
-    expect(txHash).toEqual("0x690b3dca835c2e235f44a4268f57f321b6b12777d66ecc005f52b3826e1805d4");
   });
 });

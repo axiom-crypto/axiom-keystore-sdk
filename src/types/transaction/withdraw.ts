@@ -3,6 +3,7 @@ import { L1Address, Data, Quantity } from "../primitives";
 import {
   BaseTransaction,
   BaseTransactionAction,
+  SequencerTransactionAction,
   SignableTransactionAction,
   WithdrawTransactionAction,
 } from "./base";
@@ -34,14 +35,13 @@ export interface WithdrawTransactionInputs {
   amt: bigint;
   userAcct: KeystoreAccount;
   userProof?: Data;
-  isL1Initiated?: boolean;
-  l1InitiatedNonce?: bigint;
   nodeClientUrl?: string;
   sequencerClientUrl?: string;
 }
 
-export interface WithdrawTransactionClient
+export interface WithdrawTransactionRequestClient
   extends WithdrawTransactionInputs,
     SignableTransactionAction,
     BaseTransactionAction,
+    SequencerTransactionAction,
     WithdrawTransactionAction {}
