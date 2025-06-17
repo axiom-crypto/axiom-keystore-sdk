@@ -7,14 +7,13 @@ import {
   Hash,
   L1InitiatedTransactionSol,
   TransactionType,
-  WithdrawTransactionClient,
+  WithdrawTransactionRequestClient,
   WithdrawTransactionInputs,
 } from "@/types";
 import { DOMAIN, WITHDRAW_TYPES } from "@/types/eip712";
 import { ecdsaSign } from "@/utils/ecdsa";
 import { RLP } from "@ethereumjs/rlp";
 import {
-  boolToHex,
   bytesToHex,
   encodePacked,
   hashTypedData,
@@ -24,9 +23,9 @@ import {
   pad,
 } from "viem";
 
-export async function createWithdrawTransactionClient(
+export async function createWithdrawTransactionRequestClient(
   tx: WithdrawTransactionInputs,
-): Promise<WithdrawTransactionClient> {
+): Promise<WithdrawTransactionRequestClient> {
   const nodeClient = createNodeClient({ url: tx.nodeClientUrl ?? NODE_URL });
   const nonce =
     tx.nonce ??
@@ -47,9 +46,6 @@ export async function createWithdrawTransactionClient(
       return await sequencerClient.gasPrice();
     })());
   const feePerGas = numberToHex(feePerGasBigInt, { size: 32 });
-
-  const isL1Initiated = boolToHex(tx.isL1Initiated ?? false, { size: 1 });
-  const l1InitiatedNonce = tx.l1InitiatedNonce ? numberToHex(tx.l1InitiatedNonce) : "0x";
 
   const userAcct = initAccount({
     address: tx.userAcct.address,
@@ -72,10 +68,10 @@ export async function createWithdrawTransactionClient(
     ]),
   );
 
-  const toBytes = (): Data => {
+  const rawSequencerTransaction = (): Data => {
     return encodePacked(
-      ["bytes1", "bytes1", "bytes", "bytes"],
-      [TransactionType.Withdraw, isL1Initiated, l1InitiatedNonce, rlpEncodedPortion],
+      ["bytes1", "bool", "bytes", "bytes"],
+      [TransactionType.Withdraw, false, "0x", rlpEncodedPortion],
     );
   };
 
@@ -101,8 +97,6 @@ export async function createWithdrawTransactionClient(
     };
   };
 
-  const txHash = (): Hash => keccak256(toBytes());
-
   const userMsgHash = (): Hash => {
     return hashTypedData(toTypedData());
   };
@@ -124,14 +118,11 @@ export async function createWithdrawTransactionClient(
     amt: tx.amt,
     userAcct,
     userProof: tx.userProof,
-    isL1Initiated: tx.isL1Initiated,
-    l1InitiatedNonce: tx.l1InitiatedNonce,
     nodeClientUrl: tx.nodeClientUrl,
     sequencerClientUrl: tx.sequencerClientUrl,
-    toBytes,
+    rawSequencerTransaction,
     l1InitiatedTransaction,
     toTypedData,
-    txHash,
     userMsgHash,
     sign,
     withdrawalHash,

@@ -1,6 +1,11 @@
 import { KeystoreAccount } from "../keystoreAccount";
 import { Data, Quantity } from "../primitives";
-import { BaseTransaction, BaseTransactionAction, SignableTransactionAction } from "./base";
+import {
+  BaseTransaction,
+  BaseTransactionAction,
+  SequencerTransactionAction,
+  SignableTransactionAction,
+} from "./base";
 
 /**
  * An update transaction (type = "0x02").
@@ -39,13 +44,12 @@ export interface UpdateTransactionInputs {
   sponsorAcct?: KeystoreAccount;
   userProof?: Data;
   sponsorProof?: Data;
-  l1InitiatedNonce?: bigint;
-  isL1Initiated?: boolean;
   nodeClientUrl?: string;
   sequencerClientUrl?: string;
 }
 
-export interface UpdateTransactionClient
+export interface UpdateTransactionRequestClient
   extends UpdateTransactionInputs,
     SignableTransactionAction,
-    BaseTransactionAction {}
+    BaseTransactionAction,
+    SequencerTransactionAction {}

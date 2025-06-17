@@ -11,9 +11,10 @@ export type DepositTransaction = BaseTransaction & {
 };
 
 export interface DepositTransactionInputs {
-  l1InitiatedNonce?: bigint;
   amt: bigint;
   keystoreAddress: KeystoreAddress;
 }
 
-export interface DepositTransactionClient extends DepositTransactionInputs, BaseTransactionAction {}
+export interface DepositTransactionRequestClient
+  extends DepositTransactionInputs,
+    BaseTransactionAction {}

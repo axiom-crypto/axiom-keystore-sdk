@@ -71,10 +71,10 @@ The SDK supports all transaction types of the keystore rollup, including `Deposi
 
 #### Deposit
 
-To create a client for the `Deposit` transaction type, you can use the `createDepositTransactionClient` function. You'll need to provide the recipient `keystoreAddress` and the deposit `amt`.
+To create a client for the `Deposit` transaction type, you can use the `createDepositTransactionRequestClient` function. You'll need to provide the recipient `keystoreAddress` and the deposit `amt`.
 
 ```typescript
-const depositTx = await createDepositTransactionClient({
+const depositTx = await createDepositTransactionRequestClient({
   keystoreAddress: userAcct.address,
   amt: parseEther("0.01"),
 });
@@ -82,10 +82,10 @@ const depositTx = await createDepositTransactionClient({
 
 #### Withdraw
 
-To create a client for the `Withdraw` transaction type, you can use the `createWithdrawTransactionClient` function. You'll need to provide the withdrawal `amt`, the recipient address `to` on L1, the `userAcct` (the keystore account initiating the withdrawal).
+To create a client for the `Withdraw` transaction type, you can use the `createWithdrawTransactionRequestClient` function. You'll need to provide the withdrawal `amt`, the recipient address `to` on L1, the `userAcct` (the keystore account initiating the withdrawal).
 
 ```typescript
-const withdrawTx = await createWithdrawTransactionClient({
+const withdrawTx = await createWithdrawTransactionRequestClient({
   amt: parseEther("0.005"),
   to: account.address,
   userAcct,
@@ -94,7 +94,7 @@ const withdrawTx = await createWithdrawTransactionClient({
 
 #### Update
 
-To create a client for the `Update` transaction type, you can use the `createUpdateTransactionClient` function. In addition to the user keystore account we created earlier, we'll be providing an optional Sponsor Account that will be sponsoring the `Update` transaction on the keystore rollup.
+To create a client for the `Update` transaction type, you can use the `createUpdateTransactionRequestClient` function. In addition to the user keystore account we created earlier, we'll be providing an optional Sponsor Account that will be sponsoring the `Update` transaction on the keystore rollup.
 
 ```typescript
 const sponsorAcct = initAccountFromAddress({
@@ -103,7 +103,7 @@ const sponsorAcct = initAccountFromAddress({
   vkey: mOfNEcdsaClient.vkey,
   nodeClient,
 });
-const updateTx = await createUpdateTransactionClient({
+const updateTx = await createUpdateTransactionRequestClient({
   newUserData: keyData,
   newUserVkey: mOfNEcdsaClient.vkey,
   userAcct,
@@ -136,7 +136,7 @@ const sponsorAuthInputs = mOfNEcdsaClient.makeAuthInputs({
 
 // Send authentication data to the signature prover
 const authHash = await mOfNEcdsaClient.authenticateSponsoredTransaction({
-  transaction: updateTx.toBytes(),
+  transaction: updateTx.rawSequencerTransaction(),
   sponsoredAuthInputs: {
     userAuthInputs,
     sponsorAuthInputs,
@@ -180,7 +180,7 @@ const l1Client = createWalletClient({
   .extend(walletActionsL1());
 ```
 
-Next, prepare the L1 transaction data using a specific transaction client (e.g., `createDepositTransactionClient`). Then, send this transaction to the L1 bridge contract using the `initiateL1Transaction` method on your extended L1 client.
+Next, prepare the L1 transaction data using a specific transaction client (e.g., `createDepositTransactionRequestClient`). Then, send this transaction to the L1 bridge contract using the `initiateL1Transaction` method on your extended L1 client.
 
 Once the L1 transaction is confirmed, retrieve its receipt. From this L1 receipt, you can extract the corresponding L2 transaction hash using `getL2TransactionHashes`. Finally, use a `SequencerClient` (or `NodeClient`) to wait for the L2 transaction to be processed and get its receipt.
 
@@ -188,7 +188,7 @@ Once the L1 transaction is confirmed, retrieve its receipt. From this L1 receipt
 // Send the deposit transaction to L1
 const l1TxHash = await l1Client.initiateL1Transaction({
   bridgeAddress: config.bridgeAddress,
-  txClient: depositTx,
+  txRequestClient: depositTx,
 });
 console.log("L1 transaction hash:", l1TxHash);
 
