@@ -24,9 +24,11 @@ export type BaseTransaction = {
 
 export interface BaseTransactionAction {
   txType: TransactionType;
-  toBytes: () => Data;
-  txHash: () => Hash;
   l1InitiatedTransaction: () => L1InitiatedTransactionSol;
+}
+
+export interface SequencerTransactionAction {
+  rawSequencerTransaction: () => Data;
 }
 
 export interface WithdrawTransactionAction {

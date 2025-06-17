@@ -1,6 +1,6 @@
 import {
   BaseTransactionAction,
-  DepositTransactionClient,
+  DepositTransactionRequestClient,
   FinalizeWithdrawalArgs,
   Hash,
   TransactionType,
@@ -12,7 +12,7 @@ import { writeContract } from "viem/actions";
 const abi = AxiomKeystoreRollupAbi.abi;
 
 export type InitiateL1TransactionParameters = BridgeAddressParameter & {
-  txClient: BaseTransactionAction;
+  txRequestClient: BaseTransactionAction;
 };
 
 export type InitiateL1TransactionReturnType = Hash;
@@ -35,14 +35,14 @@ async function initiateL1Transaction(
   client: any, // eslint-disable-line @typescript-eslint/no-explicit-any
   parameters: InitiateL1TransactionParameters,
 ): Promise<InitiateL1TransactionReturnType> {
-  const { bridgeAddress, txClient } = parameters;
+  const { bridgeAddress, txRequestClient } = parameters;
 
   const value = await (async () => {
-    switch (txClient.txType) {
+    switch (txRequestClient.txType) {
       case TransactionType.Deposit:
         return (
           (await client.l1InitiatedFee({ bridgeAddress, txType: TransactionType.Deposit })) +
-          (txClient as DepositTransactionClient).amt
+          (txRequestClient as DepositTransactionRequestClient).amt
         );
       case TransactionType.Withdraw:
         return client.l1InitiatedFee({ bridgeAddress, txType: TransactionType.Withdraw });
@@ -59,7 +59,7 @@ async function initiateL1Transaction(
     address: bridgeAddress,
     abi,
     functionName: "initiateL1Transaction",
-    args: [txClient.l1InitiatedTransaction()],
+    args: [txRequestClient.l1InitiatedTransaction()],
     value,
   });
 }

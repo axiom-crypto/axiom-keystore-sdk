@@ -6,11 +6,11 @@ import {
   MOfNEcdsaKeyDataFields,
   MOfNEcdsaAuthDataFields,
   MOfNEcdsaAuthInputs,
-  createDepositTransactionClient,
+  createDepositTransactionRequestClient,
   publicActionsL1,
   walletActionsL1,
   getL2TransactionHashes,
-  createWithdrawTransactionClient,
+  createWithdrawTransactionRequestClient,
   SEQUENCER_URL,
   M_OF_N_ECDSA_SIG_PROVER_URL,
   BRIDGE_ADDRESS,
@@ -76,15 +76,15 @@ async function main() {
   console.log("User account initialized:", userAcct);
 
   // Create a deposit transaction
-  const depositTx = await createDepositTransactionClient({
+  const depositTx = await createDepositTransactionRequestClient({
     keystoreAddress: userAcct.address,
     amt: parseEther("0.01"),
   });
 
   // Send the deposit transaction to L1
   const depositL1TxHash = await l1Client.initiateL1Transaction({
-    bridgeAddress: config.bridgeAddress,
-    txClient: depositTx,
+    bridgeAddress: config.bridgeAddress as `0x${string}`,
+    txRequestClient: depositTx,
   });
   console.log("L1 transaction hash:", depositL1TxHash);
 
@@ -99,7 +99,7 @@ async function main() {
   console.log("Deposit transaction receipt:", l2TxReceipt);
 
   // Create a withdraw transaction
-  const withdrawTx = await createWithdrawTransactionClient({
+  const withdrawTx = await createWithdrawTransactionRequestClient({
     amt: parseEther("0.005"),
     to: account.address,
     userAcct,
@@ -117,7 +117,7 @@ async function main() {
   });
 
   const authHash = await mOfNEcdsaClient.authenticateTransaction({
-    transaction: withdrawTx.toBytes(),
+    transaction: withdrawTx.rawSequencerTransaction(),
     authInputs: userAuthInputs,
   });
   const authenticatedTx = await mOfNEcdsaClient.waitForAuthentication({ hash: authHash });
@@ -136,7 +136,7 @@ async function main() {
     transactionHash: withdrawTxHash,
   });
   const finalizeWithdrawalL1TxHash = await l1Client.finalizeWithdrawal({
-    bridgeAddress: config.bridgeAddress,
+    bridgeAddress: config.bridgeAddress as `0x${string}`,
     ...finalizationArgs,
   });
   console.log("Withdrawal finalized on L1. L1 transaction hash:", finalizeWithdrawalL1TxHash);

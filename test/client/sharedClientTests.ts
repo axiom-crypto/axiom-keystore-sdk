@@ -2,7 +2,7 @@ import {
   BlockTag,
   BlockTransactionsKind,
   createL2BlockClient,
-  createUpdateTransactionClient,
+  createUpdateTransactionRequestClient,
   GetTransactionReceiptResponse,
   NodeClient,
   TransactionStatus,
@@ -108,9 +108,9 @@ export function runNodeClientTests(createClient: () => NodeClient) {
     });
 
     test("keystore_call", async () => {
-      const tx = await createUpdateTransactionClient(TEST_TX_REQ);
+      const tx = await createUpdateTransactionRequestClient(TEST_TX_REQ);
       await client.call({
-        transaction: tx.toBytes(),
+        transaction: tx.rawSequencerTransaction(),
         block: BlockTag.Latest,
       });
     });

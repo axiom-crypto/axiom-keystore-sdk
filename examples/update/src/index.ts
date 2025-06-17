@@ -1,7 +1,7 @@
 import {
   createSignatureProverClient,
   initAccountCounterfactual,
-  createUpdateTransactionClient,
+  createUpdateTransactionRequestClient,
   createSequencerClient,
   initAccountFromAddress,
   SEQUENCER_URL,
@@ -80,7 +80,7 @@ async function main() {
 
   // Create a client to handle the Update transaction type, which is used to update the user
   // keystore account's data and vkey.
-  const updateTx = await createUpdateTransactionClient({
+  const updateTx = await createUpdateTransactionRequestClient({
     newUserData: keyData,
     newUserVkey: mOfNEcdsaClient.vkey,
     userAcct,
@@ -102,7 +102,7 @@ async function main() {
   });
 
   const authHash = await mOfNEcdsaClient.authenticateSponsoredTransaction({
-    transaction: updateTx.toBytes(),
+    transaction: updateTx.rawSequencerTransaction(),
     sponsoredAuthInputs: {
       userAuthInputs,
       sponsorAuthInputs,

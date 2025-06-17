@@ -7,26 +7,24 @@ import {
   Hash,
   L1InitiatedTransactionSol,
   TransactionType,
-  UpdateTransactionClient,
+  UpdateTransactionRequestClient,
   UpdateTransactionInputs,
 } from "@/types";
 import { DOMAIN, UPDATE_TYPES } from "@/types/eip712";
 import { ecdsaSign } from "@/utils/ecdsa";
 import { RLP } from "@ethereumjs/rlp";
 import {
-  boolToHex,
   bytesToHex,
   encodePacked,
   hashTypedData,
   HashTypedDataParameters,
-  keccak256,
   numberToHex,
   pad,
 } from "viem";
 
-export async function createUpdateTransactionClient(
+export async function createUpdateTransactionRequestClient(
   tx: UpdateTransactionInputs,
-): Promise<UpdateTransactionClient> {
+): Promise<UpdateTransactionRequestClient> {
   const nodeClient = createNodeClient({ url: tx.nodeClientUrl ?? NODE_URL });
   const nonce =
     tx.nonce ??
@@ -47,9 +45,6 @@ export async function createUpdateTransactionClient(
       return await sequencerClient.gasPrice();
     })());
   const feePerGas = numberToHex(feePerGasBigInt, { size: 32 });
-
-  const isL1Initiated = boolToHex(tx.isL1Initiated ?? false, { size: 1 });
-  const l1InitiatedNonce = tx.l1InitiatedNonce ? numberToHex(tx.l1InitiatedNonce) : "0x";
 
   const userAcct = initAccount({
     address: tx.userAcct.address,
@@ -88,10 +83,10 @@ export async function createUpdateTransactionClient(
     ]),
   );
 
-  const toBytes = (): Data => {
+  const rawSequencerTransaction = (): Data => {
     return encodePacked(
-      ["bytes1", "bytes1", "bytes", "bytes"],
-      [TransactionType.Update, isL1Initiated, l1InitiatedNonce, rlpEncodedPortion],
+      ["bytes1", "bool", "bytes", "bytes"],
+      [TransactionType.Update, false, "0x", rlpEncodedPortion],
     );
   };
 
@@ -117,8 +112,6 @@ export async function createUpdateTransactionClient(
     };
   };
 
-  const txHash = (): Hash => keccak256(toBytes());
-
   const userMsgHash = (): Hash => {
     return hashTypedData(toTypedData());
   };
@@ -138,10 +131,7 @@ export async function createUpdateTransactionClient(
     sponsorAcct,
     userProof: tx.userProof,
     sponsorProof: tx.sponsorProof,
-    l1InitiatedNonce: tx.l1InitiatedNonce,
-    isL1Initiated: tx.isL1Initiated,
-    toBytes,
-    txHash,
+    rawSequencerTransaction,
     l1InitiatedTransaction,
     toTypedData,
     userMsgHash,
