@@ -31,7 +31,7 @@ export async function createDepositTransactionClient(
   const l1InitiatedTransaction = (): L1InitiatedTransactionSol => {
     return {
       txType: TransactionType.Deposit,
-      data: keystoreAddress,
+      data: encodePacked(["uint256", "bytes32"], [amt, keystoreAddress]),
     };
   };
 
